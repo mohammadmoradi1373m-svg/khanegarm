@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>خانه‌گرم | لوازم خانگی و ماشین اصلاح</title>
+<meta name="description" content="لوازم خانگی و ماشین اصلاح با کیفیت مطمئن، به همراه راهنمای خرید و نگهداری.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -18,7 +19,7 @@
     --teal:#2F6F62;
     --rust:#C1442E;
     --line:#E4CFB0;
-    --radius:22px;
+    --radius:20px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
@@ -26,8 +27,8 @@
     background:var(--bg);
     color:var(--ink);
     font-family:'IBM Plex Sans Arabic', sans-serif;
-    font-size:17px;
-    line-height:1.9;
+    font-size:16.5px;
+    line-height:1.85;
     overflow-x:hidden;
   }
   h1,h2,h3,.display{
@@ -37,311 +38,243 @@
   }
   a{color:inherit; text-decoration:none;}
   img{max-width:100%; display:block;}
-  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+  .wrap{max-width:1140px; margin:0 auto; padding:0 26px;}
+  section{padding:84px 0;}
 
-  /* header */
+  /* ===== header ===== */
   header{
     position:sticky; top:0; z-index:50;
-    background:rgba(255,247,236,0.88);
+    background:rgba(255,247,236,0.9);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
   }
-  .nav{display:flex; align-items:center; justify-content:space-between; padding:18px 28px;}
-  .logo{font-family:'Vazirmatn'; font-weight:900; font-size:22px; display:flex; align-items:center; gap:8px;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:16px 26px;}
+  .logo{font-family:'Vazirmatn'; font-weight:900; font-size:21px; display:flex; align-items:center; gap:7px;}
   .logo span{color:var(--rust);}
-  .nav-links{display:flex; gap:34px; font-weight:500; font-size:15px; color:var(--ink-soft);}
+  .nav-links{display:flex; gap:30px; font-weight:500; font-size:14.5px; color:var(--ink-soft);}
   .nav-links a:hover{color:var(--rust);}
-  .nav-cta{
-    background:var(--ink); color:#fff !important; padding:11px 24px; border-radius:100px;
-    font-weight:600; font-size:14.5px; transition:transform .2s ease, background .2s ease;
-  }
-  .nav-cta:hover{background:var(--rust); transform:translateY(-1px);}
-  .burger{display:none;}
+  .nav-right{display:flex; align-items:center; gap:10px;}
 
-  /* hero */
-  .hero{
-    position:relative;
-    padding:86px 0 60px;
-    overflow:hidden;
-  }
-  .hero-grid{
-    display:grid; grid-template-columns:1.1fr 0.9fr; gap:56px; align-items:center;
-  }
-  .eyebrow{
-    display:inline-flex; align-items:center; gap:8px;
-    background:var(--bg-alt); border:1px solid var(--line);
-    color:var(--amber-deep); font-weight:600; font-size:13.5px;
-    padding:7px 16px; border-radius:100px; margin-bottom:22px;
-  }
-  .hero h1{
-    font-size:clamp(34px, 5vw, 54px);
-    line-height:1.28;
-    margin-bottom:22px;
-  }
-  .hero h1 em{
-    font-style:normal;
-    color:var(--rust);
-    position:relative;
-  }
-  .hero p.lead{
-    font-size:18px; color:var(--ink-soft); max-width:480px; margin-bottom:34px;
-  }
-  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:38px;}
-  .btn-primary{
-    background:var(--rust); color:#fff; padding:15px 30px; border-radius:100px;
-    font-weight:700; font-size:15.5px; display:inline-block;
-    box-shadow:0 10px 24px -8px rgba(193,68,46,0.55);
-    transition:transform .2s ease, box-shadow .2s ease;
-  }
-  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 14px 30px -8px rgba(193,68,46,0.6);}
-  .btn-ghost{
-    border:1.5px solid var(--ink); padding:14px 26px; border-radius:100px;
-    font-weight:600; font-size:15.5px; display:inline-block;
-    transition:background .2s ease, color .2s ease;
-  }
-  .btn-ghost:hover{background:var(--ink); color:#fff;}
-  .trust-row{display:flex; gap:26px; flex-wrap:wrap; color:var(--ink-soft); font-size:14px;}
-  .trust-row span{display:flex; align-items:center; gap:7px;}
-  .dot{width:6px; height:6px; border-radius:50%; background:var(--teal);}
-
-  .hero-art{
-    position:relative; aspect-ratio:1/1; border-radius:32px;
-    background:linear-gradient(160deg, var(--amber) 0%, var(--rust) 100%);
-    display:flex; align-items:center; justify-content:center;
-    overflow:hidden;
-  }
-  .hero-art::before{
-    content:""; position:absolute; inset:0;
-    background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 55%);
-  }
-  .hero-art .emoji-stack{font-size:96px; display:flex; gap:18px; position:relative; z-index:2; filter:drop-shadow(0 18px 26px rgba(0,0,0,0.18));}
-  .hero-art .emoji-stack span:nth-child(2){margin-top:60px;}
-  .float-card{
-    position:absolute; background:var(--card); border-radius:16px; padding:14px 18px;
-    box-shadow:0 16px 34px -12px rgba(59,42,30,0.35); font-size:14px; font-weight:600;
-    display:flex; align-items:center; gap:10px; z-index:3;
-  }
-  .float-card.a{top:8%; right:-6%;}
-  .float-card.b{bottom:10%; left:-8%;}
-  .float-card .badge{width:34px; height:34px; border-radius:10px; background:var(--bg-alt); display:flex; align-items:center; justify-content:center; font-size:17px;}
-
-  /* morning timeline - signature element */
-  .timeline-section{
-    background:linear-gradient(120deg, #FDE9C8 0%, #FBEEDD 45%, var(--bg) 100%);
-    padding:80px 0 90px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-  }
-  .section-head{text-align:center; max-width:600px; margin:0 auto 56px;}
-  .section-head .eyebrow{margin-bottom:16px;}
-  .section-head h2{font-size:clamp(26px,3.4vw,36px); margin-bottom:14px;}
-  .section-head p{color:var(--ink-soft); font-size:16px;}
-
-  .timeline{
-    position:relative; display:grid; grid-template-columns:repeat(4,1fr); gap:0;
-  }
-  .timeline::before{
-    content:""; position:absolute; top:34px; right:12.5%; left:12.5%; height:2px;
-    background:repeating-linear-gradient(to left, var(--amber-deep) 0 10px, transparent 10px 18px);
-  }
-  .t-step{text-align:center; padding:0 14px; position:relative;}
-  .t-num{
-    width:68px; height:68px; border-radius:50%; background:var(--card); border:2px solid var(--amber-deep);
-    display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 18px; position:relative; z-index:2;
-    box-shadow:0 8px 18px -8px rgba(193,68,46,0.3);
-  }
-  .t-step h3{font-size:16.5px; margin-bottom:8px;}
-  .t-step p{font-size:14px; color:var(--ink-soft); line-height:1.7;}
-  .t-time{font-size:12.5px; color:var(--amber-deep); font-weight:700; letter-spacing:.03em; margin-bottom:6px; display:block;}
-
-  /* products */
-  .products{padding:96px 0;}
-  .filter-row{display:flex; gap:10px; justify-content:center; margin-bottom:48px; flex-wrap:wrap;}
-  .chip{
-    padding:9px 20px; border-radius:100px; border:1.5px solid var(--line); font-size:14px; font-weight:600;
-    color:var(--ink-soft); cursor:pointer; transition:all .2s ease; background:var(--card);
-  }
-  .chip.active, .chip:hover{background:var(--ink); color:#fff; border-color:var(--ink);}
-
-  .product-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:26px;}
-  .p-card{
-    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
-    padding:26px; transition:transform .25s ease, box-shadow .25s ease;
-  }
-  .p-card:hover{transform:translateY(-6px); box-shadow:0 22px 40px -18px rgba(59,42,30,0.28);}
-  .p-thumb{
-    aspect-ratio:1/0.85; border-radius:16px; margin-bottom:20px;
-    display:flex; align-items:center; justify-content:center; font-size:64px;
-  }
-  .p-thumb.warm{background:linear-gradient(160deg,#FCE2B8,#F6C077);}
-  .p-thumb.teal{background:linear-gradient(160deg,#D8ECE6,#AFD8CC);}
-  .p-thumb.rust{background:linear-gradient(160deg,#F3D2C6,#E7AA97);}
-  .p-tag{font-size:12.5px; font-weight:700; color:var(--teal); margin-bottom:8px; display:block;}
-  .p-card h3{font-size:18px; margin-bottom:6px;}
-  .p-card .desc{font-size:14px; color:var(--ink-soft); margin-bottom:18px; min-height:44px;}
-  .p-foot{display:flex; align-items:center; justify-content:space-between;}
-  .price{font-family:'Vazirmatn'; font-weight:800; font-size:19px;}
-  .price small{font-size:12px; font-weight:500; color:var(--ink-soft);}
-  .add-btn{
-    background:var(--bg-alt); border:1px solid var(--line); width:42px; height:42px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center; font-size:19px; cursor:pointer;
-    transition:background .2s ease, color .2s ease, transform .2s ease;
-    font-family:inherit; padding:0; color:var(--ink);
-  }
-  .add-btn:hover{background:var(--rust); color:#fff; transform:rotate(90deg);}
-
-  /* trust strip */
-  .trust-strip{background:var(--ink); color:#fff; padding:54px 0;}
-  .trust-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:30px; text-align:center;}
-  .trust-grid .icon{font-size:30px; margin-bottom:12px;}
-  .trust-grid h4{font-family:'Vazirmatn'; font-weight:700; font-size:16px; margin-bottom:6px;}
-  .trust-grid p{font-size:13.5px; color:#D8C7B4; line-height:1.6;}
-
-  /* testimonials */
-  .testimonials{padding:96px 0; background:var(--bg-alt);}
-  .t-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
-  .t-card{
-    background:var(--card); border-radius:var(--radius); padding:30px; border:1px solid var(--line);
-  }
-  .stars{color:var(--amber-deep); font-size:15px; margin-bottom:14px; letter-spacing:2px;}
-  .t-card p{font-size:15px; color:var(--ink); margin-bottom:20px;}
-  .t-person{display:flex; align-items:center; gap:12px;}
-  .t-avatar{width:40px; height:40px; border-radius:50%; background:var(--teal); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Vazirmatn';}
-  .t-person .name{font-weight:700; font-size:14.5px;}
-  .t-person .loc{font-size:12.5px; color:var(--ink-soft);}
-
-  /* CTA band */
-  .cta-band{padding:100px 0; text-align:center; position:relative;}
-  .cta-box{
-    background:linear-gradient(135deg,var(--amber) 0%, var(--rust) 100%);
-    border-radius:32px; padding:70px 40px; color:#fff; position:relative; overflow:hidden;
-  }
-  .cta-box::after{content:"🏠 ✂️ ☕"; position:absolute; font-size:120px; opacity:.12; bottom:-30px; left:-10px; letter-spacing:20px;}
-  .cta-box h2{font-size:clamp(26px,3.6vw,38px); margin-bottom:16px; position:relative;}
-  .cta-box p{max-width:480px; margin:0 auto 30px; opacity:.95; position:relative;}
-  .btn-white{background:#fff; color:var(--rust); padding:16px 34px; border-radius:100px; font-weight:800; display:inline-block; position:relative;}
-
-  footer{padding:56px 0 34px; border-top:1px solid var(--line);}
-  .foot-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:30px; margin-bottom:40px;}
-  .foot-grid h5{font-size:14px; margin-bottom:16px; color:var(--ink-soft);}
-  .foot-grid ul{list-style:none; display:flex; flex-direction:column; gap:10px; font-size:14px;}
-  .foot-grid ul a:hover{color:var(--rust);}
-  .foot-bottom{display:flex; justify-content:space-between; color:var(--ink-soft); font-size:13px; border-top:1px solid var(--line); padding-top:24px; flex-wrap:wrap; gap:10px;}
-
-  @media (max-width:880px){
-    .nav-links{display:none;}
-    .hero-grid{grid-template-columns:1fr;}
-    .hero-art{margin-top:20px;}
-    .timeline{grid-template-columns:1fr 1fr; row-gap:40px;}
-    .timeline::before{display:none;}
-    .product-grid{grid-template-columns:1fr 1fr;}
-    .trust-grid{grid-template-columns:1fr 1fr;}
-    .t-grid{grid-template-columns:1fr;}
-    .foot-grid{grid-template-columns:1fr 1fr;}
-    .float-card{display:none;}
-  }
-  @media (max-width:520px){
-    .product-grid{grid-template-columns:1fr;}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{transition:none !important;}
-  }
-  a:focus-visible, .chip:focus-visible, .add-btn:focus-visible{outline:3px solid var(--teal); outline-offset:2px;}
-
-  /* cart trigger */
   .cart-btn{
     position:relative; display:flex; align-items:center; gap:8px;
     background:var(--bg-alt); border:1px solid var(--line); color:var(--ink) !important;
-    padding:10px 18px; border-radius:100px; font-weight:600; font-size:14.5px; cursor:pointer;
-    transition:background .2s ease;
+    padding:9px 16px; border-radius:100px; font-weight:600; font-size:14px; cursor:pointer;
+    font-family:inherit; transition:background .2s ease;
   }
   .cart-btn:hover{background:var(--line);}
   .cart-count{
-    position:absolute; top:-7px; left:-7px; background:var(--rust); color:#fff;
-    font-size:11px; font-weight:700; width:20px; height:20px; border-radius:50%;
+    position:absolute; top:-6px; left:-6px; background:var(--rust); color:#fff;
+    font-size:11px; font-weight:700; width:19px; height:19px; border-radius:50%;
     display:flex; align-items:center; justify-content:center; font-family:'Vazirmatn';
     transition:transform .15s ease;
   }
   .cart-count.bump{transform:scale(1.35);}
+  .nav-cta{
+    background:var(--ink); color:#fff !important; padding:10px 22px; border-radius:100px;
+    font-weight:600; font-size:14px; transition:background .2s ease;
+  }
+  .nav-cta:hover{background:var(--rust);}
 
-  /* cart drawer */
+  /* ===== shared bits ===== */
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--bg-alt); border:1px solid var(--line);
+    color:var(--amber-deep); font-weight:600; font-size:13px;
+    padding:6px 15px; border-radius:100px; margin-bottom:18px;
+  }
+  .section-head{max-width:600px; margin:0 auto 48px; text-align:center;}
+  .section-head h2{font-size:clamp(25px,3.2vw,33px); margin-bottom:12px;}
+  .section-head p{color:var(--ink-soft); font-size:15.5px;}
+  .btn-primary{
+    background:var(--rust); color:#fff; padding:14px 28px; border-radius:100px;
+    font-weight:700; font-size:15px; display:inline-block;
+    box-shadow:0 10px 22px -8px rgba(193,68,46,0.5);
+    transition:transform .2s ease;
+  }
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{
+    border:1.5px solid var(--ink); padding:13px 24px; border-radius:100px;
+    font-weight:600; font-size:15px; display:inline-block; transition:background .2s ease, color .2s ease;
+  }
+  .btn-ghost:hover{background:var(--ink); color:#fff;}
+
+  /* ===== hero ===== */
+  .hero{padding:70px 0 56px;}
+  .hero-grid{display:grid; grid-template-columns:1.05fr 0.95fr; gap:50px; align-items:center;}
+  .hero h1{font-size:clamp(32px,4.6vw,48px); line-height:1.32; margin-bottom:18px;}
+  .hero h1 em{font-style:normal; color:var(--rust);}
+  .hero p.lead{font-size:17px; color:var(--ink-soft); max-width:460px; margin-bottom:28px;}
+  .hero-ctas{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:30px;}
+  .trust-row{display:flex; gap:22px; flex-wrap:wrap; color:var(--ink-soft); font-size:13.5px;}
+  .trust-row span{display:flex; align-items:center; gap:6px;}
+  .dot{width:6px; height:6px; border-radius:50%; background:var(--teal); flex-shrink:0;}
+  .hero-art{
+    position:relative; aspect-ratio:1/0.9; border-radius:28px;
+    background:linear-gradient(160deg, var(--amber) 0%, var(--rust) 100%);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .hero-art::before{content:""; position:absolute; inset:0; background:radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 55%);}
+  .hero-art .emoji-stack{font-size:84px; display:flex; gap:16px; position:relative; z-index:2; filter:drop-shadow(0 16px 22px rgba(0,0,0,0.18));}
+  .float-card{
+    position:absolute; bottom:8%; right:-5%; background:var(--card); border-radius:16px; padding:13px 17px;
+    box-shadow:0 16px 30px -12px rgba(59,42,30,0.35); font-size:13.5px; font-weight:600;
+    display:flex; align-items:center; gap:9px; z-index:3;
+  }
+  .float-card .badge{width:32px; height:32px; border-radius:9px; background:var(--bg-alt); display:flex; align-items:center; justify-content:center; font-size:16px;}
+
+  /* ===== products ===== */
+  .filter-row{display:flex; gap:9px; justify-content:center; margin-bottom:40px; flex-wrap:wrap;}
+  .chip{
+    padding:8px 18px; border-radius:100px; border:1.5px solid var(--line); font-size:13.5px; font-weight:600;
+    color:var(--ink-soft); cursor:pointer; transition:all .2s ease; background:var(--card); font-family:inherit;
+  }
+  .chip.active, .chip:hover{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .product-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .p-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px; transition:transform .22s ease, box-shadow .22s ease;
+  }
+  .p-card[data-cat]{display:block;}
+  .p-card.hidden{display:none;}
+  .p-card:hover{transform:translateY(-4px); box-shadow:0 18px 32px -16px rgba(59,42,30,0.25);}
+  .p-thumb{aspect-ratio:1/0.82; border-radius:14px; margin-bottom:16px; display:flex; align-items:center; justify-content:center; font-size:56px;}
+  .p-thumb.warm{background:linear-gradient(160deg,#FCE2B8,#F6C077);}
+  .p-thumb.teal{background:linear-gradient(160deg,#D8ECE6,#AFD8CC);}
+  .p-thumb.rust{background:linear-gradient(160deg,#F3D2C6,#E7AA97);}
+  .p-tag{font-size:12px; font-weight:700; color:var(--teal); margin-bottom:6px; display:block;}
+  .p-card h3{font-size:16.5px; margin-bottom:5px;}
+  .p-card .desc{font-size:13.5px; color:var(--ink-soft); margin-bottom:16px; min-height:40px;}
+  .p-foot{display:flex; align-items:center; justify-content:space-between;}
+  .price{font-family:'Vazirmatn'; font-weight:800; font-size:17.5px;}
+  .price small{font-size:11.5px; font-weight:500; color:var(--ink-soft);}
+  .add-btn{
+    background:var(--bg-alt); border:1px solid var(--line); width:40px; height:40px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer;
+    transition:background .2s ease, color .2s ease, transform .2s ease; font-family:inherit; padding:0; color:var(--ink);
+  }
+  .add-btn:hover{background:var(--rust); color:#fff; transform:rotate(90deg);}
+
+  /* ===== guide / learn (signature) ===== */
+  .guide-section{background:var(--bg-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .guide-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .guide-card{
+    background:var(--card); border-radius:16px; padding:0; border:1px solid var(--line);
+    position:relative; overflow:hidden;
+  }
+  .guide-card::before{
+    content:""; position:absolute; top:0; right:22px; width:34px; height:14px;
+    background:var(--amber); border-radius:0 0 6px 6px; opacity:.85;
+  }
+  .guide-top{padding:30px 24px 18px;}
+  .guide-tag{font-size:12px; font-weight:700; color:var(--rust); margin-bottom:10px; display:block;}
+  .guide-card h3{font-size:17px; margin-bottom:10px; line-height:1.5;}
+  .guide-card p.teaser{font-size:14px; color:var(--ink-soft); margin-bottom:0;}
+  .guide-card details{border-top:1px dashed var(--line);}
+  .guide-card summary{
+    cursor:pointer; list-style:none; padding:14px 24px; font-size:13.5px; font-weight:700;
+    color:var(--teal); display:flex; align-items:center; gap:6px; user-select:none;
+  }
+  .guide-card summary::-webkit-details-marker{display:none;}
+  .guide-card summary .arrow{transition:transform .2s ease; font-size:12px;}
+  .guide-card details[open] summary .arrow{transform:rotate(90deg);}
+  .guide-body{padding:0 24px 24px; font-size:14px; color:var(--ink); line-height:1.85;}
+  .guide-body p{margin-bottom:12px;}
+  .guide-body p:last-child{margin-bottom:0;}
+
+  /* ===== trust + testimonials combined ===== */
+  .trust-testi{background:var(--ink); color:#fff;}
+  .tt-grid{display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:start;}
+  .trust-list{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+  .trust-item .icon{font-size:24px; margin-bottom:8px;}
+  .trust-item h4{font-family:'Vazirmatn'; font-weight:700; font-size:14.5px; margin-bottom:4px;}
+  .trust-item p{font-size:13px; color:#D8C7B4; line-height:1.6;}
+  .testi-card{background:rgba(255,255,255,0.06); border-radius:16px; padding:22px; margin-bottom:14px;}
+  .testi-card:last-child{margin-bottom:0;}
+  .testi-card .stars{color:var(--amber); font-size:14px; margin-bottom:8px; letter-spacing:2px;}
+  .testi-card p{font-size:14px; margin-bottom:10px; color:#F3E8D9;}
+  .testi-name{font-size:13px; color:#D8C7B4; font-weight:600;}
+
+  /* ===== CTA band ===== */
+  .cta-band{text-align:center;}
+  .cta-box{
+    background:linear-gradient(135deg,var(--amber) 0%, var(--rust) 100%);
+    border-radius:28px; padding:56px 36px; color:#fff;
+  }
+  .cta-box h2{font-size:clamp(24px,3.4vw,32px); margin-bottom:14px;}
+  .cta-box p{max-width:440px; margin:0 auto 26px; opacity:.95; font-size:15px;}
+  .btn-white{background:#fff; color:var(--rust); padding:14px 30px; border-radius:100px; font-weight:800; display:inline-block;}
+
+  /* ===== footer ===== */
+  footer{padding:50px 0 28px; border-top:1px solid var(--line);}
+  .foot-grid{display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:30px; margin-bottom:32px;}
+  .foot-grid h5{font-size:13.5px; margin-bottom:14px; color:var(--ink-soft);}
+  .foot-grid ul{list-style:none; display:flex; flex-direction:column; gap:9px; font-size:13.5px;}
+  .foot-grid ul a:hover{color:var(--rust);}
+  .foot-bottom{display:flex; justify-content:space-between; color:var(--ink-soft); font-size:12.5px; border-top:1px solid var(--line); padding-top:20px; flex-wrap:wrap; gap:8px;}
+
+  /* ===== cart drawer ===== */
   .cart-overlay{
     position:fixed; inset:0; background:rgba(59,42,30,0.42); backdrop-filter:blur(2px);
     z-index:90; opacity:0; pointer-events:none; transition:opacity .28s ease;
   }
   .cart-overlay.open{opacity:1; pointer-events:auto;}
   .cart-drawer{
-    position:fixed; top:0; bottom:0; left:0; width:min(420px, 92vw); background:var(--bg);
+    position:fixed; top:0; bottom:0; left:0; width:min(410px, 92vw); background:var(--bg);
     z-index:91; box-shadow:24px 0 60px -20px rgba(59,42,30,0.35);
     transform:translateX(-100%); transition:transform .32s cubic-bezier(.22,.8,.3,1);
     display:flex; flex-direction:column;
   }
   .cart-drawer.open{transform:translateX(0);}
-  .cart-head{
-    display:flex; align-items:center; justify-content:space-between; padding:22px 24px;
-    border-bottom:1px solid var(--line); flex-shrink:0;
-  }
-  .cart-head h3{font-size:19px;}
-  .cart-close{
-    width:36px; height:36px; border-radius:50%; background:var(--bg-alt); border:none;
-    font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    transition:background .2s ease;
-  }
+  .cart-head{display:flex; align-items:center; justify-content:space-between; padding:20px 22px; border-bottom:1px solid var(--line); flex-shrink:0;}
+  .cart-head h3{font-size:18px;}
+  .cart-close{width:34px; height:34px; border-radius:50%; background:var(--bg-alt); border:none; font-size:17px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .2s ease;}
   .cart-close:hover{background:var(--line);}
-  .cart-items{flex:1; overflow-y:auto; padding:18px 24px; display:flex; flex-direction:column; gap:16px;}
-  .cart-item{
-    display:flex; gap:14px; align-items:center; background:var(--card); border:1px solid var(--line);
-    border-radius:16px; padding:14px;
-  }
-  .ci-thumb{
-    width:52px; height:52px; border-radius:12px; background:var(--bg-alt); flex-shrink:0;
-    display:flex; align-items:center; justify-content:center; font-size:24px;
-  }
+  .cart-items{flex:1; overflow-y:auto; padding:16px 22px; display:flex; flex-direction:column; gap:14px;}
+  .cart-item{display:flex; gap:13px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:13px;}
+  .ci-thumb{width:48px; height:48px; border-radius:11px; background:var(--bg-alt); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:22px;}
   .ci-info{flex:1; min-width:0;}
-  .ci-info h4{font-size:14.5px; font-weight:700; margin-bottom:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .ci-price{font-size:13px; color:var(--ink-soft); font-family:'Vazirmatn'; font-weight:600;}
-  .ci-controls{display:flex; align-items:center; gap:8px; flex-shrink:0;}
-  .qty-btn{
-    width:26px; height:26px; border-radius:50%; border:1px solid var(--line); background:var(--bg-alt);
-    cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;
-    transition:background .15s ease;
-  }
+  .ci-info h4{font-size:14px; font-weight:700; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ci-price{font-size:12.5px; color:var(--ink-soft); font-family:'Vazirmatn'; font-weight:600;}
+  .ci-controls{display:flex; align-items:center; gap:7px; flex-shrink:0;}
+  .qty-btn{width:25px; height:25px; border-radius:50%; border:1px solid var(--line); background:var(--bg-alt); cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center; transition:background .15s ease; font-family:inherit;}
   .qty-btn:hover{background:var(--line);}
-  .qty-val{font-family:'Vazirmatn'; font-weight:700; font-size:14px; min-width:16px; text-align:center;}
-  .ci-remove{
-    background:none; border:none; color:var(--ink-soft); font-size:13px; cursor:pointer; margin-right:4px;
-    text-decoration:underline; flex-shrink:0;
-  }
-  .ci-remove:hover{color:var(--rust);}
-  .cart-empty{
-    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
-    flex:1; padding:40px 24px; color:var(--ink-soft); gap:14px;
-  }
-  .cart-empty .big-emoji{font-size:52px;}
-  .cart-empty p{font-size:15px; max-width:220px;}
-  .cart-foot{
-    border-top:1px solid var(--line); padding:20px 24px 26px; flex-shrink:0; background:var(--bg);
-  }
-  .cart-subtotal{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-size:15px;}
-  .cart-subtotal .val{font-family:'Vazirmatn'; font-weight:800; font-size:20px;}
-  .cart-checkout{
-    display:block; width:100%; text-align:center; background:var(--rust); color:#fff; border:none;
-    padding:15px; border-radius:100px; font-weight:700; font-size:15.5px; cursor:pointer;
-    box-shadow:0 10px 24px -8px rgba(193,68,46,0.5); transition:transform .2s ease;
-  }
+  .qty-val{font-family:'Vazirmatn'; font-weight:700; font-size:13.5px; min-width:15px; text-align:center;}
+  .cart-empty{display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; flex:1; padding:36px 22px; color:var(--ink-soft); gap:12px;}
+  .cart-empty .big-emoji{font-size:46px;}
+  .cart-empty p{font-size:14.5px; max-width:210px;}
+  .cart-foot{border-top:1px solid var(--line); padding:18px 22px 24px; flex-shrink:0; background:var(--bg);}
+  .cart-subtotal{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-size:14.5px;}
+  .cart-subtotal .val{font-family:'Vazirmatn'; font-weight:800; font-size:19px;}
+  .cart-checkout{display:block; width:100%; text-align:center; background:var(--rust); color:#fff; border:none; padding:14px; border-radius:100px; font-weight:700; font-size:15px; cursor:pointer; font-family:inherit; transition:transform .2s ease;}
   .cart-checkout:hover{transform:translateY(-2px);}
-  .cart-note{text-align:center; font-size:12.5px; color:var(--ink-soft); margin-top:12px;}
+  .cart-note{text-align:center; font-size:12px; color:var(--ink-soft); margin-top:10px;}
 
-  /* toast */
   .toast{
-    position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
-    background:var(--ink); color:#fff; padding:13px 24px; border-radius:100px; font-size:14.5px;
-    font-weight:600; z-index:120; display:flex; align-items:center; gap:10px; opacity:0;
-    transition:opacity .25s ease, transform .25s ease; pointer-events:none; white-space:nowrap;
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:12px 22px; border-radius:100px; font-size:14px;
+    font-weight:600; z-index:120; opacity:0; transition:opacity .25s ease, transform .25s ease;
+    pointer-events:none; white-space:nowrap;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
+  @media (max-width:880px){
+    .nav-links{display:none;}
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-art{margin-top:8px;}
+    .float-card{display:none;}
+    .product-grid{grid-template-columns:1fr 1fr;}
+    .guide-grid{grid-template-columns:1fr;}
+    .tt-grid{grid-template-columns:1fr; gap:32px;}
+    .foot-grid{grid-template-columns:1fr 1fr;}
+    section{padding:64px 0;}
+  }
   @media (max-width:520px){
+    .product-grid{grid-template-columns:1fr;}
+    .trust-list{grid-template-columns:1fr;}
     .cart-drawer{width:100vw;}
   }
+  @media (prefers-reduced-motion:reduce){ *{transition:none !important;} }
+  a:focus-visible, .chip:focus-visible, .add-btn:focus-visible, summary:focus-visible{outline:3px solid var(--teal); outline-offset:2px;}
 </style>
 </head>
 <body>
@@ -350,17 +283,17 @@
   <div class="nav wrap">
     <div class="logo">خانه<span>گرم</span></div>
     <nav class="nav-links">
-      <a href="#products">محصولات</a>
-      <a href="#timeline">روتین صبح</a>
+      <a href="#products">فروشگاه</a>
+      <a href="#guide">یادداشت‌های خانه‌گرم</a>
       <a href="#reviews">نظرات مشتری‌ها</a>
       <a href="#contact">تماس</a>
     </nav>
-    <div style="display:flex; align-items:center; gap:12px;">
+    <div class="nav-right">
       <button class="cart-btn" onclick="openCart()" aria-label="مشاهده سبد خرید">
         🛍️ سبد خرید
         <span class="cart-count" id="cartCount" style="display:none;">۰</span>
       </button>
-      <a href="#products" class="nav-cta">مشاهده محصولات</a>
+      <a href="#products" class="nav-cta">خرید کنید</a>
     </div>
   </div>
 </header>
@@ -372,10 +305,10 @@
     <button class="cart-close" onclick="closeCart()" aria-label="بستن سبد خرید">✕</button>
   </div>
   <div id="cartBody">
-    <div class="cart-empty" id="cartEmpty">
+    <div class="cart-empty">
       <div class="big-emoji">🛍️</div>
-      <p>سبد خریدتون هنوز خالیه. یه سر به محصولات بزنید!</p>
-      <a href="#products" class="btn-ghost" onclick="closeCart()" style="padding:12px 22px; font-size:14px;">مشاهده محصولات</a>
+      <p>سبد خریدتون هنوز خالیه. یه سر به فروشگاه بزنید!</p>
+      <a href="#products" class="btn-ghost" onclick="closeCart()" style="padding:11px 20px; font-size:13.5px;">مشاهده محصولات</a>
     </div>
   </div>
   <div class="cart-foot" id="cartFoot" style="display:none;">
@@ -395,10 +328,10 @@
     <div>
       <div class="eyebrow">🔥 ارسال رایگان بالای ۲ میلیون تومان</div>
       <h1>لوازم خانگی و ماشین اصلاحی که <em>صبح‌هاتو</em> راحت‌تر می‌کنه</h1>
-      <p class="lead">از کتری برقی تا ماشین اصلاح حرفه‌ای؛ محصولاتی که با کیفیت اروپایی و قیمت منصفانه، وارد خونه‌ی گرم شما می‌شن.</p>
+      <p class="lead">از کتری برقی تا ماشین اصلاح حرفه‌ای؛ محصولاتی با کیفیت مطمئن و قیمت منصفانه، به همراه راهنمای خرید و نگهداری.</p>
       <div class="hero-ctas">
         <a href="#products" class="btn-primary">خرید محصولات →</a>
-        <a href="#timeline" class="btn-ghost">ببین چطور کار می‌کنه</a>
+        <a href="#guide" class="btn-ghost">راهنمای خرید</a>
       </div>
       <div class="trust-row">
         <span><i class="dot"></i> ۱۸ ماه گارانتی</span>
@@ -407,52 +340,13 @@
       </div>
     </div>
     <div class="hero-art">
-      <div class="emoji-stack">
-        <span>☕</span><span>✂️</span>
-      </div>
-      <div class="float-card a"><span class="badge">⭐</span> ۴.۸ از ۵ — بیش از ۲۱۰۰ نظر</div>
-      <div class="float-card b"><span class="badge">🚚</span> تحویل تا ۲۴ ساعت</div>
+      <div class="emoji-stack"><span>☕</span><span>✂️</span></div>
+      <div class="float-card"><span class="badge">⭐</span> ۴.۸ از ۵ — بیش از ۲۱۰۰ نظر</div>
     </div>
   </div>
 </section>
 
-<section class="timeline-section" id="timeline">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow">روتین صبح با خانه‌گرم</div>
-      <h2>یک صبحِ ساده و مرتب، قدم به قدم</h2>
-      <p>هر محصول ما جای مشخصی توی صبح شما داره؛ از بیدار شدن تا بیرون رفتن از خونه.</p>
-    </div>
-    <div class="timeline">
-      <div class="t-step">
-        <span class="t-time">۰۶:۳۰</span>
-        <div class="t-num">☕</div>
-        <h3>کتری برقی سریع‌جوش</h3>
-        <p>در کمتر از ۲ دقیقه، چای یا قهوه‌ی صبح آماده‌ست.</p>
-      </div>
-      <div class="t-step">
-        <span class="t-time">۰۶:۴۵</span>
-        <div class="t-num">🍞</div>
-        <h3>توستر دو کاره</h3>
-        <p>صبحونه‌ی گرم برای کل خانواده، بدون دردسر.</p>
-      </div>
-      <div class="t-step">
-        <span class="t-time">۰۷:۰۰</span>
-        <div class="t-num">✂️</div>
-        <h3>ماشین اصلاح شارژی</h3>
-        <p>اصلاح تمیز و بی‌صدا، قبل از رفتن سر کار.</p>
-      </div>
-      <div class="t-step">
-        <span class="t-time">۰۷:۲۰</span>
-        <div class="t-num">🚪</div>
-        <h3>آماده‌ی یک روز خوب</h3>
-        <p>خونه مرتب، خودتون مرتب؛ صبح بدون عجله.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="products" id="products">
+<section id="products">
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">فروشگاه خانه‌گرم</div>
@@ -460,13 +354,12 @@
       <p>یک انتخاب دقیق از بهترین لوازم خانگی و ابزار اصلاح.</p>
     </div>
     <div class="filter-row">
-      <div class="chip active">همه</div>
-      <div class="chip">لوازم آشپزخانه</div>
-      <div class="chip">ماشین اصلاح</div>
-      <div class="chip">پرفروش‌ترین‌ها</div>
+      <button class="chip active" data-filter="all">همه</button>
+      <button class="chip" data-filter="kitchen">لوازم آشپزخانه</button>
+      <button class="chip" data-filter="grooming">ماشین اصلاح</button>
     </div>
-    <div class="product-grid">
-      <div class="p-card">
+    <div class="product-grid" id="productGrid">
+      <div class="p-card" data-cat="kitchen">
         <div class="p-thumb warm">☕</div>
         <span class="p-tag">آشپزخانه</span>
         <h3>کتری برقی استیل ۱.۷ لیتر</h3>
@@ -476,7 +369,7 @@
           <button class="add-btn" onclick="addToCart('kettle','کتری برقی استیل ۱.۷ لیتر',1290000,'☕')" aria-label="افزودن کتری برقی به سبد">+</button>
         </div>
       </div>
-      <div class="p-card">
+      <div class="p-card" data-cat="grooming">
         <div class="p-thumb rust">✂️</div>
         <span class="p-tag">ماشین اصلاح</span>
         <h3>ماشین اصلاح شارژی حرفه‌ای</h3>
@@ -486,7 +379,7 @@
           <button class="add-btn" onclick="addToCart('trimmer','ماشین اصلاح شارژی حرفه‌ای',1850000,'✂️')" aria-label="افزودن ماشین اصلاح به سبد">+</button>
         </div>
       </div>
-      <div class="p-card">
+      <div class="p-card" data-cat="kitchen">
         <div class="p-thumb teal">🍞</div>
         <span class="p-tag">آشپزخانه</span>
         <h3>توستر دو کاره خانگی</h3>
@@ -496,7 +389,7 @@
           <button class="add-btn" onclick="addToCart('toaster','توستر دو کاره خانگی',980000,'🍞')" aria-label="افزودن توستر به سبد">+</button>
         </div>
       </div>
-      <div class="p-card">
+      <div class="p-card" data-cat="kitchen">
         <div class="p-thumb warm">🌀</div>
         <span class="p-tag">آشپزخانه</span>
         <h3>مخلوط‌کن قدرتی ۶۰۰ وات</h3>
@@ -506,7 +399,7 @@
           <button class="add-btn" onclick="addToCart('blender','مخلوط‌کن قدرتی ۶۰۰ وات',1450000,'🌀')" aria-label="افزودن مخلوط‌کن به سبد">+</button>
         </div>
       </div>
-      <div class="p-card">
+      <div class="p-card" data-cat="grooming">
         <div class="p-thumb rust">💈</div>
         <span class="p-tag">ماشین اصلاح</span>
         <h3>ست اصلاح صورت و بدن</h3>
@@ -516,9 +409,9 @@
           <button class="add-btn" onclick="addToCart('groomset','ست اصلاح صورت و بدن',1690000,'💈')" aria-label="افزودن ست اصلاح به سبد">+</button>
         </div>
       </div>
-      <div class="p-card">
+      <div class="p-card" data-cat="kitchen">
         <div class="p-thumb teal">🧺</div>
-        <span class="p-tag">پرفروش</span>
+        <span class="p-tag">آشپزخانه</span>
         <h3>اتو بخار حرفه‌ای</h3>
         <p class="desc">بخار قوی، صفحه سرامیکی ضدرسوب.</p>
         <div class="p-foot">
@@ -530,61 +423,103 @@
   </div>
 </section>
 
-<section class="trust-strip">
-  <div class="wrap trust-grid">
-    <div>
-      <div class="icon">🛡️</div>
-      <h4>گارانتی اصالت</h4>
-      <p>۱۸ ماه ضمانت روی تمام محصولات</p>
+<section class="guide-section" id="guide">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">یادداشت‌های خانه‌گرم</div>
+      <h2>راهنمای خرید و نگهداری</h2>
+      <p>چند نکته‌ی کاربردی که پیش از خرید و برای نگهداری بهتر لازمشون دارید.</p>
     </div>
-    <div>
-      <div class="icon">🚚</div>
-      <h4>ارسال سریع</h4>
-      <p>تحویل به سراسر کشور طی ۲۴ تا ۷۲ ساعت</p>
-    </div>
-    <div>
-      <div class="icon">↩️</div>
-      <h4>بازگشت آسان</h4>
-      <p>۷ روز فرصت برای پس دادن بدون سوال</p>
-    </div>
-    <div>
-      <div class="icon">📞</div>
-      <h4>پشتیبانی واقعی</h4>
-      <p>پاسخ‌گویی مستقیم توسط تیم خانه‌گرم</p>
+    <div class="guide-grid">
+      <article class="guide-card">
+        <div class="guide-top">
+          <span class="guide-tag">راهنمای خرید</span>
+          <h3>چطور ماشین اصلاح مناسب پوستتون رو انتخاب کنید</h3>
+          <p class="teaser">نوع تیغه، تعداد رگولاتور بلندی مو و مدت شارژ، سه چیزی هستن که قبل از خرید باید بررسی کنید.</p>
+        </div>
+        <details>
+          <summary><span class="arrow">◂</span> ادامه مطلب</summary>
+          <div class="guide-body">
+            <p>برای پوست‌های حساس، ماشین اصلاح با تیغه‌ی تیتانیومی یا سرامیکی معمولاً گزینه‌ی بهتری‌ست، چون گرمای کمتری تولید می‌کنه و کمتر باعث قرمزی یا سوزش می‌شه.</p>
+            <p>اگه بلندی مو رو زیاد تغییر می‌دید، دنبال مدلی باشید که رگولاتور چند‌مرحله‌ای داره؛ این‌جوری بین اصلاح کامل و ته‌ریش دقیق سوئیچ کردن خیلی راحت‌تره.</p>
+            <p>مدت شارژ هم مهمه: برای استفاده‌ی روزانه، مدلی با حداقل ۶۰ دقیقه کارکرد پیوسته کافیه؛ ولی اگه سفر زیاد می‌رید، بهتره مدل‌های با شارژ سریع (۵ دقیقه شارژ برای یک بار استفاده) رو در نظر بگیرید.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="guide-card">
+        <div class="guide-top">
+          <span class="guide-tag">نگهداری</span>
+          <h3>چند نکته برای عمر بیشتر لوازم برقی خونه</h3>
+          <p class="teaser">تمیز نگه‌داشتن و مصرف درست برق، مهم‌ترین عامل طول عمر لوازم خانگیه.</p>
+        </div>
+        <details>
+          <summary><span class="arrow">◂</span> ادامه مطلب</summary>
+          <div class="guide-body">
+            <p>برای کتری و اتو، رسوب آب یکی از اصلی‌ترین دلایل کاهش عمر المنته. هر ۲ تا ۳ هفته یک‌بار با محلول آب و سرکه (یا جوش‌شیرین) داخلشون رو بشورید.</p>
+            <p>توسترها و مخلوط‌کن‌ها رو بعد از هر استفاده از خرده‌های غذا خالی کنید؛ تجمع خرده‌ها هم باعث بوی سوختگی می‌شه هم به موتور فشار می‌آره.</p>
+            <p>سعی کنید از پریزهای چندراهی بی‌کیفیت برای لوازم پرمصرف (مثل اتو یا کتری) استفاده نکنید؛ ولتاژ ناپایدار مستقیم روی عمر قطعات داخلی اثر می‌گذاره.</p>
+          </div>
+        </details>
+      </article>
+
+      <article class="guide-card">
+        <div class="guide-top">
+          <span class="guide-tag">آموزش</span>
+          <h3>اصلاح ایمن در خانه، قدم به قدم</h3>
+          <p class="teaser">با رعایت چند نکته‌ی ساده، اصلاح خونگی هم می‌تونه نتیجه‌ای شبیه آرایشگاه بده.</p>
+        </div>
+        <details>
+          <summary><span class="arrow">◂</span> ادامه مطلب</summary>
+          <div class="guide-body">
+            <p>همیشه قبل از اصلاح، پوست رو با آب گرم بشورید؛ منافذ باز می‌شن و ریسک کشیدگی یا زخم پوست کمتر می‌شه.</p>
+            <p>خط اصلاح رو از جای بلندترین مو شروع کنید و رفته‌رفته به سمت رگولاتور کوتاه‌تر بروید؛ این‌جوری کمتر احتمال داره جایی رو کوتاه‌تر از حد لازم بزنید.</p>
+            <p>بعد از اصلاح، تیغه‌ها رو با برس مخصوص یا زیر آب (اگه ضدآب باشه) تمیز کنید و کمی روغن مخصوص روی تیغه بزنید؛ این کار هم عمر تیغه رو بیشتر می‌کنه هم کیفیت برش رو حفظ می‌کنه.</p>
+          </div>
+        </details>
+      </article>
     </div>
   </div>
 </section>
 
-<section class="testimonials" id="reviews">
-  <div class="wrap">
-    <div class="section-head">
-      <div class="eyebrow">حرف مشتری‌ها</div>
-      <h2>تجربه‌ی خانواده‌هایی مثل شما</h2>
+<section class="trust-testi">
+  <div class="wrap tt-grid">
+    <div>
+      <div class="eyebrow" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15); color:var(--amber);">چرا خانه‌گرم</div>
+      <div class="trust-list">
+        <div class="trust-item">
+          <div class="icon">🛡️</div>
+          <h4>گارانتی اصالت</h4>
+          <p>۱۸ ماه ضمانت روی تمام محصولات</p>
+        </div>
+        <div class="trust-item">
+          <div class="icon">🚚</div>
+          <h4>ارسال سریع</h4>
+          <p>تحویل به سراسر کشور طی ۲۴ تا ۷۲ ساعت</p>
+        </div>
+        <div class="trust-item">
+          <div class="icon">↩️</div>
+          <h4>بازگشت آسان</h4>
+          <p>۷ روز فرصت برای پس دادن بدون سوال</p>
+        </div>
+        <div class="trust-item">
+          <div class="icon">📞</div>
+          <h4>پشتیبانی واقعی</h4>
+          <p>پاسخ‌گویی مستقیم توسط تیم خانه‌گرم</p>
+        </div>
+      </div>
     </div>
-    <div class="t-grid">
-      <div class="t-card">
+    <div id="reviews">
+      <div class="eyebrow" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15); color:var(--amber);">نظرات مشتری‌ها</div>
+      <div class="testi-card">
         <div class="stars">★★★★★</div>
         <p>«ماشین اصلاحش خیلی بی‌صداست و شارژش کل هفته کفاف می‌ده. واقعاً راضی‌ام.»</p>
-        <div class="t-person">
-          <div class="t-avatar">آ</div>
-          <div><div class="name">آرش، تهران</div><div class="loc">خریدار ماشین اصلاح حرفه‌ای</div></div>
-        </div>
+        <div class="testi-name">آرش، تهران</div>
       </div>
-      <div class="t-card">
+      <div class="testi-card">
         <div class="stars">★★★★★</div>
         <p>«کتری برقی خیلی سریع جوش میاد و بسته‌بندی محصول هم شیک و مرتب بود.»</p>
-        <div class="t-person">
-          <div class="t-avatar">م</div>
-          <div><div class="name">مریم، اصفهان</div><div class="loc">خریدار کتری استیل</div></div>
-        </div>
-      </div>
-      <div class="t-card">
-        <div class="stars">★★★★☆</div>
-        <p>«پشتیبانی‌شون واقعاً جواب می‌داد و مشکل توستر رو سریع حل کردن.»</p>
-        <div class="t-person">
-          <div class="t-avatar">ح</div>
-          <div><div class="name">حسین، شیراز</div><div class="loc">خریدار توستر دو کاره</div></div>
-        </div>
+        <div class="testi-name">مریم، اصفهان</div>
       </div>
     </div>
   </div>
@@ -604,23 +539,15 @@
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <div class="logo" style="margin-bottom:14px;">خانه<span>گرم</span></div>
-        <p style="color:var(--ink-soft); font-size:14px; max-width:260px;">لوازم خانگی و ماشین اصلاح، انتخاب‌شده برای صبح‌های ساده و آرام.</p>
+        <div class="logo" style="margin-bottom:12px;">خانه<span>گرم</span></div>
+        <p style="color:var(--ink-soft); font-size:13.5px; max-width:260px;">لوازم خانگی و ماشین اصلاح، به همراه راهنمای خرید و نگهداری.</p>
       </div>
       <div>
-        <h5>محصولات</h5>
+        <h5>فروشگاه</h5>
         <ul>
           <li><a href="#products">لوازم آشپزخانه</a></li>
           <li><a href="#products">ماشین اصلاح</a></li>
-          <li><a href="#products">پرفروش‌ترین‌ها</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>پشتیبانی</h5>
-        <ul>
-          <li><a href="#">شرایط گارانتی</a></li>
-          <li><a href="#">راهنمای بازگشت کالا</a></li>
-          <li><a href="#">سوالات متداول</a></li>
+          <li><a href="#guide">یادداشت‌های خانه‌گرم</a></li>
         </ul>
       </div>
       <div>
@@ -640,31 +567,31 @@
 </footer>
 
 <script>
+  /* filter chips */
   document.querySelectorAll('.chip').forEach(chip=>{
     chip.addEventListener('click', ()=>{
       document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
       chip.classList.add('active');
+      const filter = chip.dataset.filter;
+      document.querySelectorAll('#productGrid .p-card').forEach(card=>{
+        if(filter === 'all' || card.dataset.cat === filter){
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
     });
   });
 
   /* ---------- cart ---------- */
-  let cart = []; // {id, name, price, emoji, qty}
-
+  let cart = [];
   const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
-  function toFa(num){
-    return String(num).replace(/\d/g, d => faDigits[d]);
-  }
-  function formatToman(num){
-    return toFa(num.toLocaleString('en-US')) + ' تومان';
-  }
+  function toFa(num){ return String(num).replace(/\d/g, d => faDigits[d]); }
+  function formatToman(num){ return toFa(num.toLocaleString('en-US')) + ' تومان'; }
 
   function addToCart(id, name, price, emoji){
     const existing = cart.find(i => i.id === id);
-    if(existing){
-      existing.qty += 1;
-    } else {
-      cart.push({id, name, price, emoji, qty:1});
-    }
+    if(existing){ existing.qty += 1; } else { cart.push({id, name, price, emoji, qty:1}); }
     renderCart();
     bumpCount();
     showToast(`«${name}» به سبد اضافه شد ✅`);
@@ -674,14 +601,7 @@
     const item = cart.find(i => i.id === id);
     if(!item) return;
     item.qty += delta;
-    if(item.qty <= 0){
-      cart = cart.filter(i => i.id !== id);
-    }
-    renderCart();
-  }
-
-  function removeItem(id){
-    cart = cart.filter(i => i.id !== id);
+    if(item.qty <= 0){ cart = cart.filter(i => i.id !== id); }
     renderCart();
   }
 
@@ -700,10 +620,10 @@
 
     if(cart.length === 0){
       body.innerHTML = `
-        <div class="cart-empty" id="cartEmpty">
+        <div class="cart-empty">
           <div class="big-emoji">🛍️</div>
-          <p>سبد خریدتون هنوز خالیه. یه سر به محصولات بزنید!</p>
-          <a href="#products" class="btn-ghost" onclick="closeCart()" style="padding:12px 22px; font-size:14px;">مشاهده محصولات</a>
+          <p>سبد خریدتون هنوز خالیه. یه سر به فروشگاه بزنید!</p>
+          <a href="#products" class="btn-ghost" onclick="closeCart()" style="padding:11px 20px; font-size:13.5px;">مشاهده محصولات</a>
         </div>`;
       foot.style.display = 'none';
       return;
@@ -762,9 +682,7 @@
     showToast('سفارش ثبت شد؛ به‌زودی باهاتون تماس می‌گیریم 📞');
   }
 
-  document.addEventListener('keydown', (e)=>{
-    if(e.key === 'Escape') closeCart();
-  });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeCart(); });
 </script>
 
 </body>
