@@ -305,22 +305,26 @@
 <nav class="menu-panel" id="menuPanel">
   <button class="menu-close" onclick="toggleMenu()">✕</button>
   <a class="menu-item" onclick="navGo('/')">خانه</a>
-  <div class="menu-group-head" id="productsGroupHead" onclick="toggleProductsGroup()">
+  <div class="menu-group-head" onclick="toggleGroup(this)">
     <span>محصولات</span><span class="caret">▾</span>
   </div>
-  <div class="menu-sub" id="productsGroupSub">
+  <div class="menu-sub">
     <a class="menu-item" onclick="navGo('/products?cat=trimmer')">✂️ ماشین اصلاح</a>
     <a class="menu-item" onclick="navGo('/products?cat=dryer')">💨 سشوار</a>
     <a class="menu-item" onclick="navGo('/products')">مشاهده همه محصولات</a>
   </div>
-  <h4>راهنما</h4>
-  <div class="menu-sub expanded">
+  <div class="menu-group-head" onclick="toggleGroup(this)">
+    <span>راهنما</span><span class="caret">▾</span>
+  </div>
+  <div class="menu-sub">
     <a class="menu-item" onclick="navGo('/guides')">یادداشت‌ها و راهنمای خرید</a>
     <a class="menu-item" onclick="navGo('/faq')">سوالات متداول</a>
     <a class="menu-item" onclick="navGo('/track')">پیگیری سفارش</a>
   </div>
-  <h4>درباره خانه‌گرم</h4>
-  <div class="menu-sub expanded">
+  <div class="menu-group-head" onclick="toggleGroup(this)">
+    <span>درباره خانه‌گرم</span><span class="caret">▾</span>
+  </div>
+  <div class="menu-sub">
     <a class="menu-item" onclick="navGo('/about')">درباره ما</a>
     <a class="menu-item" onclick="navGo('/contact')">تماس با ما</a>
     <a class="menu-item" onclick="navGo('/terms')">قوانین و حریم خصوصی</a>
@@ -869,21 +873,21 @@ function navGo(hash){
   toggleMenu();
   go(hash);
 }
-function toggleProductsGroup(){
-  const head = document.getElementById('productsGroupHead');
-  const sub = document.getElementById('productsGroupSub');
+function toggleGroup(head){
+  const sub = head.nextElementSibling;
   const expanded = sub.classList.toggle('expanded');
   head.classList.toggle('expanded', expanded);
 }
-// desktop: open products submenu on hover, close on mouse leave
+// desktop: open any menu group on hover, close on mouse leave
 (function(){
-  const head = document.getElementById('productsGroupHead');
-  const sub = document.getElementById('productsGroupSub');
-  if(window.matchMedia('(hover: hover)').matches){
-    let group = head.parentElement;
+  if(!window.matchMedia('(hover: hover)').matches) return;
+  document.querySelectorAll('.menu-group-head').forEach(head=>{
+    const sub = head.nextElementSibling;
     head.addEventListener('mouseenter', ()=>{ sub.classList.add('expanded'); head.classList.add('expanded'); });
-    group.addEventListener('mouseleave', ()=>{ sub.classList.remove('expanded'); head.classList.remove('expanded'); });
-  }
+    head.addEventListener('mouseleave', ()=>{ sub.classList.remove('expanded'); head.classList.remove('expanded'); });
+    sub.addEventListener('mouseenter', ()=>{ sub.classList.add('expanded'); head.classList.add('expanded'); });
+    sub.addEventListener('mouseleave', ()=>{ sub.classList.remove('expanded'); head.classList.remove('expanded'); });
+  });
 })();
 function openCart(){ document.getElementById('cartDrawer').classList.add('open'); document.getElementById('cartOverlay').classList.add('open'); }
 function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
@@ -1172,7 +1176,7 @@ async function submitOrder(){
 }
 
 /* ============ ORDER TRACKING ============ */
-const STAGE_NAMES = ['در حال بسته‌بندی','تحویل به پست/باربری','در حال ارسال','تحویل داده شده'];
+const STAGE_NAMES = ['در حال بسته‌بندی','تحویل داده‌شده به پست/باربری','در حال ارسال'];
 const PAY_LABELS = { cod:'پرداخت هنگام تحویل', card:'کارت به کارت', online:'پرداخت آنلاین' };
 const PAY_STATUS_LABELS = { paid_cod:'پرداخت هنگام تحویل', awaiting_confirmation:'در انتظار تایید واریز', confirmed:'پرداخت تایید شد' };
 async function trackOrder(){
@@ -1203,7 +1207,7 @@ async function trackOrder(){
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>کد سفارش</span><b style="font-family:'Vazirmatn';">${o.order_code}</b></div>
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>روش ارسال</span><b>${o.shipping}</b></div>
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:${o.tracking_code?'6px':'0'};"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status] || o.payment_status}</b></div>
-      ${o.tracking_code ? `<div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>کد رهگیری پستی</span><b style="font-family:'Vazirmatn';">${o.tracking_code}</b></div>` : ''}
+      ${o.tracking_code ? `<div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>کد رهگیری پستی</span><b style="font-family:'Vazirmatn';">${o.tracking_code}</b></div><p style="font-size:12px; color:var(--ink-soft); margin-top:6px;">برای اطلاع از زمان دقیق تحویل، با همین کد رهگیری از سایت شرکت پستی/باربری مربوطه پیگیری کنید.</p>` : ''}
       <div class="stage-list" style="margin-top:14px;">
         ${STAGE_NAMES.map((s,i)=>`
           <div class="stage ${i < o.status ? 'done' : i === o.status ? 'current' : ''}">
