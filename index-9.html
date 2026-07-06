@@ -448,7 +448,7 @@
     <h2 id="prodListTitle">همه محصولات</h2>
   </div>
   <div style="max-width:420px; margin:0 auto 22px;">
-    <input type="text" id="productSearch" placeholder="جست‌وجوی محصول..." oninput="renderProductList(currentProdCat)"
+    <input type="text" id="productSearch" placeholder="جست‌وجوی محصول..." oninput="productPage=1; renderProductList(currentProdCat)"
       style="width:100%; border:1px solid var(--line); border-radius:100px; padding:12px 18px; font-family:inherit; font-size:14px; background:var(--card);">
   </div>
   <div class="filter-row" style="display:flex; gap:9px; justify-content:center; margin-bottom:32px; flex-wrap:wrap;">
@@ -457,6 +457,7 @@
     <button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products?cat=dryer')">سشوار</button>
   </div>
   <div class="product-grid" id="fullProductGrid"></div>
+  <div id="productPagination" style="display:flex; justify-content:center; align-items:center; gap:14px; margin-top:24px;"></div>
 </section>
 
 <!-- PRODUCT DETAIL -->
@@ -647,19 +648,51 @@
   </div>
   <div id="adminPanelBox" style="max-width:760px; margin:0 auto;" hidden>
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;">
-      <button class="chip active" id="tabBtn-orders" onclick="switchAdminTab('orders')">سفارش‌ها</button>
+      <button class="chip active" id="tabBtn-dashboard" onclick="switchAdminTab('dashboard')">داشبورد</button>
+      <button class="chip" id="tabBtn-orders" onclick="switchAdminTab('orders')">سفارش‌ها</button>
       <button class="chip" id="tabBtn-products" onclick="switchAdminTab('products')">محصولات</button>
       <button class="chip" id="tabBtn-reviews" onclick="switchAdminTab('reviews')">نظرات</button>
       <button class="chip" id="tabBtn-guides" onclick="switchAdminTab('guides')">مطالب پیشنهادی</button>
       <button class="btn-ghost" style="margin-right:auto; padding:8px 16px; font-size:12.5px;" onclick="adminLogout()">خروج</button>
     </div>
 
-    <div id="adminTab-orders">
+    <div id="adminTab-dashboard">
+      <div id="adminDashboard" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;"></div>
+    </div>
+
+    <div id="adminTab-orders" hidden>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
         <button class="btn-ghost" style="padding:8px 16px; font-size:12.5px;" onclick="exportOrdersCSV()">📥 دانلود اکسل سفارش‌ها</button>
+        <button class="btn-ghost" style="padding:8px 16px; font-size:12.5px;" onclick="downloadFullBackup()">🗄️ دانلود بک‌آپ کامل دیتابیس</button>
       </div>
       <input type="text" id="adminSearch" placeholder="جست‌وجو با اسم یا شماره تلفن مشتری..." oninput="filterAdminOrders()"
-        style="width:100%; border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit; font-size:14px; margin-bottom:18px; background:var(--card);">
+        style="width:100%; border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit; font-size:14px; margin-bottom:10px; background:var(--card);">
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+        <select id="filterStatus" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
+          <option value="">همه وضعیت‌ها</option>
+          <option value="0">در حال بسته‌بندی</option>
+          <option value="1">تحویل داده‌شده به پست/باربری</option>
+          <option value="2">در حال ارسال</option>
+        </select>
+        <input type="date" id="filterDateFrom" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
+        <input type="date" id="filterDateTo" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
+        <input type="number" id="filterPriceMin" placeholder="از مبلغ" onchange="filterAdminOrders()" style="width:110px; border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
+        <input type="number" id="filterPriceMax" placeholder="تا مبلغ" onchange="filterAdminOrders()" style="width:110px; border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
+        <button class="btn-ghost" style="padding:9px 14px; font-size:12.5px;" onclick="clearAdminFilters()">پاک کردن فیلترها</button>
+      </div>
+      <div id="bulkBar" style="display:none; align-items:center; gap:8px; flex-wrap:wrap; background:var(--bg-alt); border-radius:10px; padding:10px 12px; margin-bottom:12px;">
+        <span id="bulkCount" style="font-size:13px; font-weight:700;"></span>
+        <select id="bulkStatus" style="border:1px solid var(--line); border-radius:10px; padding:7px 10px; font-family:inherit; font-size:13px;">
+          <option value="0">در حال بسته‌بندی</option>
+          <option value="1">تحویل داده‌شده به پست/باربری</option>
+          <option value="2">در حال ارسال</option>
+        </select>
+        <button class="btn-primary" style="padding:7px 14px; font-size:12.5px;" onclick="applyBulkStatus()">اعمال روی انتخاب‌شده‌ها</button>
+        <button class="btn-ghost" style="padding:7px 14px; font-size:12.5px;" onclick="clearBulkSelection()">لغو انتخاب</button>
+      </div>
+      <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-soft); margin-bottom:10px; cursor:pointer;">
+        <input type="checkbox" id="selectAllOrders" onchange="toggleSelectAllOrders(this.checked)"> انتخاب همه
+      </label>
       <div id="adminOrders"></div>
     </div>
 
@@ -692,6 +725,7 @@
         <option value="dryer">سشوار</option>
       </select>
       <input type="text" id="pfTag" placeholder="برچسب (مثلا ماشین اصلاح)" class="full">
+      <input type="text" id="pfBrand" placeholder="برند (مثلا فیلیپس، وگا، VGR)" class="full">
       <input type="number" id="pfPrice" placeholder="قیمت (تومان)">
       <input type="number" id="pfStock" placeholder="موجودی">
       <textarea id="pfDesc" placeholder="توضیحات" class="full"></textarea>
@@ -766,7 +800,6 @@ const FAQS = [
   {q:'چقدر طول می‌کشه سفارشم برسه؟', a:'بسته به روش ارسال انتخابی (پست، دکاپست، ماهکس، تیپاکس یا چاپار) معمولاً بین ۲ تا ۵ روز کاری طول می‌کشد.'},
   {q:'اگه از محصول راضی نبودم چیکار کنم؟', a:'در صورت بروز هرگونه مشکل، بسته با کمال احترام پس گرفته می‌شود. کافیه با شماره پشتیبانی تماس بگیرید.'},
   {q:'چطور می‌تونم سفارشمو پیگیری کنم؟', a:'از منوی «پیگیری سفارش» شماره تلفنی که هنگام ثبت سفارش وارد کردید رو وارد کنید تا مرحله‌ی فعلی سفارشتون رو ببینید.'},
-  {q:'کد تخفیف چطور به من داده می‌شه؟', a:'به ازای هر ۳ خرید موفق، یک کد تخفیف به‌صورت خودکار براتون صادر می‌شه و در پیام تایید سفارش نمایش داده می‌شه.'},
 ];
 
 /* ============ SUPABASE ============ */
@@ -780,7 +813,8 @@ async function loadProductsFromDB(){
     if(error || !data){ PRODUCTS = []; return; }
     PRODUCTS = data.map(row => ({
       id: row.id, cat: row.cat, tag: row.tag, code: row.code, name: row.name, price: row.price,
-      stock: row.stock, img: row.img_url, desc: row.description,
+      stock: row.stock, img: row.img_url, desc: row.description, brand: row.brand || '',
+      views: row.views || 0,
       features: Array.isArray(row.features) ? row.features : []
     }));
   }catch(e){ PRODUCTS = []; }
@@ -883,21 +917,42 @@ function renderHome(){
 
 /* ============ RENDER: PRODUCT LIST ============ */
 let currentProdCat = undefined;
+let productPage = 1;
+const PRODUCTS_PER_PAGE = 12;
+function goToProductPage(n){
+  productPage = n;
+  renderProductList(currentProdCat);
+  document.getElementById('fullProductGrid').scrollIntoView({behavior:'smooth', block:'start'});
+}
 function renderProductList(cat, presetQuery){
+  if(currentProdCat !== cat) productPage = 1;
   currentProdCat = cat;
   const grid = document.getElementById('fullProductGrid');
+  const pagBox = document.getElementById('productPagination');
   const title = document.getElementById('prodListTitle');
   const searchEl = document.getElementById('productSearch');
-  if(presetQuery !== undefined && searchEl){ searchEl.value = presetQuery; }
+  if(presetQuery !== undefined && searchEl){ searchEl.value = presetQuery; productPage = 1; }
   const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
   let list = cat ? PRODUCTS.filter(p=>p.cat===cat) : PRODUCTS;
   if(query){ list = list.filter(p=> p.name.toLowerCase().includes(query) || (p.tag||'').toLowerCase().includes(query)); }
   title.textContent = cat === 'trimmer' ? 'ماشین اصلاح' : cat === 'dryer' ? 'سشوار' : 'همه محصولات';
   if(list.length === 0){
     grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--ink-soft); padding:30px 0;">${query ? 'محصولی با این عنوان پیدا نشد.' : 'به‌زودی محصولات این دسته اضافه می‌شن.'}</div>`;
+    pagBox.innerHTML = '';
     return;
   }
-  grid.innerHTML = sortByStock(list).map(productCardHTML).join('');
+  const sorted = sortByStock(list);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PRODUCTS_PER_PAGE));
+  if(productPage > totalPages) productPage = totalPages;
+  const start = (productPage - 1) * PRODUCTS_PER_PAGE;
+  const pageItems = sorted.slice(start, start + PRODUCTS_PER_PAGE);
+  grid.innerHTML = pageItems.map(productCardHTML).join('');
+
+  if(totalPages <= 1){ pagBox.innerHTML = ''; return; }
+  let pagHtml = `<button class="btn-ghost" style="padding:8px 16px; font-size:13px;" ${productPage<=1?'disabled':''} onclick="goToProductPage(${productPage-1})">قبلی</button>`;
+  pagHtml += `<span style="font-size:13.5px; color:var(--ink-soft);">صفحه ${toFa(productPage)} از ${toFa(totalPages)}</span>`;
+  pagHtml += `<button class="btn-ghost" style="padding:8px 16px; font-size:13px;" ${productPage>=totalPages?'disabled':''} onclick="goToProductPage(${productPage+1})">بعدی</button>`;
+  pagBox.innerHTML = pagHtml;
 }
 
 /* ============ RENDER: PRODUCT DETAIL ============ */
@@ -924,6 +979,7 @@ function renderProductDetail(id){
   pdQtyRaw = 1;
   document.getElementById('pdQtyVal').textContent = '۱';
   renderReviews(p.id);
+  sbClient.rpc('increment_product_view', { p_id: p.id }).then(()=>{});
 }
 let pdQtyRaw = 1;
 function pdQty(delta){
@@ -1202,7 +1258,7 @@ async function trackOrder(){
 /* ============ ADMIN ============ */
 let adminOrdersCache = [];
 let adminProductsCache = [];
-let adminCurrentTab = 'orders';
+let adminCurrentTab = 'dashboard';
 
 async function renderAdminRoute(){
   const { data: sessionData } = await sbClient.auth.getSession();
@@ -1227,14 +1283,73 @@ async function adminLogout(){
 
 function switchAdminTab(tab){
   adminCurrentTab = tab;
-  ['orders','products','reviews','guides'].forEach(t=>{
+  ['dashboard','orders','products','reviews','guides'].forEach(t=>{
     document.getElementById('tabBtn-'+t).classList.toggle('active', t===tab);
     document.getElementById('adminTab-'+t).hidden = t!==tab;
   });
+  if(tab==='dashboard') renderDashboard();
   if(tab==='orders') renderAdmin();
   if(tab==='products') renderAdminProducts();
   if(tab==='reviews') renderAdminReviews();
   if(tab==='guides') renderAdminGuideSubmissions();
+}
+
+async function renderDashboard(){
+  const box = document.getElementById('adminDashboard');
+  box.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
+
+  const { data: orders } = await sbClient.from('orders').select('*');
+  const { data: products } = await sbClient.from('products').select('*');
+  const { data: customers } = await sbClient.from('customers').select('*');
+
+  const todayStr = new Date().toDateString();
+  const now = new Date();
+  const ordersToday = (orders||[]).filter(o => new Date(o.created_at).toDateString() === todayStr).length;
+  const salesThisMonth = (orders||[]).filter(o => {
+    const d = new Date(o.created_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).reduce((s,o)=> s + (o.subtotal||0), 0);
+  const inStock = (products||[]).filter(p=>p.stock>0).length;
+  const outStock = (products||[]).filter(p=>p.stock<=0).length;
+  const newCustomersToday = (customers||[]).filter(c => new Date(c.created_at).toDateString() === todayStr).length;
+
+  const cards = [
+    {label:'سفارش‌های امروز', val: toFa(ordersToday), color:'#C1442E'},
+    {label:'فروش ماه جاری', val: formatToman(salesThisMonth), color:'#3B7A57'},
+    {label:'محصولات موجود', val: toFa(inStock), color:'#2C6E8F'},
+    {label:'محصولات ناموجود', val: toFa(outStock), color:'#B15C1E'},
+    {label:'مشتریان جدید امروز', val: toFa(newCustomersToday), color:'#7A5AC1'},
+  ];
+  box.innerHTML = cards.map(c=>`
+    <div class="card" style="border-right:4px solid ${c.color};">
+      <div style="font-size:12.5px; color:var(--ink-soft); margin-bottom:6px;">${c.label}</div>
+      <div style="font-size:20px; font-weight:800; font-family:'Vazirmatn';">${c.val}</div>
+    </div>
+  `).join('');
+}
+
+function downloadFullBackup(){
+  (async ()=>{
+    showToast('در حال آماده‌سازی بک‌آپ...');
+    const [orders, products, reviews, guides, customers] = await Promise.all([
+      sbClient.from('orders').select('*'),
+      sbClient.from('products').select('*'),
+      sbClient.from('reviews').select('*'),
+      sbClient.from('guides').select('*'),
+      sbClient.from('customers').select('*'),
+    ]);
+    const backup = {
+      exported_at: new Date().toISOString(),
+      orders: orders.data||[], products: products.data||[], reviews: reviews.data||[],
+      guides: guides.data||[], customers: customers.data||[]
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `khanegarm_backup_${new Date().toISOString().slice(0,10)}.json`; a.click();
+    URL.revokeObjectURL(url);
+    showToast('بک‌آپ دانلود شد ✅');
+  })();
 }
 
 async function migrateImagesToStorage(){
@@ -1284,15 +1399,29 @@ async function renderAdmin(){
   adminOrdersCache = data || [];
   filterAdminOrders();
 }
+let selectedOrderIds = new Set();
 function filterAdminOrders(){
   const box = document.getElementById('adminOrders');
   const q = (document.getElementById('adminSearch').value || '').trim().toLowerCase();
+  const statusVal = document.getElementById('filterStatus').value;
+  const dateFrom = document.getElementById('filterDateFrom').value;
+  const dateTo = document.getElementById('filterDateTo').value;
+  const priceMin = document.getElementById('filterPriceMin').value;
+  const priceMax = document.getElementById('filterPriceMax').value;
+
   let list = adminOrdersCache;
   if(q){ list = list.filter(o => o.name.toLowerCase().includes(q) || o.phone.includes(q)); }
+  if(statusVal !== ''){ list = list.filter(o => o.status === parseInt(statusVal, 10)); }
+  if(dateFrom){ list = list.filter(o => new Date(o.created_at) >= new Date(dateFrom)); }
+  if(dateTo){ list = list.filter(o => new Date(o.created_at) <= new Date(dateTo + 'T23:59:59')); }
+  if(priceMin){ list = list.filter(o => o.subtotal >= parseInt(priceMin, 10)); }
+  if(priceMax){ list = list.filter(o => o.subtotal <= parseInt(priceMax, 10)); }
+
   if(list.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">سفارشی پیدا نشد.</p>'; return; }
   box.innerHTML = list.map((o)=>`
     <div class="admin-order">
-      <div class="row"><b>${o.name}</b><span class="status-badge">${STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)]}</span></div>
+      <div class="row"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="order-check" value="${o.id}" ${selectedOrderIds.has(o.id)?'checked':''} onchange="toggleOrderSelect('${o.id}', this.checked)"><b>${o.name}</b></label><span class="status-badge">${STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)]}</span></div>
+      <div class="row" style="font-size:12px; color:var(--ink-soft);"><span>🗓️ ${new Date(o.created_at).toLocaleDateString('fa-IR')}</span></div>
       <div class="row"><span>📞 ${o.phone}</span><span>🚚 ${o.shipping}</span></div>
       <div class="row"><span>📍 ${o.address}</span></div>
       <div class="items">${o.items.map(i=>`${i.name} × ${toFa(i.qty)}`).join('، ')}</div>
@@ -1308,6 +1437,51 @@ function filterAdminOrders(){
       </div>
     </div>
   `).join('');
+  updateBulkBar();
+}
+function clearAdminFilters(){
+  document.getElementById('filterStatus').value = '';
+  document.getElementById('filterDateFrom').value = '';
+  document.getElementById('filterDateTo').value = '';
+  document.getElementById('filterPriceMin').value = '';
+  document.getElementById('filterPriceMax').value = '';
+  filterAdminOrders();
+}
+function toggleOrderSelect(id, checked){
+  if(checked) selectedOrderIds.add(id); else selectedOrderIds.delete(id);
+  updateBulkBar();
+}
+function toggleSelectAllOrders(checked){
+  document.querySelectorAll('.order-check').forEach(cb=>{
+    cb.checked = checked;
+    if(checked) selectedOrderIds.add(cb.value); else selectedOrderIds.delete(cb.value);
+  });
+  updateBulkBar();
+}
+function clearBulkSelection(){
+  selectedOrderIds.clear();
+  document.getElementById('selectAllOrders').checked = false;
+  filterAdminOrders();
+}
+function updateBulkBar(){
+  const bar = document.getElementById('bulkBar');
+  const countEl = document.getElementById('bulkCount');
+  if(selectedOrderIds.size > 0){
+    bar.style.display = 'flex';
+    countEl.textContent = `${toFa(selectedOrderIds.size)} سفارش انتخاب شده`;
+  } else {
+    bar.style.display = 'none';
+  }
+}
+async function applyBulkStatus(){
+  const newStatus = parseInt(document.getElementById('bulkStatus').value, 10);
+  if(selectedOrderIds.size === 0) return;
+  const ids = Array.from(selectedOrderIds);
+  const { error } = await sbClient.from('orders').update({status: newStatus}).in('id', ids);
+  if(error){ showToast('خطا در به‌روزرسانی گروهی'); return; }
+  showToast(`${toFa(ids.length)} سفارش به‌روزرسانی شد ✅`);
+  selectedOrderIds.clear();
+  await renderAdmin();
 }
 function findOrderById(id){ return adminOrdersCache.find(o=>o.id===id); }
 async function advanceOrder(id){
@@ -1388,6 +1562,7 @@ async function renderAdminProducts(){
         <span class="status-badge" style="${p.stock<=3 ? 'background:#F3D2C6; color:var(--rust);' : ''}">${p.stock<=3 ? '⚠️ موجودی کم: ' : 'موجودی: '}${toFa(p.stock)}</span>
       </div>
       <div class="row"><span>${formatToman(p.price)}</span><span>${p.tag}</span></div>
+      <div class="row" style="font-size:12.5px; color:var(--ink-soft);"><span>${p.brand ? '🏷️ '+p.brand : ''}</span><span>👁️ ${toFa(p.views||0)} بازدید</span></div>
       <div class="btns">
         <button onclick="openProductForm('${p.id}')">✏️ ویرایش</button>
         <button onclick="deleteProduct('${p.id}')" style="color:var(--rust);">🗑️ حذف</button>
@@ -1404,6 +1579,7 @@ function openProductForm(id){
     document.getElementById('pfName').value = p.name;
     document.getElementById('pfCat').value = p.cat;
     document.getElementById('pfTag').value = p.tag || '';
+    document.getElementById('pfBrand').value = p.brand || '';
     document.getElementById('pfCode').value = p.code || '';
     document.getElementById('pfPrice').value = p.price;
     document.getElementById('pfStock').value = p.stock;
@@ -1416,6 +1592,7 @@ function openProductForm(id){
     document.getElementById('pfName').value = '';
     document.getElementById('pfCat').value = 'trimmer';
     document.getElementById('pfTag').value = '';
+    document.getElementById('pfBrand').value = '';
     document.getElementById('pfCode').value = '';
     document.getElementById('pfPrice').value = '';
     document.getElementById('pfStock').value = '';
@@ -1432,6 +1609,7 @@ async function saveProduct(){
   const name = document.getElementById('pfName').value.trim();
   const cat = document.getElementById('pfCat').value;
   const tag = document.getElementById('pfTag').value.trim();
+  const brand = document.getElementById('pfBrand').value.trim();
   const code = document.getElementById('pfCode').value.trim();
   const price = parseInt(document.getElementById('pfPrice').value, 10);
   const stock = parseInt(document.getElementById('pfStock').value, 10);
@@ -1456,7 +1634,7 @@ async function saveProduct(){
     img_url = pub.publicUrl;
   }
 
-  const row = { id, cat, tag, code, name, price, stock, description, features, img_url };
+  const row = { id, cat, tag, brand, code, name, price, stock, description, features, img_url };
   const { error } = await sbClient.from('products').upsert(row);
 
   btn.disabled = false; btn.textContent = 'ذخیره';
@@ -1477,12 +1655,14 @@ async function deleteProduct(id){
 }
 
 /* ---- REVIEWS ADMIN ---- */
+let adminReviewsShown = 10;
 async function renderAdminReviews(){
   const box = document.getElementById('adminReviews');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
   const { data, error } = await sbClient.from('reviews').select('*').order('created_at', {ascending:false});
   if(error || !data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">نظری ثبت نشده.</p>'; return; }
-  box.innerHTML = data.map(r=>`
+  const visible = data.slice(0, adminReviewsShown);
+  box.innerHTML = visible.map(r=>`
     <div class="admin-order">
       <div class="row"><b>${r.name||'بدون نام'}</b><span class="status-badge">${r.status==='approved'?'تاییدشده':'در انتظار بررسی'}</span></div>
       <div class="row"><span>📞 ${r.phone}</span><span>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
@@ -1493,7 +1673,7 @@ async function renderAdminReviews(){
         <button onclick="deleteReview('${r.id}')" style="color:var(--rust);">🗑️ حذف</button>
       </div>
     </div>
-  `).join('');
+  `).join('') + (data.length > adminReviewsShown ? `<button class="btn-ghost" style="width:100%; padding:10px; font-size:13px;" onclick="adminReviewsShown+=10; renderAdminReviews();">نمایش بیشتر (${toFa(data.length-adminReviewsShown)} مورد دیگر)</button>` : '');
 }
 async function approveReview(id){
   const { error } = await sbClient.from('reviews').update({status:'approved'}).eq('id', id);
