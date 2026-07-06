@@ -44,7 +44,8 @@
   }
   .burger span, .burger::before, .burger::after{content:""; display:block; width:18px; height:2px; background:var(--ink); border-radius:2px; position:relative;}
   .burger{flex-direction:column; gap:4px;}
-  .logo{font-family:'Vazirmatn'; font-weight:900; font-size:20px;}
+  .logo{font-family:'Vazirmatn'; font-weight:900; font-size:20px; display:inline-flex; align-items:center; gap:6px;}
+  .logo svg{flex-shrink:0;}
   .logo span{color:var(--rust);}
   .nav-right{display:flex; align-items:center; gap:9px;}
   .cart-btn{position:relative; display:flex; align-items:center; gap:7px; background:var(--bg-alt); border:1px solid var(--line); padding:9px 15px; border-radius:100px; font-weight:600; font-size:13.5px; cursor:pointer;}
@@ -294,7 +295,7 @@
   <div class="nav wrap">
     <div class="nav-left">
       <button class="burger" onclick="toggleMenu()" aria-label="باز کردن منو"><span></span></button>
-      <div class="logo">خانه<span>گرم</span></div>
+      <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C1442E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>خانه<span>گرم</span></div>
     </div>
     <div class="nav-right">
       <button class="cart-btn" onclick="openCart()" aria-label="سبد خرید">🛍️ سبد خرید<span class="cart-count" id="cartCount" style="display:none;">۰</span></button>
@@ -401,6 +402,11 @@
         <div class="eyebrow">🔥 ارسال به سراسر کشور</div>
         <h1>ماشین اصلاح و سشواری که <em>هر روزتو</em> راحت‌تر می‌کنه</h1>
         <p class="lead">محصولاتی با کیفیت مطمئن و قیمت منصفانه، به همراه راهنمای خرید و نگهداری.</p>
+        <div style="display:flex; gap:8px; margin-bottom:20px; max-width:420px;">
+          <input type="text" id="homeSearch" placeholder="جست‌وجوی محصول..." onkeydown="if(event.key==='Enter') runHomeSearch()"
+            style="flex:1; min-width:0; border:1px solid var(--line); border-radius:100px; padding:12px 18px; font-family:inherit; font-size:14px; background:var(--card);">
+          <button class="btn-primary" style="padding:12px 20px;" onclick="runHomeSearch()">🔍</button>
+        </div>
         <div class="hero-ctas">
           <a class="btn-primary" onclick="go('/products')">خرید محصولات ←</a>
           <a class="btn-ghost" onclick="go('/guides')">راهنمای خرید</a>
@@ -650,7 +656,6 @@
 
     <div id="adminTab-orders">
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
-        <button class="btn-ghost" style="padding:8px 16px; font-size:12.5px;" onclick="deleteOldOrders()">حذف سفارش‌های قدیمی‌تر از ۳۰ روز</button>
         <button class="btn-ghost" style="padding:8px 16px; font-size:12.5px;" onclick="exportOrdersCSV()">📥 دانلود اکسل سفارش‌ها</button>
       </div>
       <input type="text" id="adminSearch" placeholder="جست‌وجو با اسم یا شماره تلفن مشتری..." oninput="filterAdminOrders()"
@@ -690,6 +695,7 @@
       <input type="number" id="pfPrice" placeholder="قیمت (تومان)">
       <input type="number" id="pfStock" placeholder="موجودی">
       <textarea id="pfDesc" placeholder="توضیحات" class="full"></textarea>
+      <input type="text" id="pfCode" placeholder="کد محصول (مثلا V-290)" class="full">
       <textarea id="pfFeatures" placeholder="ویژگی‌ها (هر خط یک ویژگی)" class="full"></textarea>
       <input type="file" id="pfImage" accept="image/*" class="full">
       <div id="pfImagePreview" class="full" style="font-size:12.5px; color:var(--ink-soft);"></div>
@@ -732,7 +738,7 @@
 <footer>
   <div class="wrap">
     <div class="foot-grid">
-      <div><div class="logo" style="margin-bottom:10px;">خانه<span>گرم</span></div><p style="color:var(--ink-soft); font-size:13px;">ماشین اصلاح و سشوار، با راهنمای خرید و نگهداری.</p></div>
+      <div><div class="logo" style="margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C1442E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>خانه<span>گرم</span></div><p style="color:var(--ink-soft); font-size:13px;">ماشین اصلاح و سشوار، با راهنمای خرید و نگهداری.</p></div>
       <div><h5>دسترسی سریع</h5><ul>
         <li><a onclick="go('/products')" style="cursor:pointer;">فروشگاه</a></li>
         <li><a onclick="go('/guides')" style="cursor:pointer;">یادداشت‌ها</a></li>
@@ -781,7 +787,7 @@ async function loadProductsFromDB(){
     const { data, error } = await sbClient.from('products').select('*');
     if(error || !data){ PRODUCTS = []; return; }
     PRODUCTS = data.map(row => ({
-      id: row.id, cat: row.cat, tag: row.tag, name: row.name, price: row.price,
+      id: row.id, cat: row.cat, tag: row.tag, code: row.code, name: row.name, price: row.price,
       stock: row.stock, img: row.img_url, desc: row.description,
       features: Array.isArray(row.features) ? row.features : []
     }));
@@ -807,6 +813,10 @@ function parseHash(){
   if(query){ query.split('&').forEach(kv=>{ const [k,v]=kv.split('='); params[k]=decodeURIComponent(v||''); }); }
   return {path: path || '/', params};
 }
+function runHomeSearch(){
+  const q = document.getElementById('homeSearch').value.trim();
+  go('/products?q=' + encodeURIComponent(q));
+}
 function go(hash){ location.hash = hash; }
 async function render(){
   const {path, params} = parseHash();
@@ -817,7 +827,7 @@ async function render(){
     await loadProductsFromDB();
   }
   if(path === '/'){ renderHome(); }
-  if(path === '/products'){ renderProductList(params.cat); }
+  if(path === '/products'){ renderProductList(params.cat, params.q); }
   if(path === '/product'){ renderProductDetail(params.id); }
   if(path === '/track'){ /* results render on demand */ }
   if(path === '/admin'){ await renderAdminRoute(); }
@@ -858,30 +868,35 @@ function closeCart(){ document.getElementById('cartDrawer').classList.remove('op
 
 /* ============ RENDER: HOME ============ */
 function productCardHTML(p){
-  const low = p.stock <= 5;
-  return `<div class="p-card" onclick="go('/product?id=${p.id}')">
-    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${p.img}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;"></div>
+  const low = p.stock <= 5 && p.stock > 0;
+  const out = p.stock <= 0;
+  return `<div class="p-card" style="${out?'opacity:.5;':''}" onclick="go('/product?id=${p.id}')">
+    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${p.img}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
     <span class="p-tag">${p.tag}</span>
     <h3>${p.name}</h3>
     <p class="desc">${p.desc}</p>
     <div class="p-foot">
       <div class="price">${toFa(p.price.toLocaleString('en-US'))}<small> تومان</small></div>
-      <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.id}')" aria-label="افزودن به سبد">+</button>
+      <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.id}')" aria-label="افزودن به سبد" ${out?'disabled style="opacity:.4; cursor:not-allowed;"':''}>+</button>
     </div>
-    <div class="stock-note ${low?'low':''}">${p.stock>0 ? (low ? 'تنها '+toFa(p.stock)+' عدد باقی مانده' : 'موجود در انبار') : 'ناموجود'}</div>
+    <div class="stock-note ${low?'low':''}" style="${out?'color:var(--rust); font-weight:700;':''}">${p.stock>0 ? (low ? 'تنها '+toFa(p.stock)+' عدد باقی مانده' : 'موجود در انبار') : 'ناموجود — به‌زودی شارژ می‌شه'}</div>
   </div>`;
 }
+function sortByStock(list){
+  return [...list].sort((a,b)=> (b.stock>0) - (a.stock>0));
+}
 function renderHome(){
-  document.getElementById('homeFeatured').innerHTML = PRODUCTS.slice(0,3).map(productCardHTML).join('');
+  document.getElementById('homeFeatured').innerHTML = sortByStock(PRODUCTS).slice(0,3).map(productCardHTML).join('');
 }
 
 /* ============ RENDER: PRODUCT LIST ============ */
 let currentProdCat = undefined;
-function renderProductList(cat){
+function renderProductList(cat, presetQuery){
   currentProdCat = cat;
   const grid = document.getElementById('fullProductGrid');
   const title = document.getElementById('prodListTitle');
   const searchEl = document.getElementById('productSearch');
+  if(presetQuery !== undefined && searchEl){ searchEl.value = presetQuery; }
   const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
   let list = cat ? PRODUCTS.filter(p=>p.cat===cat) : PRODUCTS;
   if(query){ list = list.filter(p=> p.name.toLowerCase().includes(query) || (p.tag||'').toLowerCase().includes(query)); }
@@ -890,7 +905,7 @@ function renderProductList(cat){
     grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--ink-soft); padding:30px 0;">${query ? 'محصولی با این عنوان پیدا نشد.' : 'به‌زودی محصولات این دسته اضافه می‌شن.'}</div>`;
     return;
   }
-  grid.innerHTML = list.map(productCardHTML).join('');
+  grid.innerHTML = sortByStock(list).map(productCardHTML).join('');
 }
 
 /* ============ RENDER: PRODUCT DETAIL ============ */
@@ -1096,7 +1111,7 @@ async function submitOrder(){
     if(!paymentRef){ showToast('لطفا ۴ رقم آخر کارت یا کد پیگیری واریز رو وارد کنید'); return; }
   }
 
-  const items = cart.map(i=>{ const p=findProduct(i.id); return {id:i.id, name:p?p.name:i.id, qty:i.qty, price:p?p.price:0}; });
+  const items = cart.map(i=>{ const p=findProduct(i.id); return {id:i.id, code:p?(p.code||p.id):i.id, name:p?p.name:i.id, qty:i.qty, price:p?p.price:0}; });
   const subtotal = items.reduce((s,i)=>s + i.price*i.qty, 0);
 
   const btn = document.getElementById('submitOrderBtn');
@@ -1246,18 +1261,11 @@ async function migrateImagesToStorage(){
   await loadProductsFromDB();
   renderAdminProducts();
 }
-async function deleteOldOrders(){
-  const cutoff = new Date(Date.now() - 30*24*60*60*1000).toISOString();
-  const { error } = await sbClient.from('orders').delete().lt('created_at', cutoff);
-  if(error){ showToast('خطا در حذف سفارش‌ها'); return; }
-  showToast('سفارش‌های قدیمی حذف شدن ✅');
-  await renderAdmin();
-}
 function exportOrdersCSV(){
   if(adminOrdersCache.length === 0){ showToast('سفارشی برای خروجی گرفتن نیست'); return; }
   const header = ['کد سفارش','نام','تلفن','آدرس','روش ارسال','وضعیت','پرداخت','کد رهگیری','جمع کل','اقلام','تاریخ'];
   const rows = adminOrdersCache.map(o=>[
-    o.order_code, o.name, o.phone, o.address, o.shipping, STAGE_NAMES[o.status],
+    o.order_code, o.name, o.phone, o.address, o.shipping, STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)],
     PAY_STATUS_LABELS[o.payment_status]||o.payment_status, o.tracking_code||'', o.subtotal,
     o.items.map(i=>`${i.name} x${i.qty}`).join(' | '), new Date(o.created_at).toLocaleDateString('fa-IR')
   ]);
@@ -1285,7 +1293,7 @@ function filterAdminOrders(){
   if(list.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">سفارشی پیدا نشد.</p>'; return; }
   box.innerHTML = list.map((o)=>`
     <div class="admin-order">
-      <div class="row"><b>${o.name}</b><span class="status-badge">${STAGE_NAMES[o.status]}</span></div>
+      <div class="row"><b>${o.name}</b><span class="status-badge">${STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)]}</span></div>
       <div class="row"><span>📞 ${o.phone}</span><span>🚚 ${o.shipping}</span></div>
       <div class="row"><span>📍 ${o.address}</span></div>
       <div class="items">${o.items.map(i=>`${i.name} × ${toFa(i.qty)}`).join('، ')}</div>
@@ -1293,7 +1301,7 @@ function filterAdminOrders(){
       <div class="row"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status]||o.payment_status}${o.payment_ref ? ' ('+o.payment_ref+')' : ''}</b></div>
       ${o.tracking_code ? `<div class="row"><span>کد رهگیری</span><b style="font-family:'Vazirmatn';">${o.tracking_code}</b></div>` : ''}
       <div class="btns">
-        <button onclick="advanceOrder('${o.id}')">مرحله بعد</button>
+        ${o.status < STAGE_NAMES.length-1 ? `<button onclick="advanceOrder('${o.id}')">مرحله بعد</button>` : ''}
         <button onclick="printOrder('${o.id}')">🖨️ چاپ برگه A5</button>
         <button onclick="openOrderEdit('${o.id}')">✏️ ویرایش</button>
         ${o.payment_status==='awaiting_confirmation' ? `<button onclick="confirmPayment('${o.id}')">✅ تایید واریز</button>` : ''}
@@ -1361,7 +1369,7 @@ function printOrder(id){
     <h3>برگه سفارش ${o.order_code}</h3>
     <div class="box"><b>فرستنده:</b> خانه‌گرم — فارس، کازرون — ۰۹۹۹۹۴۳۹۵۳۴</div>
     <div class="box"><b>گیرنده:</b> ${o.name} — ${o.phone}<br>${o.address}<br>روش ارسال: ${o.shipping}</div>
-    <div class="box items-box"><b>اقلام سفارش:</b><br>${o.items.map(i=>i.name+' × '+i.qty).join('<br>')}</div>
+    <div class="box items-box"><b>اقلام سفارش:</b><br>${o.items.map(i=>(i.code||i.name)+' × '+i.qty).join('<br>')}</div>
     </body></html>`);
   w.document.close();
   w.print();
@@ -1397,6 +1405,7 @@ function openProductForm(id){
     document.getElementById('pfName').value = p.name;
     document.getElementById('pfCat').value = p.cat;
     document.getElementById('pfTag').value = p.tag || '';
+    document.getElementById('pfCode').value = p.code || '';
     document.getElementById('pfPrice').value = p.price;
     document.getElementById('pfStock').value = p.stock;
     document.getElementById('pfDesc').value = p.description || '';
@@ -1408,6 +1417,7 @@ function openProductForm(id){
     document.getElementById('pfName').value = '';
     document.getElementById('pfCat').value = 'trimmer';
     document.getElementById('pfTag').value = '';
+    document.getElementById('pfCode').value = '';
     document.getElementById('pfPrice').value = '';
     document.getElementById('pfStock').value = '';
     document.getElementById('pfDesc').value = '';
@@ -1423,6 +1433,7 @@ async function saveProduct(){
   const name = document.getElementById('pfName').value.trim();
   const cat = document.getElementById('pfCat').value;
   const tag = document.getElementById('pfTag').value.trim();
+  const code = document.getElementById('pfCode').value.trim();
   const price = parseInt(document.getElementById('pfPrice').value, 10);
   const stock = parseInt(document.getElementById('pfStock').value, 10);
   const description = document.getElementById('pfDesc').value.trim();
@@ -1446,7 +1457,7 @@ async function saveProduct(){
     img_url = pub.publicUrl;
   }
 
-  const row = { id, cat, tag, name, price, stock, description, features, img_url };
+  const row = { id, cat, tag, code, name, price, stock, description, features, img_url };
   const { error } = await sbClient.from('products').upsert(row);
 
   btn.disabled = false; btn.textContent = 'ذخیره';
