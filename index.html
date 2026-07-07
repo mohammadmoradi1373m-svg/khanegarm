@@ -350,8 +350,12 @@
     <h3>تکمیل سفارش</h3>
     <div class="form-grid">
       <input type="text" id="ordName" placeholder="نام و نام خانوادگی">
-      <input type="tel" id="ordPhone" placeholder="شماره تلفن">
-      <textarea id="ordAddress" placeholder="آدرس کامل پستی"></textarea>
+      <input type="tel" id="ordPhone" placeholder="شماره تلفن (۰۹xxxxxxxxx)" maxlength="11">
+      <input type="text" id="ordProvince" list="provinceList" placeholder="استان (جست‌وجو کنید)" class="full" oninput="onProvinceInput()">
+      <datalist id="provinceList"></datalist>
+      <input type="text" id="ordCity" list="cityList" placeholder="اول استان رو انتخاب کنید" class="full" disabled>
+      <datalist id="cityList"></datalist>
+      <textarea id="ordAddress" placeholder="آدرس دقیق (خیابان، کوچه، پلاک)"></textarea>
       <div class="full" style="font-size:13.5px; font-weight:700; margin-top:4px;">روش ارسال (پس‌کرایه):</div>
       <div class="ship-options" id="shipOptions">
         <label class="ship-opt"><input type="radio" name="ship" value="پست"> پست</label>
@@ -385,7 +389,6 @@
     <div style="font-size:48px; margin-bottom:10px;">✅</div>
     <h3>سفارش شما ثبت شد!</h3>
     <p style="color:var(--ink-soft); font-size:14px; margin-bottom:10px;">کد پیگیری سفارش شما: <b id="confirmCode" style="font-family:'Vazirmatn';"></b></p>
-    <p id="confirmCoupon" style="color:var(--teal); font-weight:700; font-size:14px; display:none;"></p>
     <button class="btn-primary" style="margin-top:14px;" onclick="document.getElementById('confirmModal').classList.remove('open')">متوجه شدم</button>
   </div>
 </div>
@@ -466,7 +469,7 @@
   <div class="reviews-box">
     <h3 style="margin-bottom:16px;">نظرات مشتری‌ها</h3>
     <div class="review-form">
-      <input type="text" id="revPhone" placeholder="شماره تلفن">
+      <input type="tel" id="revPhone" placeholder="شماره تلفن (۰۹xxxxxxxxx)" maxlength="11">
       <input type="text" id="revName" placeholder="نام و نام خانوادگی">
       <div class="star-pick" id="starPick">
         <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
@@ -653,6 +656,7 @@
       <button class="chip" id="tabBtn-products" onclick="switchAdminTab('products')">محصولات</button>
       <button class="chip" id="tabBtn-reviews" onclick="switchAdminTab('reviews')">نظرات</button>
       <button class="chip" id="tabBtn-guides" onclick="switchAdminTab('guides')">مطالب پیشنهادی</button>
+      <button class="chip" id="tabBtn-todos" onclick="switchAdminTab('todos')">📝 وظایف</button>
       <button class="btn-ghost" style="margin-right:auto; padding:8px 16px; font-size:12.5px;" onclick="adminLogout()">خروج</button>
     </div>
 
@@ -710,6 +714,15 @@
 
     <div id="adminTab-guides" hidden>
       <div id="adminGuideSubmissions"></div>
+    </div>
+
+    <div id="adminTab-todos" hidden>
+      <div style="display:flex; gap:8px; margin-bottom:16px;">
+        <input type="text" id="todoInput" placeholder="یه وظیفه‌ی جدید بنویس..." onkeydown="if(event.key==='Enter') addTodo()"
+          style="flex:1; min-width:0; border:1px solid var(--line); border-radius:10px; padding:11px 14px; font-family:inherit; font-size:14px; background:var(--card);">
+        <button class="btn-primary" style="padding:10px 20px;" onclick="addTodo()">افزودن</button>
+      </div>
+      <div id="adminTodos"></div>
     </div>
   </div>
 </section>
@@ -794,6 +807,40 @@
 <script>
 /* ============ DATA ============ */
 let PRODUCTS = [];
+
+const PROVINCE_CITIES = {
+  'تهران':['تهران','ری','اسلامشهر','شهریار','ورامین','پاکدشت'],
+  'فارس':['شیراز','کازرون','مرودشت','جهرم','لار','فسا','داراب'],
+  'اصفهان':['اصفهان','کاشان','نجف‌آباد','خمینی‌شهر','شاهین‌شهر'],
+  'خراسان رضوی':['مشهد','نیشابور','سبزوار','تربت حیدریه','قوچان'],
+  'آذربایجان شرقی':['تبریز','مراغه','میانه','مرند','اهر'],
+  'آذربایجان غربی':['ارومیه','خوی','بوکان','مهاباد','میاندوآب'],
+  'خوزستان':['اهواز','آبادان','خرمشهر','دزفول','بندر ماهشهر'],
+  'مازندران':['ساری','بابل','آمل','قائم‌شهر','بهشهر'],
+  'گیلان':['رشت','بندر انزلی','لاهیجان','آستارا','رودسر'],
+  'کرمان':['کرمان','رفسنجان','سیرجان','جیرفت','بم'],
+  'البرز':['کرج','فردیس','نظرآباد','اشتهارد'],
+  'قم':['قم'],
+  'مرکزی':['اراک','ساوه','خمین','محلات'],
+  'گلستان':['گرگان','گنبد کاووس','علی‌آباد کتول'],
+  'قزوین':['قزوین','تاکستان'],
+  'همدان':['همدان','ملایر','نهاوند','تویسرکان'],
+  'کرمانشاه':['کرمانشاه','اسلام‌آباد غرب','سنقر'],
+  'یزد':['یزد','میبد','اردکان'],
+  'سیستان و بلوچستان':['زاهدان','زابل','چابهار','ایرانشهر'],
+  'هرمزگان':['بندرعباس','قشم','میناب','بندر لنگه'],
+  'کردستان':['سنندج','سقز','مریوان','بانه'],
+  'زنجان':['زنجان','ابهر','خدابنده'],
+  'لرستان':['خرم‌آباد','بروجرد','دورود'],
+  'بوشهر':['بوشهر','برازجان','گناوه'],
+  'اردبیل':['اردبیل','مشگین‌شهر','پارس‌آباد'],
+  'سمنان':['سمنان','شاهرود','دامغان'],
+  'چهارمحال و بختیاری':['شهرکرد','بروجن','فارسان'],
+  'کهگیلویه و بویراحمد':['یاسوج','دهدشت','گچساران'],
+  'ایلام':['ایلام','دهلران','آبدانان'],
+  'خراسان جنوبی':['بیرجند','قائنات'],
+  'خراسان شمالی':['بجنورد','شیروان'],
+};
 
 const FAQS = [
   {q:'هزینه ارسال چطور محاسبه می‌شه؟', a:'هزینه ارسال به‌صورت پس‌کرایه است، یعنی هنگام تحویل بسته توسط شرکت پستی/باربری از شما دریافت می‌شود. هزینه بسته‌بندی از قبل در قیمت محصول لحاظ شده.'},
@@ -1023,6 +1070,7 @@ async function submitReview(){
   const name = document.getElementById('revName').value.trim();
   const comment = document.getElementById('revComment').value.trim();
   if(!phone || !name || !comment || starVal === 0){ showToast('لطفا نام، شماره تلفن، امتیاز و نظر رو کامل کنید'); return; }
+  if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
   const { data, error } = await sbClient.rpc('submit_review', {
     p_product_id: pid, p_phone: phone, p_name: name, p_rating: starVal, p_comment: comment
   });
@@ -1147,11 +1195,15 @@ function onPayMethodChange(){
 async function submitOrder(){
   const name = document.getElementById('ordName').value.trim();
   const phone = document.getElementById('ordPhone').value.trim();
+  const province = document.getElementById('ordProvince').value.trim();
+  const city = document.getElementById('ordCity').value.trim();
   const address = document.getElementById('ordAddress').value.trim();
   const shipEl = document.querySelector('input[name="ship"]:checked');
   const payEl = document.querySelector('input[name="pay"]:checked');
-  if(!name || !phone || !address || !shipEl){ showToast('لطفا همه فیلدها رو تکمیل کنید'); return; }
-  if(!/^09\d{9}$/.test(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
+  if(!name || !phone || !province || !city || !address || !shipEl){ showToast('لطفا همه فیلدها رو تکمیل کنید'); return; }
+  if(!PROVINCE_CITIES[province]){ showToast('استان رو از لیست پیشنهادی انتخاب کنید'); return; }
+  if(!PROVINCE_CITIES[province].includes(city)){ showToast('شهر رو از لیست پیشنهادی انتخاب کنید'); return; }
+  if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
   const shipping = shipEl.value;
   const paymentMethod = payEl ? payEl.value : 'cod';
   let paymentRef = null;
@@ -1169,7 +1221,8 @@ async function submitOrder(){
 
   const { data, error } = await sbClient.rpc('create_order', {
     p_name: name, p_phone: phone, p_address: address, p_shipping: shipping,
-    p_items: items, p_subtotal: subtotal, p_payment_method: paymentMethod, p_payment_ref: paymentRef
+    p_items: items, p_subtotal: subtotal, p_payment_method: paymentMethod, p_payment_ref: paymentRef,
+    p_province: province, p_city: city
   });
 
   btn.disabled = false;
@@ -1192,6 +1245,10 @@ async function submitOrder(){
   closeCheckout();
   document.getElementById('ordName').value='';
   document.getElementById('ordPhone').value='';
+  document.getElementById('ordProvince').value='';
+  document.getElementById('ordCity').value='';
+  document.getElementById('ordCity').disabled = true;
+  document.getElementById('ordCity').placeholder = 'اول استان رو انتخاب کنید';
   document.getElementById('ordAddress').value='';
   document.querySelectorAll('input[name="ship"]').forEach(i=>i.checked=false);
   document.getElementById('payRef').value='';
@@ -1199,11 +1256,6 @@ async function submitOrder(){
   document.getElementById('cardPayBox').style.display = 'none';
 
   document.getElementById('confirmCode').textContent = data.order_code;
-  const couponEl = document.getElementById('confirmCoupon');
-  if(data.coupon){
-    couponEl.textContent = `تبریک! به‌خاطر ۳ خرید، این کد تخفیف مال شماست: ${data.coupon}`;
-    couponEl.style.display='block';
-  } else { couponEl.style.display='none'; }
   document.getElementById('confirmModal').classList.add('open');
 
   await loadProductsFromDB();
@@ -1283,7 +1335,7 @@ async function adminLogout(){
 
 function switchAdminTab(tab){
   adminCurrentTab = tab;
-  ['dashboard','orders','products','reviews','guides'].forEach(t=>{
+  ['dashboard','orders','products','reviews','guides','todos'].forEach(t=>{
     document.getElementById('tabBtn-'+t).classList.toggle('active', t===tab);
     document.getElementById('adminTab-'+t).hidden = t!==tab;
   });
@@ -1292,6 +1344,7 @@ function switchAdminTab(tab){
   if(tab==='products') renderAdminProducts();
   if(tab==='reviews') renderAdminReviews();
   if(tab==='guides') renderAdminGuideSubmissions();
+  if(tab==='todos') renderAdminTodos();
 }
 
 async function renderDashboard(){
@@ -1423,7 +1476,7 @@ function filterAdminOrders(){
       <div class="row"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="order-check" value="${o.id}" ${selectedOrderIds.has(o.id)?'checked':''} onchange="toggleOrderSelect('${o.id}', this.checked)"><b>${o.name}</b></label><span class="status-badge">${STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)]}</span></div>
       <div class="row" style="font-size:12px; color:var(--ink-soft);"><span>🗓️ ${new Date(o.created_at).toLocaleDateString('fa-IR')}</span></div>
       <div class="row"><span>📞 ${o.phone}</span><span>🚚 ${o.shipping}</span></div>
-      <div class="row"><span>📍 ${o.address}</span></div>
+      <div class="row"><span>📍 ${o.province?o.province+'، ':''}${o.city?o.city+' — ':''}${o.address}</span></div>
       <div class="items">${o.items.map(i=>`${i.name} × ${toFa(i.qty)}`).join('، ')}</div>
       <div class="row"><span>جمع کل</span><b>${formatToman(o.subtotal)}</b></div>
       <div class="row"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status]||o.payment_status}${o.payment_ref ? ' ('+o.payment_ref+')' : ''}</b></div>
@@ -1540,8 +1593,9 @@ function printOrder(id){
     </style>
     </head><body>
     <h3>برگه سفارش ${o.order_code}</h3>
+    <div class="box" style="display:flex; justify-content:space-between; font-size:12px; padding:8px 12px;"><span>تاریخ ثبت سفارش</span><b>${new Date(o.created_at).toLocaleDateString('fa-IR')} — ${new Date(o.created_at).toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'})}</b></div>
     <div class="box"><b>فرستنده:</b> خانه‌گرم — فارس، کازرون — ۰۹۹۹۹۴۳۹۵۳۴</div>
-    <div class="box"><b>گیرنده:</b> ${o.name} — ${o.phone}<br>${o.address}<br>روش ارسال: ${o.shipping}</div>
+    <div class="box"><b>گیرنده:</b> ${o.name} — ${o.phone}<br>${o.province?o.province+'، ':''}${o.city?o.city+' — ':''}${o.address}<br>روش ارسال: ${o.shipping}</div>
     <div class="box items-box"><b>اقلام سفارش:</b><br>${o.items.map(i=>(i.code||i.name)+' × '+i.qty).join('<br>')}</div>
     </body></html>`);
   w.document.close();
@@ -1696,6 +1750,39 @@ async function deleteReview(id){
   renderAdminReviews();
 }
 
+/* ---- ADMIN TODOS ---- */
+async function renderAdminTodos(){
+  const box = document.getElementById('adminTodos');
+  box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
+  const { data, error } = await sbClient.from('admin_todos').select('*').order('created_at', {ascending:false});
+  if(error){ box.innerHTML = '<p style="text-align:center; color:var(--rust);">خطا در دریافت وظایف.</p>'; return; }
+  if(!data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز وظیفه‌ای ثبت نشده.</p>'; return; }
+  box.innerHTML = data.map(t=>`
+    <div class="admin-order" style="display:flex; align-items:center; gap:12px; padding:14px 16px;">
+      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTodoDone('${t.id}', this.checked)" style="width:20px; height:20px; flex-shrink:0;">
+      <span style="flex:1; ${t.done?'text-decoration:line-through; color:var(--ink-soft);':''}">${t.text}</span>
+      <button onclick="deleteTodo('${t.id}')" style="color:var(--rust); background:none; border:none; cursor:pointer; font-size:16px;">🗑️</button>
+    </div>
+  `).join('');
+}
+async function addTodo(){
+  const input = document.getElementById('todoInput');
+  const text = input.value.trim();
+  if(!text) return;
+  const { error } = await sbClient.from('admin_todos').insert({text});
+  if(error){ showToast('خطا در افزودن وظیفه'); return; }
+  input.value = '';
+  renderAdminTodos();
+}
+async function toggleTodoDone(id, done){
+  await sbClient.from('admin_todos').update({done}).eq('id', id);
+  renderAdminTodos();
+}
+async function deleteTodo(id){
+  await sbClient.from('admin_todos').delete().eq('id', id);
+  renderAdminTodos();
+}
+
 /* ---- GUIDE SUBMISSIONS ADMIN ---- */
 async function renderAdminGuideSubmissions(){
   const box = document.getElementById('adminGuideSubmissions');
@@ -1741,7 +1828,33 @@ function showToast(msg){
   toastTimer = setTimeout(()=>toast.classList.remove('show'), 2600);
 }
 
+/* ============ PROVINCE/CITY + PHONE VALIDATION ============ */
+function populateProvinceList(){
+  const dl = document.getElementById('provinceList');
+  if(!dl) return;
+  dl.innerHTML = Object.keys(PROVINCE_CITIES).map(p=>`<option value="${p}">`).join('');
+}
+function onProvinceInput(){
+  const province = document.getElementById('ordProvince').value.trim();
+  const cityInput = document.getElementById('ordCity');
+  const cityList = document.getElementById('cityList');
+  if(PROVINCE_CITIES[province]){
+    cityList.innerHTML = PROVINCE_CITIES[province].map(c=>`<option value="${c}">`).join('');
+    cityInput.disabled = false;
+    cityInput.placeholder = 'شهر (جست‌وجو کنید)';
+  } else {
+    cityList.innerHTML = '';
+    cityInput.disabled = true;
+    cityInput.value = '';
+    cityInput.placeholder = 'اول استان رو انتخاب کنید';
+  }
+}
+function isValidPhone(phone){
+  return /^09[0-9]{9}$/.test(phone);
+}
+
 /* ============ INIT ============ */
+populateProvinceList();
 if(!location.hash) location.hash = '#/';
 render();
 </script>
