@@ -189,6 +189,9 @@
   .form-grid .full{grid-column:1/-1;}
   .ship-options{display:flex; flex-direction:column; gap:8px; grid-column:1/-1;}
   .ship-opt{display:flex; align-items:center; gap:10px; border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; cursor:pointer; font-size:14px;}
+  .field-error{border-color:var(--rust) !important; box-shadow:0 0 0 2px rgba(193,68,46,.16) !important;}
+  .ship-options.field-error{border:1.5px solid var(--rust); border-radius:12px; padding:8px; box-shadow:none !important;}
+  .field-error-label{display:block; color:var(--rust); font-size:11.5px; font-weight:700; margin:-6px 0 4px;}
   .ship-opt input{accent-color:var(--rust);}
   .ship-opt.checked{border-color:var(--rust); background:var(--bg-alt);}
 
@@ -310,9 +313,7 @@
   <div class="menu-group-head" onclick="toggleGroup(this)">
     <span>محصولات</span><span class="caret">▾</span>
   </div>
-  <div class="menu-sub">
-    <a class="menu-item" onclick="navGo('/products?cat=trimmer')">✂️ ماشین اصلاح</a>
-    <a class="menu-item" onclick="navGo('/products?cat=dryer')">💨 سشوار</a>
+  <div class="menu-sub" id="menuCatList">
     <a class="menu-item" onclick="navGo('/products')">مشاهده همه محصولات</a>
   </div>
   <div class="menu-group-head" onclick="toggleGroup(this)">
@@ -356,6 +357,7 @@
       <input type="text" id="ordCity" list="cityList" placeholder="اول استان رو انتخاب کنید" class="full" disabled>
       <datalist id="cityList"></datalist>
       <textarea id="ordAddress" placeholder="آدرس دقیق (خیابان، کوچه، پلاک)"></textarea>
+      <input type="text" id="ordPostal" placeholder="کد پستی (۱۰ رقم)" maxlength="10" inputmode="numeric" class="full">
       <div class="full" style="font-size:13.5px; font-weight:700; margin-top:4px;">روش ارسال (پس‌کرایه):</div>
       <div class="ship-options" id="shipOptions">
         <label class="ship-opt"><input type="radio" name="ship" value="پست"> پست</label>
@@ -428,14 +430,7 @@
     <div class="eyebrow">دسته‌بندی محصولات</div>
     <h2>چی نیاز داری؟</h2>
   </div>
-  <div class="cat-grid" style="margin-bottom:56px;">
-    <div class="cat-card" onclick="go('/products?cat=trimmer')">
-      <div class="ic">✂️</div><h3>ماشین اصلاح</h3><p>مدل‌های حرفه‌ای و خانگی</p>
-    </div>
-    <div class="cat-card" onclick="go('/products?cat=dryer')">
-      <div class="ic">💨</div><h3>سشوار</h3><p>قدرتمند، سبک و بادوام</p>
-    </div>
-  </div>
+  <div class="cat-grid" style="margin-bottom:56px;" id="homeCatGrid"></div>
 
   <div class="section-head">
     <div class="eyebrow">پرفروش‌ترین‌ها</div>
@@ -454,11 +449,7 @@
     <input type="text" id="productSearch" placeholder="جست‌وجوی محصول..." oninput="productPage=1; renderProductList(currentProdCat)"
       style="width:100%; border:1px solid var(--line); border-radius:100px; padding:12px 18px; font-family:inherit; font-size:14px; background:var(--card);">
   </div>
-  <div class="filter-row" style="display:flex; gap:9px; justify-content:center; margin-bottom:32px; flex-wrap:wrap;">
-    <button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products')">همه</button>
-    <button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products?cat=trimmer')">ماشین اصلاح</button>
-    <button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products?cat=dryer')">سشوار</button>
-  </div>
+  <div class="filter-row" style="display:flex; gap:9px; justify-content:center; margin-bottom:32px; flex-wrap:wrap;" id="prodFilterRow"></div>
   <div class="product-grid" id="fullProductGrid"></div>
   <div id="productPagination" style="display:flex; justify-content:center; align-items:center; gap:14px; margin-top:24px;"></div>
 </section>
@@ -654,6 +645,7 @@
       <button class="chip active" id="tabBtn-dashboard" onclick="switchAdminTab('dashboard')">داشبورد</button>
       <button class="chip" id="tabBtn-orders" onclick="switchAdminTab('orders')">سفارش‌ها</button>
       <button class="chip" id="tabBtn-products" onclick="switchAdminTab('products')">محصولات</button>
+      <button class="chip" id="tabBtn-categories" onclick="switchAdminTab('categories')">🗂️ دسته‌بندی‌ها</button>
       <button class="chip" id="tabBtn-reviews" onclick="switchAdminTab('reviews')">نظرات</button>
       <button class="chip" id="tabBtn-guides" onclick="switchAdminTab('guides')">مطالب پیشنهادی</button>
       <button class="chip" id="tabBtn-todos" onclick="switchAdminTab('todos')">📝 وظایف</button>
@@ -708,6 +700,18 @@
       <div id="adminProducts"></div>
     </div>
 
+    <div id="adminTab-categories" hidden>
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-size:13.5px; font-weight:700; margin-bottom:10px;">+ افزودن دسته‌بندی جدید</div>
+        <div class="form-grid">
+          <input type="text" id="cfName" placeholder="نام دسته (مثلا ماشین اصلاح)">
+          <input type="text" id="cfEmoji" placeholder="ایموجی (مثلا ✂️)" maxlength="4">
+        </div>
+        <button class="btn-primary" style="width:100%; margin-top:12px;" onclick="addCategory()">افزودن دسته‌بندی</button>
+      </div>
+      <div id="adminCategories"></div>
+    </div>
+
     <div id="adminTab-reviews" hidden>
       <div id="adminReviews"></div>
     </div>
@@ -733,10 +737,7 @@
     <h3 id="productModalTitle">افزودن محصول</h3>
     <div class="form-grid">
       <input type="text" id="pfName" placeholder="نام محصول" class="full">
-      <select id="pfCat" class="full" style="border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
-        <option value="trimmer">ماشین اصلاح</option>
-        <option value="dryer">سشوار</option>
-      </select>
+      <select id="pfCat" class="full" style="border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;"></select>
       <input type="text" id="pfTag" placeholder="برچسب (مثلا ماشین اصلاح)" class="full">
       <input type="text" id="pfBrand" placeholder="برند (مثلا فیلیپس، وگا، VGR)" class="full">
       <input type="number" id="pfPrice" placeholder="قیمت (تومان)">
@@ -744,8 +745,9 @@
       <textarea id="pfDesc" placeholder="توضیحات" class="full"></textarea>
       <input type="text" id="pfCode" placeholder="کد محصول (مثلا V-290)" class="full">
       <textarea id="pfFeatures" placeholder="ویژگی‌ها (هر خط یک ویژگی)" class="full"></textarea>
-      <input type="file" id="pfImage" accept="image/*" class="full">
-      <div id="pfImagePreview" class="full" style="font-size:12.5px; color:var(--ink-soft);"></div>
+      <div class="full" style="font-size:12.5px; color:var(--ink-soft); margin-top:4px;">می‌تونی یک یا چند عکس برای این محصول انتخاب کنی. عکس اول به‌عنوان تصویر اصلی نمایش داده می‌شه.</div>
+      <input type="file" id="pfImage" accept="image/*" multiple class="full" onchange="handlePfImageSelect(event)">
+      <div id="pfImagePreview" class="full" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
     </div>
     <div style="display:flex; gap:10px; margin-top:16px;">
       <button class="btn-primary" id="pfSaveBtn" style="flex:1;" onclick="saveProduct()">ذخیره</button>
@@ -762,11 +764,27 @@
       <input type="text" id="oeName" placeholder="نام مشتری" class="full">
       <input type="tel" id="oePhone" placeholder="شماره تلفن" class="full">
       <textarea id="oeAddress" placeholder="آدرس" class="full"></textarea>
+      <input type="text" id="oePostal" placeholder="کد پستی" maxlength="10" class="full">
       <input type="text" id="oeTracking" placeholder="کد رهگیری پستی" class="full">
     </div>
     <div style="display:flex; gap:10px; margin-top:16px;">
       <button class="btn-primary" style="flex:1;" onclick="saveOrderEdit()">ذخیره</button>
       <button class="btn-ghost" onclick="document.getElementById('orderEditModal').classList.remove('open')">انصراف</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY EDIT MODAL -->
+<div class="modal-overlay" id="categoryEditModal">
+  <div class="modal-box">
+    <h3>ویرایش دسته‌بندی</h3>
+    <div class="form-grid">
+      <input type="text" id="ceName" placeholder="نام دسته" class="full">
+      <input type="text" id="ceEmoji" placeholder="ایموجی" maxlength="4">
+    </div>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button class="btn-primary" style="flex:1;" onclick="saveCategoryEdit()">ذخیره</button>
+      <button class="btn-ghost" onclick="document.getElementById('categoryEditModal').classList.remove('open')">انصراف</button>
     </div>
   </div>
 </div>
@@ -807,6 +825,7 @@
 <script>
 /* ============ DATA ============ */
 let PRODUCTS = [];
+let CATEGORIES = [];
 
 const PROVINCE_CITIES = {
   'تهران':['تهران','ری','اسلامشهر','شهریار','ورامین','پاکدشت'],
@@ -860,11 +879,31 @@ async function loadProductsFromDB(){
     if(error || !data){ PRODUCTS = []; return; }
     PRODUCTS = data.map(row => ({
       id: row.id, cat: row.cat, tag: row.tag, code: row.code, name: row.name, price: row.price,
-      stock: row.stock, img: row.img_url, desc: row.description, brand: row.brand || '',
+      stock: row.stock, img: row.img_url, images: Array.isArray(row.images) ? row.images : [],
+      desc: row.description, brand: row.brand || '',
       views: row.views || 0,
       features: Array.isArray(row.features) ? row.features : []
     }));
   }catch(e){ PRODUCTS = []; }
+}
+
+async function loadCategoriesFromDB(){
+  try{
+    const { data, error } = await sbClient.from('categories').select('*').order('sort_order');
+    if(error || !data){ CATEGORIES = []; return; }
+    CATEGORIES = data;
+  }catch(e){ CATEGORIES = []; }
+  renderMenuCategories();
+}
+function catName(id){
+  const c = CATEGORIES.find(c=>c.id===id);
+  return c ? c.name : id;
+}
+function renderMenuCategories(){
+  const box = document.getElementById('menuCatList');
+  if(!box) return;
+  box.innerHTML = CATEGORIES.map(c=>`<a class="menu-item" onclick="navGo('/products?cat=${c.id}')">${c.emoji||'📦'} ${c.name}</a>`).join('')
+    + `<a class="menu-item" onclick="navGo('/products')">مشاهده همه محصولات</a>`;
 }
 
 /* ============ STORAGE HELPERS (cart stays local per-device) ============ */
@@ -877,6 +916,10 @@ const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
 function toFa(n){ return String(n).replace(/\d/g, d=>faDigits[d]); }
 function formatToman(n){ return toFa(n.toLocaleString('en-US')) + ' تومان'; }
 function findProduct(id){ return PRODUCTS.find(p=>p.id===id); }
+function escapeHtml(str){
+  if(str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
 
 /* ============ ROUTER ============ */
 function parseHash(){
@@ -897,7 +940,7 @@ async function render(){
     sec.hidden = sec.dataset.route !== path;
   });
   if(path === '/' || path === '/products' || path === '/product'){
-    await loadProductsFromDB();
+    await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
   }
   if(path === '/'){ renderHome(); }
   if(path === '/products'){ renderProductList(params.cat, params.q); }
@@ -960,6 +1003,10 @@ function sortByStock(list){
 }
 function renderHome(){
   document.getElementById('homeFeatured').innerHTML = sortByStock(PRODUCTS).slice(0,3).map(productCardHTML).join('');
+  document.getElementById('homeCatGrid').innerHTML = CATEGORIES.map(c=>`
+    <div class="cat-card" onclick="go('/products?cat=${c.id}')">
+      <div class="ic">${c.emoji||'📦'}</div><h3>${c.name}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
+    </div>`).join('');
 }
 
 /* ============ RENDER: PRODUCT LIST ============ */
@@ -981,8 +1028,13 @@ function renderProductList(cat, presetQuery){
   if(presetQuery !== undefined && searchEl){ searchEl.value = presetQuery; productPage = 1; }
   const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
   let list = cat ? PRODUCTS.filter(p=>p.cat===cat) : PRODUCTS;
-  if(query){ list = list.filter(p=> p.name.toLowerCase().includes(query) || (p.tag||'').toLowerCase().includes(query)); }
-  title.textContent = cat === 'trimmer' ? 'ماشین اصلاح' : cat === 'dryer' ? 'سشوار' : 'همه محصولات';
+  if(query){ list = list.filter(p=> p.name.toLowerCase().includes(query) || (p.tag||'').toLowerCase().includes(query) || (p.brand||'').toLowerCase().includes(query)); }
+  title.textContent = cat ? catName(cat) : 'همه محصولات';
+  const filterRow = document.getElementById('prodFilterRow');
+  if(filterRow){
+    filterRow.innerHTML = `<button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products')">همه</button>` +
+      CATEGORIES.map(c=>`<button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products?cat=${c.id}')">${c.emoji||''} ${c.name}</button>`).join('');
+  }
   if(list.length === 0){
     grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--ink-soft); padding:30px 0;">${query ? 'محصولی با این عنوان پیدا نشد.' : 'به‌زودی محصولات این دسته اضافه می‌شن.'}</div>`;
     pagBox.innerHTML = '';
@@ -1007,9 +1059,12 @@ function renderProductDetail(id){
   const p = findProduct(id);
   const root = document.getElementById('productDetailRoot');
   if(!p){ root.innerHTML = '<p>محصول پیدا نشد.</p>'; return; }
+  const images = (p.images && p.images.length) ? p.images : (p.img ? [p.img] : []);
+  pdCurrentImages = images;
   root.innerHTML = `
     <div>
-      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img src="${p.img}" alt="${p.name}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:20px;"></div>
+      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${images[0]||''}" alt="${p.name}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:20px;"></div>
+      ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${img}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
     </div>
     <div>
       <span class="pd-tag">${p.tag}</span>
@@ -1024,13 +1079,24 @@ function renderProductDetail(id){
       <button class="btn-primary" onclick="addToCart('${p.id}', pdQtyRaw)" style="width:100%;" ${p.stock<=0?'disabled':''}>افزودن به سبد خرید</button>
     </div>`;
   pdQtyRaw = 1;
+  pdCurrentId = p.id;
   document.getElementById('pdQtyVal').textContent = '۱';
   renderReviews(p.id);
   sbClient.rpc('increment_product_view', { p_id: p.id }).then(()=>{});
 }
+let pdCurrentImages = [];
+function pdSwitchImage(i){
+  const mainImg = document.getElementById('pdMainImg');
+  if(mainImg && pdCurrentImages[i]) mainImg.src = pdCurrentImages[i];
+  document.querySelectorAll('.pd-thumbs .th').forEach(el=>el.classList.toggle('active', parseInt(el.dataset.idx)===i));
+}
 let pdQtyRaw = 1;
+let pdCurrentId = null;
 function pdQty(delta){
-  pdQtyRaw = Math.max(1, pdQtyRaw + delta);
+  const p = findProduct(pdCurrentId);
+  const maxQty = (p && p.stock > 0) ? p.stock : 99;
+  if(delta > 0 && pdQtyRaw >= maxQty){ showToast(`فقط ${toFa(maxQty)} عدد از این محصول موجوده`); return; }
+  pdQtyRaw = Math.max(1, Math.min(pdQtyRaw + delta, maxQty));
   document.getElementById('pdQtyVal').textContent = toFa(pdQtyRaw);
 }
 
@@ -1055,8 +1121,8 @@ async function renderReviews(pid){
   box.innerHTML = data.map(r=>`
     <div class="review-item">
       <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
-      <p>${r.comment}</p>
-      <div class="rname">${r.name || 'مشتری خانه‌گرم'} — ${maskPhone(r.phone)}</div>
+      <p>${escapeHtml(r.comment)}</p>
+      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${maskPhone(r.phone)}</div>
     </div>`).join('');
 }
 function maskPhone(phone){
@@ -1092,12 +1158,12 @@ async function renderCommunityGuides(){
   box.innerHTML = data.map(g=>`
     <article class="guide-card">
       <div class="guide-top">
-        <span class="guide-tag">${g.tag || 'یادداشت مشتری'}</span>
-        <h3>${g.title}</h3>
-        <p class="teaser">${g.teaser || ''}</p>
+        <span class="guide-tag">${escapeHtml(g.tag) || 'یادداشت مشتری'}</span>
+        <h3>${escapeHtml(g.title)}</h3>
+        <p class="teaser">${escapeHtml(g.teaser) || ''}</p>
       </div>
       <details><summary>ادامه مطلب ◂</summary>
-        <div class="guide-body"><p>${g.body}</p></div>
+        <div class="guide-body"><p>${escapeHtml(g.body)}</p></div>
       </details>
     </article>
   `).join('');
@@ -1129,6 +1195,11 @@ function addToCart(id, qty){
   const p = findProduct(id);
   if(!p || p.stock <= 0){ showToast('این محصول در حال حاضر ناموجود است'); return; }
   const existing = cart.find(i=>i.id===id);
+  const currentQty = existing ? existing.qty : 0;
+  if(currentQty + qty > p.stock){
+    showToast(`فقط ${toFa(p.stock)} عدد از «${p.name}» موجوده و ${currentQty>0?'همین مقدار توی سبدتونه':'نمی‌شه بیشتر اضافه کرد'}`);
+    return;
+  }
   if(existing){ existing.qty += qty; } else { cart.push({id, qty}); }
   saveJSON('kg_cart', cart);
   renderCart();
@@ -1138,6 +1209,11 @@ function addToCart(id, qty){
 function changeCartQty(id, delta){
   const item = cart.find(i=>i.id===id);
   if(!item) return;
+  const p = findProduct(id);
+  if(delta > 0 && p && item.qty + delta > p.stock){
+    showToast(`فقط ${toFa(p.stock)} عدد از «${p.name}» موجوده — امکان افزایش بیشتر نیست`);
+    return;
+  }
   item.qty += delta;
   if(item.qty <= 0) cart = cart.filter(i=>i.id!==id);
   saveJSON('kg_cart', cart);
@@ -1187,30 +1263,70 @@ function openCheckout(){
 function closeCheckout(){ document.getElementById('checkoutModal').classList.remove('open'); }
 document.getElementById('shipOptions').addEventListener('change', ()=>{
   document.querySelectorAll('.ship-opt').forEach(o=>o.classList.toggle('checked', o.querySelector('input').checked));
+  document.getElementById('shipOptions').classList.remove('field-error');
+});
+['ordName','ordPhone','ordProvince','ordCity','ordAddress','ordPostal','payRef'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('input', ()=> el.classList.remove('field-error'));
 });
 function onPayMethodChange(){
   const method = document.querySelector('input[name="pay"]:checked').value;
   document.getElementById('cardPayBox').style.display = method === 'card' ? 'block' : 'none';
 }
 async function submitOrder(){
-  const name = document.getElementById('ordName').value.trim();
-  const phone = document.getElementById('ordPhone').value.trim();
-  const province = document.getElementById('ordProvince').value.trim();
-  const city = document.getElementById('ordCity').value.trim();
-  const address = document.getElementById('ordAddress').value.trim();
+  const nameEl = document.getElementById('ordName');
+  const phoneEl = document.getElementById('ordPhone');
+  const provinceEl = document.getElementById('ordProvince');
+  const cityEl = document.getElementById('ordCity');
+  const addressEl = document.getElementById('ordAddress');
+  const postalEl = document.getElementById('ordPostal');
+  const shipBox = document.getElementById('shipOptions');
+  const payRefEl = document.getElementById('payRef');
+
+  const name = nameEl.value.trim();
+  const phone = phoneEl.value.trim();
+  const province = provinceEl.value.trim();
+  const city = cityEl.value.trim();
+  const address = addressEl.value.trim();
+  const postalCode = postalEl.value.trim();
   const shipEl = document.querySelector('input[name="ship"]:checked');
   const payEl = document.querySelector('input[name="pay"]:checked');
-  if(!name || !phone || !province || !city || !address || !shipEl){ showToast('لطفا همه فیلدها رو تکمیل کنید'); return; }
-  if(!PROVINCE_CITIES[province]){ showToast('استان رو از لیست پیشنهادی انتخاب کنید'); return; }
-  if(!PROVINCE_CITIES[province].includes(city)){ showToast('شهر رو از لیست پیشنهادی انتخاب کنید'); return; }
-  if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
-  const shipping = shipEl.value;
+
+  [nameEl, phoneEl, provinceEl, cityEl, addressEl, postalEl, payRefEl].forEach(el=>el.classList.remove('field-error'));
+  shipBox.classList.remove('field-error');
+
+  let firstInvalid = null;
+  const flag = (el, bad)=>{ if(bad){ el.classList.add('field-error'); if(!firstInvalid) firstInvalid = el; } };
+
+  flag(nameEl, !name);
+  flag(phoneEl, !phone || !isValidPhone(phone));
+  flag(provinceEl, !province || !PROVINCE_CITIES[province]);
+  flag(cityEl, !city || !(PROVINCE_CITIES[province] && PROVINCE_CITIES[province].includes(city)));
+  flag(addressEl, !address || address.length < 15);
+  flag(postalEl, !/^[0-9]{10}$/.test(postalCode));
+  if(!shipEl){ shipBox.classList.add('field-error'); if(!firstInvalid) firstInvalid = shipBox; }
+
   const paymentMethod = payEl ? payEl.value : 'cod';
   let paymentRef = null;
   if(paymentMethod === 'card'){
-    paymentRef = document.getElementById('payRef').value.trim();
-    if(!paymentRef){ showToast('لطفا ۴ رقم آخر کارت یا کد پیگیری واریز رو وارد کنید'); return; }
+    paymentRef = payRefEl.value.trim();
+    flag(payRefEl, !paymentRef);
   }
+
+  if(firstInvalid){
+    if(addressEl.classList.contains('field-error') && address && address.length < 15){
+      showToast('آدرس رو کامل‌تر بنویسید (حداقل ۱۵ کاراکتر، شامل خیابان/کوچه/پلاک)');
+    } else if(postalEl.classList.contains('field-error')){
+      showToast('کد پستی باید دقیقاً ۱۰ رقم باشه');
+    } else {
+      showToast('لطفا فیلدهای مشخص‌شده با رنگ قرمز رو تکمیل کنید');
+    }
+    firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
+    if(firstInvalid.focus) firstInvalid.focus();
+    return;
+  }
+
+  const shipping = shipEl.value;
 
   const items = cart.map(i=>{ const p=findProduct(i.id); return {id:i.id, code:p?(p.code||p.id):i.id, name:p?p.name:i.id, qty:i.qty, price:p?p.price:0}; });
   const subtotal = items.reduce((s,i)=>s + i.price*i.qty, 0);
@@ -1222,7 +1338,7 @@ async function submitOrder(){
   const { data, error } = await sbClient.rpc('create_order', {
     p_name: name, p_phone: phone, p_address: address, p_shipping: shipping,
     p_items: items, p_subtotal: subtotal, p_payment_method: paymentMethod, p_payment_ref: paymentRef,
-    p_province: province, p_city: city
+    p_province: province, p_city: city, p_postal_code: postalCode
   });
 
   btn.disabled = false;
@@ -1250,6 +1366,7 @@ async function submitOrder(){
   document.getElementById('ordCity').disabled = true;
   document.getElementById('ordCity').placeholder = 'اول استان رو انتخاب کنید';
   document.getElementById('ordAddress').value='';
+  document.getElementById('ordPostal').value='';
   document.querySelectorAll('input[name="ship"]').forEach(i=>i.checked=false);
   document.getElementById('payRef').value='';
   document.querySelector('input[name="pay"][value="cod"]').checked = true;
@@ -1283,17 +1400,17 @@ async function trackOrder(){
   let html = '';
   if(cust){
     html += `<div class="card" style="margin-bottom:20px;">
-      <div style="font-weight:700; margin-bottom:4px;">${cust.name}</div>
-      <div style="font-size:13px; color:var(--ink-soft);">${cust.address}</div>
+      <div style="font-weight:700; margin-bottom:4px;">${escapeHtml(cust.name)}</div>
+      <div style="font-size:13px; color:var(--ink-soft);">${escapeHtml(cust.address)}</div>
     </div>`;
   }
 
   html += ordersData.map(o=>`
     <div class="card" style="margin-bottom:16px;">
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>کد سفارش</span><b style="font-family:'Vazirmatn';">${o.order_code}</b></div>
-      <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>روش ارسال</span><b>${o.shipping}</b></div>
+      <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>روش ارسال</span><b>${escapeHtml(o.shipping)}</b></div>
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:${o.tracking_code?'6px':'0'};"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status] || o.payment_status}</b></div>
-      ${o.tracking_code ? `<div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>کد رهگیری پستی</span><b style="font-family:'Vazirmatn';">${o.tracking_code}</b></div><p style="font-size:12px; color:var(--ink-soft); margin-top:6px;">برای اطلاع از زمان دقیق تحویل، با همین کد رهگیری از سایت شرکت پستی/باربری مربوطه پیگیری کنید.</p>` : ''}
+      ${o.tracking_code ? `<div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>کد رهگیری پستی</span><b style="font-family:'Vazirmatn';">${escapeHtml(o.tracking_code)}</b></div><p style="font-size:12px; color:var(--ink-soft); margin-top:6px;">برای اطلاع از زمان دقیق تحویل، با همین کد رهگیری از سایت شرکت پستی/باربری مربوطه پیگیری کنید.</p>` : ''}
       <div class="stage-list" style="margin-top:14px;">
         ${STAGE_NAMES.map((s,i)=>`
           <div class="stage ${i < o.status ? 'done' : i === o.status ? 'current' : ''}">
@@ -1317,7 +1434,7 @@ async function renderAdminRoute(){
   const loggedIn = !!(sessionData && sessionData.session);
   document.getElementById('adminLoginBox').hidden = loggedIn;
   document.getElementById('adminPanelBox').hidden = !loggedIn;
-  if(loggedIn){ switchAdminTab(adminCurrentTab); }
+  if(loggedIn){ await loadCategoriesFromDB(); switchAdminTab(adminCurrentTab); }
 }
 async function adminLogin(){
   const email = document.getElementById('adminEmail').value.trim();
@@ -1335,13 +1452,14 @@ async function adminLogout(){
 
 function switchAdminTab(tab){
   adminCurrentTab = tab;
-  ['dashboard','orders','products','reviews','guides','todos'].forEach(t=>{
+  ['dashboard','orders','products','categories','reviews','guides','todos'].forEach(t=>{
     document.getElementById('tabBtn-'+t).classList.toggle('active', t===tab);
     document.getElementById('adminTab-'+t).hidden = t!==tab;
   });
   if(tab==='dashboard') renderDashboard();
   if(tab==='orders') renderAdmin();
   if(tab==='products') renderAdminProducts();
+  if(tab==='categories') renderAdminCategories();
   if(tab==='reviews') renderAdminReviews();
   if(tab==='guides') renderAdminGuideSubmissions();
   if(tab==='todos') renderAdminTodos();
@@ -1420,7 +1538,7 @@ async function migrateImagesToStorage(){
       const { error: upErr } = await sbClient.storage.from('product-images').upload(path, blob, {upsert:true, contentType: blob.type});
       if(upErr) continue;
       const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path);
-      await sbClient.from('products').update({img_url: pub.publicUrl}).eq('id', p.id);
+      await sbClient.from('products').update({img_url: pub.publicUrl, images: [pub.publicUrl]}).eq('id', p.id);
       moved++;
     }catch(e){ /* skip this product, continue with others */ }
   }
@@ -1430,9 +1548,9 @@ async function migrateImagesToStorage(){
 }
 function exportOrdersCSV(){
   if(adminOrdersCache.length === 0){ showToast('سفارشی برای خروجی گرفتن نیست'); return; }
-  const header = ['کد سفارش','نام','تلفن','آدرس','روش ارسال','وضعیت','پرداخت','کد رهگیری','جمع کل','اقلام','تاریخ'];
+  const header = ['کد سفارش','نام','تلفن','آدرس','کد پستی','روش ارسال','وضعیت','پرداخت','کد رهگیری','جمع کل','اقلام','تاریخ'];
   const rows = adminOrdersCache.map(o=>[
-    o.order_code, o.name, o.phone, o.address, o.shipping, STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)],
+    o.order_code, o.name, o.phone, o.address, o.postal_code||'', o.shipping, STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)],
     PAY_STATUS_LABELS[o.payment_status]||o.payment_status, o.tracking_code||'', o.subtotal,
     o.items.map(i=>`${i.name} x${i.qty}`).join(' | '), new Date(o.created_at).toLocaleDateString('fa-IR')
   ]);
@@ -1473,14 +1591,15 @@ function filterAdminOrders(){
   if(list.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">سفارشی پیدا نشد.</p>'; return; }
   box.innerHTML = list.map((o)=>`
     <div class="admin-order">
-      <div class="row"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="order-check" value="${o.id}" ${selectedOrderIds.has(o.id)?'checked':''} onchange="toggleOrderSelect('${o.id}', this.checked)"><b>${o.name}</b></label><span class="status-badge">${STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)]}</span></div>
+      <div class="row"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="order-check" value="${o.id}" ${selectedOrderIds.has(o.id)?'checked':''} onchange="toggleOrderSelect('${o.id}', this.checked)"><b>${escapeHtml(o.name)}</b></label><span class="status-badge">${STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)]}</span></div>
       <div class="row" style="font-size:12px; color:var(--ink-soft);"><span>🗓️ ${new Date(o.created_at).toLocaleDateString('fa-IR')}</span></div>
-      <div class="row"><span>📞 ${o.phone}</span><span>🚚 ${o.shipping}</span></div>
-      <div class="row"><span>📍 ${o.province?o.province+'، ':''}${o.city?o.city+' — ':''}${o.address}</span></div>
-      <div class="items">${o.items.map(i=>`${i.name} × ${toFa(i.qty)}`).join('، ')}</div>
+      <div class="row"><span>📞 ${escapeHtml(o.phone)}</span><span>🚚 ${escapeHtml(o.shipping)}</span></div>
+      <div class="row"><span>📍 ${o.province?escapeHtml(o.province)+'، ':''}${o.city?escapeHtml(o.city)+' — ':''}${escapeHtml(o.address)}</span></div>
+      ${o.postal_code ? `<div class="row" style="font-size:12px; color:var(--ink-soft);"><span>📮 کد پستی: ${escapeHtml(o.postal_code)}</span></div>` : ''}
+      <div class="items">${o.items.map(i=>`${escapeHtml(i.name)} × ${toFa(i.qty)}`).join('، ')}</div>
       <div class="row"><span>جمع کل</span><b>${formatToman(o.subtotal)}</b></div>
-      <div class="row"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status]||o.payment_status}${o.payment_ref ? ' ('+o.payment_ref+')' : ''}</b></div>
-      ${o.tracking_code ? `<div class="row"><span>کد رهگیری</span><b style="font-family:'Vazirmatn';">${o.tracking_code}</b></div>` : ''}
+      <div class="row"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status]||o.payment_status}${o.payment_ref ? ' ('+escapeHtml(o.payment_ref)+')' : ''}</b></div>
+      ${o.tracking_code ? `<div class="row"><span>کد رهگیری</span><b style="font-family:'Vazirmatn';">${escapeHtml(o.tracking_code)}</b></div>` : ''}
       <div class="btns">
         ${o.status < STAGE_NAMES.length-1 ? `<button onclick="advanceOrder('${o.id}')">مرحله بعد</button>` : ''}
         <button onclick="printOrder('${o.id}')">🖨️ چاپ برگه A5</button>
@@ -1565,6 +1684,7 @@ function openOrderEdit(id){
   document.getElementById('oeName').value = o.name;
   document.getElementById('oePhone').value = o.phone;
   document.getElementById('oeAddress').value = o.address;
+  document.getElementById('oePostal').value = o.postal_code || '';
   document.getElementById('oeTracking').value = o.tracking_code || '';
   document.getElementById('orderEditModal').classList.add('open');
 }
@@ -1572,8 +1692,9 @@ async function saveOrderEdit(){
   const name = document.getElementById('oeName').value.trim();
   const phone = document.getElementById('oePhone').value.trim();
   const address = document.getElementById('oeAddress').value.trim();
+  const postal_code = document.getElementById('oePostal').value.trim() || null;
   const tracking_code = document.getElementById('oeTracking').value.trim() || null;
-  const { error } = await sbClient.from('orders').update({name, phone, address, tracking_code}).eq('id', orderEditId);
+  const { error } = await sbClient.from('orders').update({name, phone, address, postal_code, tracking_code}).eq('id', orderEditId);
   if(error){ showToast('خطا در ذخیره تغییرات'); return; }
   document.getElementById('orderEditModal').classList.remove('open');
   showToast('سفارش ویرایش شد ✅');
@@ -1595,38 +1716,167 @@ function printOrder(id){
     <h3>برگه سفارش ${o.order_code}</h3>
     <div class="box" style="display:flex; justify-content:space-between; font-size:12px; padding:8px 12px;"><span>تاریخ ثبت سفارش</span><b>${new Date(o.created_at).toLocaleDateString('fa-IR')} — ${new Date(o.created_at).toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'})}</b></div>
     <div class="box"><b>فرستنده:</b> خانه‌گرم — فارس، کازرون — ۰۹۹۹۹۴۳۹۵۳۴</div>
-    <div class="box"><b>گیرنده:</b> ${o.name} — ${o.phone}<br>${o.province?o.province+'، ':''}${o.city?o.city+' — ':''}${o.address}<br>روش ارسال: ${o.shipping}</div>
-    <div class="box items-box"><b>اقلام سفارش:</b><br>${o.items.map(i=>(i.code||i.name)+' × '+i.qty).join('<br>')}</div>
+    <div class="box"><b>گیرنده:</b> ${escapeHtml(o.name)} — ${escapeHtml(o.phone)}<br>${o.province?escapeHtml(o.province)+'، ':''}${o.city?escapeHtml(o.city)+' — ':''}${escapeHtml(o.address)}${o.postal_code?'<br>کد پستی: '+escapeHtml(o.postal_code):''}<br>روش ارسال: ${escapeHtml(o.shipping)}</div>
+    <div class="box items-box"><b>اقلام سفارش:</b><br>${o.items.map(i=>escapeHtml(i.name)+' × '+i.qty).join('<br>')}</div>
     </body></html>`);
   w.document.close();
   w.print();
 }
 
 /* ---- PRODUCTS ADMIN ---- */
-async function renderAdminProducts(){
-  const box = document.getElementById('adminProducts');
-  box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('products').select('*').order('name');
-  if(error || !data){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز محصولی بارگذاری نشده. از دکمه‌ی «بارگذاری اولیه محصولات» استفاده کنید.</p>'; return; }
-  adminProductsCache = data;
-  box.innerHTML = data.map(p=>`
+function productAdminCardHTML(p){
+  return `
     <div class="admin-order">
       <div class="row">
         <b>${p.name}</b>
         <span class="status-badge" style="${p.stock<=3 ? 'background:#F3D2C6; color:var(--rust);' : ''}">${p.stock<=3 ? '⚠️ موجودی کم: ' : 'موجودی: '}${toFa(p.stock)}</span>
       </div>
-      <div class="row"><span>${formatToman(p.price)}</span><span>${p.tag}</span></div>
+      <div class="row"><span>${formatToman(p.price)}</span><span>${p.tag||''}</span></div>
       <div class="row" style="font-size:12.5px; color:var(--ink-soft);"><span>${p.brand ? '🏷️ '+p.brand : ''}</span><span>👁️ ${toFa(p.views||0)} بازدید</span></div>
       <div class="btns">
         <button onclick="openProductForm('${p.id}')">✏️ ویرایش</button>
         <button onclick="deleteProduct('${p.id}')" style="color:var(--rust);">🗑️ حذف</button>
       </div>
+    </div>`;
+}
+async function renderAdminProducts(){
+  const box = document.getElementById('adminProducts');
+  box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
+  const { data, error } = await sbClient.from('products').select('*').order('name');
+  if(error || !data){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز محصولی ثبت نشده. از دکمه‌ی «+ افزودن محصول جدید» بالا استفاده کنید.</p>'; return; }
+  adminProductsCache = data;
+
+  if(data.length===0 || CATEGORIES.length===0){
+    box.innerHTML = data.map(productAdminCardHTML).join('');
+    return;
+  }
+
+  // group by category (in CATEGORIES sort order, then any leftover cats), then by brand within each category
+  const catOrder = CATEGORIES.map(c=>c.id);
+  const usedCats = [...new Set(data.map(p=>p.cat))];
+  usedCats.sort((a,b)=> catOrder.indexOf(a) - catOrder.indexOf(b));
+
+  let html = '';
+  usedCats.forEach(catId=>{
+    const catProducts = data.filter(p=>p.cat===catId);
+    const cat = CATEGORIES.find(c=>c.id===catId);
+    html += `<div style="display:flex; align-items:center; gap:8px; margin:20px 0 10px; padding-bottom:8px; border-bottom:2px solid var(--line);">
+      <span style="font-size:20px;">${cat?cat.emoji||'📦':'📦'}</span>
+      <h3 style="font-size:16px;">${cat?cat.name:catId}</h3>
+      <span style="font-size:12px; color:var(--ink-soft);">(${toFa(catProducts.length)} محصول)</span>
+    </div>`;
+
+    const brands = [...new Set(catProducts.map(p=>p.brand||'بدون برند'))].sort((a,b)=>a.localeCompare(b,'fa'));
+    brands.forEach(brand=>{
+      const brandProducts = catProducts.filter(p=>(p.brand||'بدون برند')===brand);
+      if(brands.length>1 || brand!=='بدون برند'){
+        html += `<div style="font-size:12.5px; font-weight:700; color:var(--teal); margin:10px 0 6px; padding-right:4px;">🏷️ ${brand}</div>`;
+      }
+      html += brandProducts.map(productAdminCardHTML).join('');
+    });
+  });
+  box.innerHTML = html;
+}
+
+/* ---- CATEGORIES ADMIN ---- */
+async function renderAdminCategories(){
+  const box = document.getElementById('adminCategories');
+  box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
+  const { data, error } = await sbClient.from('categories').select('*').order('sort_order');
+  if(error){ box.innerHTML = '<p style="text-align:center; color:var(--rust);">خطا در دریافت دسته‌بندی‌ها.</p>'; return; }
+  const { data: products } = await sbClient.from('products').select('cat');
+  const counts = {};
+  (products||[]).forEach(p=>{ counts[p.cat] = (counts[p.cat]||0)+1; });
+  if(!data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز دسته‌بندی‌ای ثبت نشده.</p>'; return; }
+  box.innerHTML = data.map(c=>`
+    <div class="admin-order">
+      <div class="row"><b>${c.emoji||'📦'} ${c.name}</b><span class="status-badge">${toFa(counts[c.id]||0)} محصول</span></div>
+      <div class="btns">
+        <button onclick="openProductForm(null, '${c.id}'); switchAdminTab('products');">+ افزودن محصول در این دسته</button>
+        <button onclick="openCategoryEdit('${c.id}')">✏️ ویرایش</button>
+        <button onclick="deleteCategory('${c.id}', ${counts[c.id]||0})" style="color:var(--rust);">🗑️ حذف</button>
+      </div>
     </div>
   `).join('');
 }
-function openProductForm(id){
+async function addCategory(){
+  const name = document.getElementById('cfName').value.trim();
+  const emoji = document.getElementById('cfEmoji').value.trim() || '📦';
+  if(!name){ showToast('لطفا نام دسته رو وارد کنید'); return; }
+  const id = 'cat' + Date.now();
+  const sort_order = CATEGORIES.length ? Math.max(...CATEGORIES.map(c=>c.sort_order||0)) + 1 : 1;
+  const { error } = await sbClient.from('categories').insert({id, name, emoji, sort_order});
+  if(error){ showToast('خطا در افزودن دسته‌بندی'); return; }
+  document.getElementById('cfName').value = '';
+  document.getElementById('cfEmoji').value = '';
+  showToast('دسته‌بندی افزوده شد ✅');
+  await loadCategoriesFromDB();
+  renderAdminCategories();
+}
+let categoryEditId = null;
+function openCategoryEdit(id){
+  const c = CATEGORIES.find(x=>x.id===id);
+  if(!c) return;
+  categoryEditId = id;
+  document.getElementById('ceName').value = c.name;
+  document.getElementById('ceEmoji').value = c.emoji || '';
+  document.getElementById('categoryEditModal').classList.add('open');
+}
+async function saveCategoryEdit(){
+  const name = document.getElementById('ceName').value.trim();
+  const emoji = document.getElementById('ceEmoji').value.trim() || '📦';
+  if(!name){ showToast('نام دسته نمی‌تونه خالی باشه'); return; }
+  const { error } = await sbClient.from('categories').update({name, emoji}).eq('id', categoryEditId);
+  if(error){ showToast('خطا در ذخیره تغییرات'); return; }
+  document.getElementById('categoryEditModal').classList.remove('open');
+  showToast('دسته‌بندی ویرایش شد ✅');
+  await loadCategoriesFromDB();
+  renderAdminCategories();
+}
+async function deleteCategory(id, productCount){
+  if(productCount > 0){
+    showToast(`این دسته ${toFa(productCount)} محصول داره؛ اول محصولاتش رو جابه‌جا یا حذف کنید`);
+    return;
+  }
+  if(!confirm('این دسته‌بندی حذف بشه؟')) return;
+  const { error } = await sbClient.from('categories').delete().eq('id', id);
+  if(error){ showToast('خطا در حذف دسته‌بندی'); return; }
+  showToast('دسته‌بندی حذف شد');
+  await loadCategoriesFromDB();
+  renderAdminCategories();
+}
+let pfExistingImages = [];
+let pfNewFiles = [];
+function renderPfImagePreview(){
+  const box = document.getElementById('pfImagePreview');
+  let html = '';
+  pfExistingImages.forEach((url, i)=>{
+    html += `<div style="position:relative; width:64px; height:64px;">
+      <img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; border:1px solid var(--line);">
+      <button type="button" onclick="removePfExistingImage(${i})" style="position:absolute; top:-6px; left:-6px; width:20px; height:20px; border-radius:50%; background:var(--rust); color:#fff; border:none; font-size:12px; cursor:pointer; line-height:1;">×</button>
+    </div>`;
+  });
+  pfNewFiles.forEach((file, i)=>{
+    const url = URL.createObjectURL(file);
+    html += `<div style="position:relative; width:64px; height:64px;">
+      <img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; border:2px dashed var(--teal);">
+      <button type="button" onclick="removePfNewFile(${i})" style="position:absolute; top:-6px; left:-6px; width:20px; height:20px; border-radius:50%; background:var(--rust); color:#fff; border:none; font-size:12px; cursor:pointer; line-height:1;">×</button>
+    </div>`;
+  });
+  box.innerHTML = html || '<span style="font-size:12.5px; color:var(--ink-soft);">هنوز عکسی انتخاب نشده</span>';
+}
+function handlePfImageSelect(e){
+  pfNewFiles = pfNewFiles.concat(Array.from(e.target.files || []));
+  e.target.value = '';
+  renderPfImagePreview();
+}
+function removePfExistingImage(i){ pfExistingImages.splice(i,1); renderPfImagePreview(); }
+function removePfNewFile(i){ pfNewFiles.splice(i,1); renderPfImagePreview(); }
+
+function openProductForm(id, presetCat){
   document.getElementById('pfImage').value = '';
-  document.getElementById('pfImagePreview').textContent = '';
+  pfNewFiles = [];
+  document.getElementById('pfCat').innerHTML = CATEGORIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   if(id){
     const p = adminProductsCache.find(x=>x.id===id);
     document.getElementById('productModalTitle').textContent = 'ویرایش محصول';
@@ -1640,11 +1890,11 @@ function openProductForm(id){
     document.getElementById('pfDesc').value = p.description || '';
     document.getElementById('pfFeatures').value = (p.features||[]).join('\n');
     document.getElementById('pfSaveBtn').setAttribute('data-edit-id', id);
-    document.getElementById('pfImagePreview').textContent = 'عکس فعلی حفظ می‌شه مگه عکس جدید انتخاب کنید.';
+    pfExistingImages = Array.isArray(p.images) && p.images.length ? [...p.images] : (p.img_url ? [p.img_url] : []);
   } else {
     document.getElementById('productModalTitle').textContent = 'افزودن محصول جدید';
     document.getElementById('pfName').value = '';
-    document.getElementById('pfCat').value = 'trimmer';
+    if(presetCat) document.getElementById('pfCat').value = presetCat;
     document.getElementById('pfTag').value = '';
     document.getElementById('pfBrand').value = '';
     document.getElementById('pfCode').value = '';
@@ -1653,7 +1903,9 @@ function openProductForm(id){
     document.getElementById('pfDesc').value = '';
     document.getElementById('pfFeatures').value = '';
     document.getElementById('pfSaveBtn').removeAttribute('data-edit-id');
+    pfExistingImages = [];
   }
+  renderPfImagePreview();
   document.getElementById('productModal').classList.add('open');
 }
 function closeProductForm(){ document.getElementById('productModal').classList.remove('open'); }
@@ -1669,31 +1921,34 @@ async function saveProduct(){
   const stock = parseInt(document.getElementById('pfStock').value, 10);
   const description = document.getElementById('pfDesc').value.trim();
   const features = document.getElementById('pfFeatures').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  const fileInput = document.getElementById('pfImage');
 
   if(!name || isNaN(price) || isNaN(stock)){ showToast('لطفا نام، قیمت و موجودی رو درست وارد کنید'); return; }
 
   btn.disabled = true; btn.textContent = 'در حال ذخیره...';
 
   const id = editId || ('p' + Date.now());
-  let img_url = editId ? (adminProductsCache.find(x=>x.id===editId)||{}).img_url : null;
 
-  if(fileInput.files && fileInput.files[0]){
-    const file = fileInput.files[0];
+  // upload any newly-added files, keep whatever existing images weren't removed
+  const uploadedUrls = [];
+  for(const file of pfNewFiles){
     const ext = file.name.split('.').pop();
-    const path = `${id}_${Date.now()}.${ext}`;
+    const path = `${id}_${Date.now()}_${Math.floor(Math.random()*10000)}.${ext}`;
     const { error: upErr } = await sbClient.storage.from('product-images').upload(path, file, {upsert:true});
-    if(upErr){ showToast('خطا در آپلود عکس'); btn.disabled=false; btn.textContent='ذخیره'; return; }
+    if(upErr){ showToast('خطا در آپلود یکی از عکس‌ها'); btn.disabled=false; btn.textContent='ذخیره'; return; }
     const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path);
-    img_url = pub.publicUrl;
+    uploadedUrls.push(pub.publicUrl);
   }
 
-  const row = { id, cat, tag, brand, code, name, price, stock, description, features, img_url };
+  const images = [...pfExistingImages, ...uploadedUrls];
+  const img_url = images[0] || null;
+
+  const row = { id, cat, tag, brand, code, name, price, stock, description, features, img_url, images };
   const { error } = await sbClient.from('products').upsert(row);
 
   btn.disabled = false; btn.textContent = 'ذخیره';
 
   if(error){ showToast('خطا در ذخیره محصول'); return; }
+  pfExistingImages = []; pfNewFiles = [];
   closeProductForm();
   showToast('محصول ذخیره شد ✅');
   await loadProductsFromDB();
@@ -1718,9 +1973,9 @@ async function renderAdminReviews(){
   const visible = data.slice(0, adminReviewsShown);
   box.innerHTML = visible.map(r=>`
     <div class="admin-order">
-      <div class="row"><b>${r.name||'بدون نام'}</b><span class="status-badge">${r.status==='approved'?'تاییدشده':'در انتظار بررسی'}</span></div>
+      <div class="row"><b>${escapeHtml(r.name)||'بدون نام'}</b><span class="status-badge">${r.status==='approved'?'تاییدشده':'در انتظار بررسی'}</span></div>
       <div class="row"><span>📞 ${r.phone}</span><span>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
-      <textarea id="revEdit-${r.id}" style="width:100%; margin:8px 0; border:1px solid var(--line); border-radius:8px; padding:8px; font-family:inherit; font-size:13px;">${r.comment}</textarea>
+      <textarea id="revEdit-${r.id}" style="width:100%; margin:8px 0; border:1px solid var(--line); border-radius:8px; padding:8px; font-family:inherit; font-size:13px;">${escapeHtml(r.comment)}</textarea>
       <div class="btns">
         ${r.status!=='approved' ? `<button onclick="approveReview('${r.id}')">✅ تایید</button>` : ''}
         <button onclick="saveReviewEdit('${r.id}')">💾 ذخیره ویرایش</button>
@@ -1791,9 +2046,9 @@ async function renderAdminGuideSubmissions(){
   if(error || !data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">مطلب در انتظار بررسی نیست.</p>'; return; }
   box.innerHTML = data.map(s=>`
     <div class="admin-order">
-      <div class="row"><b>${s.name}</b><span>📞 ${s.phone}</span></div>
-      <input id="subTitleEdit-${s.id}" value="${s.title}" style="width:100%; margin:8px 0; border:1px solid var(--line); border-radius:8px; padding:8px; font-family:inherit; font-size:13.5px; font-weight:700;">
-      <textarea id="subBodyEdit-${s.id}" style="width:100%; min-height:100px; border:1px solid var(--line); border-radius:8px; padding:8px; font-family:inherit; font-size:13px;">${s.body}</textarea>
+      <div class="row"><b>${escapeHtml(s.name)}</b><span>📞 ${escapeHtml(s.phone)}</span></div>
+      <input id="subTitleEdit-${s.id}" value="${escapeHtml(s.title)}" style="width:100%; margin:8px 0; border:1px solid var(--line); border-radius:8px; padding:8px; font-family:inherit; font-size:13.5px; font-weight:700;">
+      <textarea id="subBodyEdit-${s.id}" style="width:100%; min-height:100px; border:1px solid var(--line); border-radius:8px; padding:8px; font-family:inherit; font-size:13px;">${escapeHtml(s.body)}</textarea>
       <div class="btns">
         <button onclick="approveGuideSubmission('${s.id}')">✅ تایید و انتشار</button>
         <button onclick="deleteGuideSubmission('${s.id}')" style="color:var(--rust);">🗑️ رد و حذف</button>
@@ -1855,6 +2110,7 @@ function isValidPhone(phone){
 
 /* ============ INIT ============ */
 populateProvinceList();
+loadCategoriesFromDB();
 if(!location.hash) location.hash = '#/';
 render();
 </script>
