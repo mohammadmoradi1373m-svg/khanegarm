@@ -71,6 +71,14 @@
   .menu-sub{padding-right:14px; display:flex; flex-direction:column; gap:2px; max-height:0; overflow:hidden; transition:max-height .25s ease;}
   .menu-sub.expanded{max-height:300px;}
   .menu-sub .menu-item{font-size:14px; font-weight:500; color:var(--ink-soft);}
+  .menu-cat-row{display:flex; flex-direction:column;}
+  .menu-cat-row-head{display:flex; align-items:center;}
+  .menu-cat-row-head .menu-item{flex:1;}
+  .menu-cat-caret{background:none; border:none; padding:10px 12px; cursor:pointer; font-size:12px; color:var(--ink-soft); transition:transform .2s ease;}
+  .menu-cat-caret.expanded{transform:rotate(180deg);}
+  .menu-sub-brand{padding-right:20px; display:flex; flex-direction:column; gap:2px; max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .menu-sub-brand.expanded{max-height:260px;}
+  .menu-sub-brand .menu-item{font-size:13px; color:var(--ink-soft);}
   .menu-close{width:34px; height:34px; border-radius:50%; background:var(--bg-alt); border:none; font-size:16px; cursor:pointer; margin-bottom:6px;}
 
   /* shared bits */
@@ -444,9 +452,10 @@
   <div class="section-head">
     <div class="eyebrow">فروشگاه خانه‌گرم</div>
     <h2 id="prodListTitle">همه محصولات</h2>
+    <div id="prodBrandChip"></div>
   </div>
   <div style="max-width:420px; margin:0 auto 22px;">
-    <input type="text" id="productSearch" placeholder="جست‌وجوی محصول..." oninput="productPage=1; renderProductList(currentProdCat)"
+    <input type="text" id="productSearch" placeholder="جست‌وجوی محصول..." oninput="productPage=1; renderProductList(currentProdCat, undefined, currentProdBrand)"
       style="width:100%; border:1px solid var(--line); border-radius:100px; padding:12px 18px; font-family:inherit; font-size:14px; background:var(--card);">
   </div>
   <div class="filter-row" style="display:flex; gap:9px; justify-content:center; margin-bottom:32px; flex-wrap:wrap;" id="prodFilterRow"></div>
@@ -695,7 +704,6 @@
     <div id="adminTab-products" hidden>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
         <button class="btn-primary" style="padding:9px 18px; font-size:13px;" onclick="openProductForm(null)">+ افزودن محصول جدید</button>
-        <button class="btn-ghost" style="padding:9px 18px; font-size:13px;" onclick="migrateImagesToStorage()">📦 انتقال عکس‌ها به فضای ذخیره‌سازی (سرعت سایت رو بیشتر می‌کنه)</button>
       </div>
       <div id="adminProducts"></div>
     </div>
@@ -743,7 +751,7 @@
       <input type="number" id="pfPrice" placeholder="قیمت (تومان)">
       <input type="number" id="pfStock" placeholder="موجودی">
       <textarea id="pfDesc" placeholder="توضیحات" class="full"></textarea>
-      <input type="text" id="pfCode" placeholder="کد محصول (مثلا V-290)" class="full">
+      <input type="text" id="pfCode" placeholder="در حال تولید خودکار..." class="full" disabled style="background:var(--bg-alt); color:var(--ink-soft);">
       <textarea id="pfFeatures" placeholder="ویژگی‌ها (هر خط یک ویژگی)" class="full"></textarea>
       <div class="full" style="font-size:12.5px; color:var(--ink-soft); margin-top:4px;">می‌تونی یک یا چند عکس برای این محصول انتخاب کنی. عکس اول به‌عنوان تصویر اصلی نمایش داده می‌شه.</div>
       <input type="file" id="pfImage" accept="image/*" multiple class="full" onchange="handlePfImageSelect(event)">
@@ -902,8 +910,24 @@ function catName(id){
 function renderMenuCategories(){
   const box = document.getElementById('menuCatList');
   if(!box) return;
-  box.innerHTML = CATEGORIES.map(c=>`<a class="menu-item" onclick="navGo('/products?cat=${c.id}')">${c.emoji||'📦'} ${c.name}</a>`).join('')
+  box.innerHTML = CATEGORIES.map(c=>{
+    const brands = [...new Set(PRODUCTS.filter(p=>p.cat===c.id && p.brand).map(p=>p.brand))].sort((a,b)=>a.localeCompare(b,'fa'));
+    const hasBrands = brands.length > 0;
+    return `<div class="menu-cat-row">
+      <div class="menu-cat-row-head">
+        <a class="menu-item" onclick="navGo('/products?cat=${c.id}')">${c.emoji||'📦'} ${c.name}</a>
+        ${hasBrands ? `<button type="button" class="menu-cat-caret" onclick="toggleBrandSub(this)">▾</button>` : ''}
+      </div>
+      ${hasBrands ? `<div class="menu-sub-brand">${brands.map(b=>`<a class="menu-item" onclick="navGo('/products?cat=${c.id}&brand=${encodeURIComponent(b)}')">${escapeHtml(b)}</a>`).join('')}</div>` : ''}
+    </div>`;
+  }).join('')
     + `<a class="menu-item" onclick="navGo('/products')">مشاهده همه محصولات</a>`;
+}
+function toggleBrandSub(btn){
+  const row = btn.closest('.menu-cat-row');
+  const sub = row.querySelector('.menu-sub-brand');
+  const expanded = sub.classList.toggle('expanded');
+  btn.classList.toggle('expanded', expanded);
 }
 
 /* ============ STORAGE HELPERS (cart stays local per-device) ============ */
@@ -943,7 +967,7 @@ async function render(){
     await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
   }
   if(path === '/'){ renderHome(); }
-  if(path === '/products'){ renderProductList(params.cat, params.q); }
+  if(path === '/products'){ renderProductList(params.cat, params.q, params.brand); }
   if(path === '/product'){ renderProductDetail(params.id); }
   if(path === '/track'){ /* results render on demand */ }
   if(path === '/admin'){ await renderAdminRoute(); }
@@ -951,6 +975,7 @@ async function render(){
   if(path === '/guides'){ renderCommunityGuides(); }
   window.scrollTo({top:0, behavior:'instant'});
   renderCart();
+  renderMenuCategories();
 }
 window.addEventListener('hashchange', render);
 
@@ -1015,21 +1040,28 @@ let productPage = 1;
 const PRODUCTS_PER_PAGE = 12;
 function goToProductPage(n){
   productPage = n;
-  renderProductList(currentProdCat);
+  renderProductList(currentProdCat, undefined, currentProdBrand);
   document.getElementById('fullProductGrid').scrollIntoView({behavior:'smooth', block:'start'});
 }
-function renderProductList(cat, presetQuery){
-  if(currentProdCat !== cat) productPage = 1;
+let currentProdBrand = undefined;
+function renderProductList(cat, presetQuery, brand){
+  if(currentProdCat !== cat || currentProdBrand !== brand) productPage = 1;
   currentProdCat = cat;
+  currentProdBrand = brand;
   const grid = document.getElementById('fullProductGrid');
   const pagBox = document.getElementById('productPagination');
   const title = document.getElementById('prodListTitle');
+  const brandChipBox = document.getElementById('prodBrandChip');
   const searchEl = document.getElementById('productSearch');
   if(presetQuery !== undefined && searchEl){ searchEl.value = presetQuery; productPage = 1; }
   const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
   let list = cat ? PRODUCTS.filter(p=>p.cat===cat) : PRODUCTS;
+  if(brand){ list = list.filter(p=>p.brand===brand); }
   if(query){ list = list.filter(p=> p.name.toLowerCase().includes(query) || (p.tag||'').toLowerCase().includes(query) || (p.brand||'').toLowerCase().includes(query)); }
   title.textContent = cat ? catName(cat) : 'همه محصولات';
+  if(brandChipBox){
+    brandChipBox.innerHTML = brand ? `<div style="display:inline-flex; align-items:center; gap:6px; background:var(--bg-alt); border:1px solid var(--line); border-radius:100px; padding:6px 12px; font-size:13px; margin-top:8px;">🏷️ ${escapeHtml(brand)} <span style="cursor:pointer; color:var(--rust); font-weight:700;" onclick="go('/products${cat?'?cat='+cat:''}')">✕</span></div>` : '';
+  }
   const filterRow = document.getElementById('prodFilterRow');
   if(filterRow){
     filterRow.innerHTML = `<button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products')">همه</button>` +
@@ -1523,29 +1555,6 @@ function downloadFullBackup(){
   })();
 }
 
-async function migrateImagesToStorage(){
-  showToast('در حال انتقال عکس‌ها به فضای ذخیره‌سازی...');
-  const { data, error } = await sbClient.from('products').select('*');
-  if(error || !data){ showToast('خطا در دریافت محصولات'); return; }
-  let moved = 0;
-  for(const p of data){
-    if(!p.img_url || !p.img_url.startsWith('data:image')) continue;
-    try{
-      const res = await fetch(p.img_url);
-      const blob = await res.blob();
-      const ext = (blob.type.split('/')[1] || 'jpg').replace('jpeg','jpg');
-      const path = `${p.id}_${Date.now()}.${ext}`;
-      const { error: upErr } = await sbClient.storage.from('product-images').upload(path, blob, {upsert:true, contentType: blob.type});
-      if(upErr) continue;
-      const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path);
-      await sbClient.from('products').update({img_url: pub.publicUrl, images: [pub.publicUrl]}).eq('id', p.id);
-      moved++;
-    }catch(e){ /* skip this product, continue with others */ }
-  }
-  showToast(`${toFa(moved)} عکس منتقل شد ✅`);
-  await loadProductsFromDB();
-  renderAdminProducts();
-}
 function exportOrdersCSV(){
   if(adminOrdersCache.length === 0){ showToast('سفارشی برای خروجی گرفتن نیست'); return; }
   const header = ['کد سفارش','نام','تلفن','آدرس','کد پستی','روش ارسال','وضعیت','پرداخت','کد رهگیری','جمع کل','اقلام','تاریخ'];
@@ -1873,7 +1882,7 @@ function handlePfImageSelect(e){
 function removePfExistingImage(i){ pfExistingImages.splice(i,1); renderPfImagePreview(); }
 function removePfNewFile(i){ pfNewFiles.splice(i,1); renderPfImagePreview(); }
 
-function openProductForm(id, presetCat){
+async function openProductForm(id, presetCat){
   document.getElementById('pfImage').value = '';
   pfNewFiles = [];
   document.getElementById('pfCat').innerHTML = CATEGORIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
@@ -1897,13 +1906,16 @@ function openProductForm(id, presetCat){
     if(presetCat) document.getElementById('pfCat').value = presetCat;
     document.getElementById('pfTag').value = '';
     document.getElementById('pfBrand').value = '';
-    document.getElementById('pfCode').value = '';
+    document.getElementById('pfCode').value = '...';
     document.getElementById('pfPrice').value = '';
     document.getElementById('pfStock').value = '';
     document.getElementById('pfDesc').value = '';
     document.getElementById('pfFeatures').value = '';
     document.getElementById('pfSaveBtn').removeAttribute('data-edit-id');
     pfExistingImages = [];
+    sbClient.rpc('get_next_product_code').then(({data, error})=>{
+      if(!error && data) document.getElementById('pfCode').value = data;
+    });
   }
   renderPfImagePreview();
   document.getElementById('productModal').classList.add('open');
@@ -2110,6 +2122,7 @@ function isValidPhone(phone){
 
 /* ============ INIT ============ */
 populateProvinceList();
+loadProductsFromDB().then(renderMenuCategories);
 loadCategoriesFromDB();
 if(!location.hash) location.hash = '#/';
 render();
