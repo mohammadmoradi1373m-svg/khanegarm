@@ -120,7 +120,15 @@
 
   /* product grid */
   .product-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  .p-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px; transition:transform .2s ease, box-shadow .2s ease; cursor:pointer;}
+  .carousel-track{display:flex; gap:16px; overflow-x:auto; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:2px 2px 10px;}
+  .carousel-track::-webkit-scrollbar{height:5px;}
+  .carousel-track::-webkit-scrollbar-thumb{background:var(--line); border-radius:10px;}
+  .carousel-item{flex:0 0 200px; scroll-snap-align:start;}
+  .p-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px; transition:transform .2s ease, box-shadow .2s ease; cursor:pointer; position:relative;}
+  .new-badge{position:absolute; top:10px; right:10px; background:var(--teal); color:#fff; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:100px; z-index:2;}
+  .carousel-dots{display:flex; justify-content:center; gap:6px; margin:6px 0 4px;}
+  .carousel-dot{width:6px; height:6px; border-radius:50%; background:var(--line); transition:all .2s ease;}
+  .carousel-dot.active{background:var(--rust); width:16px; border-radius:100px;}
   .p-card:hover{transform:translateY(-4px); box-shadow:0 16px 28px -16px rgba(59,42,30,.25);}
   .p-thumb{aspect-ratio:1/0.8; border-radius:12px; margin-bottom:14px; display:flex; align-items:center; justify-content:center; font-size:50px;}
   .p-thumb.rust{background:linear-gradient(160deg,#F3D2C6,#E7AA97);}
@@ -473,10 +481,18 @@
   <div class="cat-grid" style="margin-bottom:56px;" id="homeCatGrid"></div>
 
   <div class="section-head">
+    <div class="eyebrow">تازه از راه رسیده</div>
+    <h2>جدیدترین محصولات</h2>
+  </div>
+  <div class="carousel-track" id="homeNewest" style="margin-bottom:8px;"></div>
+  <div class="carousel-dots" id="homeNewestDots" style="margin-bottom:56px;"></div>
+
+  <div class="section-head">
     <div class="eyebrow">پرفروش‌ترین‌ها</div>
     <h2>محصولات محبوب</h2>
   </div>
-  <div class="product-grid" id="homeFeatured"></div>
+  <div class="carousel-track" id="homeFeatured"></div>
+  <div class="carousel-dots" id="homeFeaturedDots"></div>
 </section>
 
 <!-- PRODUCTS LIST -->
@@ -716,11 +732,11 @@
         </select>
         <div class="jalali-picker-wrap">
           <input type="text" id="filterDateFrom" placeholder="از تاریخ" readonly onclick="toggleJalaliPicker('filterDateFrom')" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:108px; cursor:pointer; background:var(--card);">
-          <div class="jalali-picker-panel" id="filterDateFrom_panel"></div>
+          <div class="jalali-picker-panel" id="filterDateFrom_panel" onclick="event.stopPropagation()"></div>
         </div>
         <div class="jalali-picker-wrap">
           <input type="text" id="filterDateTo" placeholder="تا تاریخ" readonly onclick="toggleJalaliPicker('filterDateTo')" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:108px; cursor:pointer; background:var(--card);">
-          <div class="jalali-picker-panel" id="filterDateTo_panel"></div>
+          <div class="jalali-picker-panel" id="filterDateTo_panel" onclick="event.stopPropagation()"></div>
         </div>
         <input type="number" id="filterPriceMin" placeholder="از مبلغ" onchange="filterAdminOrders()" style="width:110px; border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
         <input type="number" id="filterPriceMax" placeholder="تا مبلغ" onchange="filterAdminOrders()" style="width:110px; border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
@@ -820,11 +836,11 @@
     <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
       <div class="jalali-picker-wrap">
         <input type="text" id="srDateFrom" placeholder="از تاریخ" readonly onclick="toggleJalaliPicker('srDateFrom')" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:130px; cursor:pointer; background:var(--card);">
-        <div class="jalali-picker-panel" id="srDateFrom_panel"></div>
+        <div class="jalali-picker-panel" id="srDateFrom_panel" onclick="event.stopPropagation()"></div>
       </div>
       <div class="jalali-picker-wrap">
         <input type="text" id="srDateTo" placeholder="تا تاریخ" readonly onclick="toggleJalaliPicker('srDateTo')" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:130px; cursor:pointer; background:var(--card);">
-        <div class="jalali-picker-panel" id="srDateTo_panel"></div>
+        <div class="jalali-picker-panel" id="srDateTo_panel" onclick="event.stopPropagation()"></div>
       </div>
     </div>
     <label style="display:flex; align-items:center; gap:6px; font-size:13px; margin-bottom:14px; cursor:pointer;">
@@ -975,6 +991,17 @@ async function loadProductsFromDB(){
       features: Array.isArray(row.features) ? row.features : []
     }));
   }catch(e){ PRODUCTS = []; }
+  updateNewestIds();
+}
+function productSortCode(p){
+  const c = parseInt(p.code, 10);
+  if(!isNaN(c)) return c;
+  const m = /^p(\d+)$/.exec(p.id||'');
+  return m ? parseInt(m[1],10) : 0;
+}
+let NEWEST_PRODUCT_IDS = new Set();
+function updateNewestIds(){
+  NEWEST_PRODUCT_IDS = new Set([...PRODUCTS].sort((a,b)=>productSortCode(b)-productSortCode(a)).slice(0,3).map(p=>p.id));
 }
 
 async function loadCategoriesFromDB(){
@@ -1168,9 +1195,9 @@ function renderJalaliPanel(inputId){
   }
   panel.innerHTML = `
     <div class="jp-head">
-      <button type="button" class="jp-nav" onclick="jpChangeMonth('${inputId}',1)">›</button>
+      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',-1)">›</button>
       <span>${PERSIAN_MONTHS[st.jm-1]} ${toFa(st.jy)}</span>
-      <button type="button" class="jp-nav" onclick="jpChangeMonth('${inputId}',-1)">‹</button>
+      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',1)">‹</button>
     </div>
     <div class="jp-grid">
       ${['ش','ی','د','س','چ','پ','ج'].map(d=>`<div class="jp-dow">${d}</div>`).join('')}
@@ -1224,7 +1251,7 @@ async function render(){
   if(path === '/' || path === '/products' || path === '/product'){
     await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
   }
-  if(path === '/'){ renderHome(); renderDeliveredCount(); }
+  if(path === '/'){ renderHome(); renderDeliveredCount(); } else { stopHomeCarousels(); }
   if(path === '/products'){ renderProductList(params.cat, params.q, params.brand); }
   if(path === '/product'){ renderProductDetail(params.id); }
   if(path === '/track'){ /* results render on demand */ }
@@ -1269,7 +1296,9 @@ function closeCart(){ document.getElementById('cartDrawer').classList.remove('op
 function productCardHTML(p){
   const low = p.stock <= 5 && p.stock > 0;
   const out = p.stock <= 0;
+  const isNew = NEWEST_PRODUCT_IDS.has(p.id);
   return `<div class="p-card" style="${out?'opacity:.5;':''}" onclick="go('/product?id=${p.id}')">
+    ${isNew ? `<span class="new-badge">جدید</span>` : ''}
     <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${p.img}" alt="${p.name}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
     <span class="p-tag">${p.tag}</span>
     <h3>${p.name}</h3>
@@ -1284,9 +1313,18 @@ function productCardHTML(p){
 function sortByStock(list){
   return [...list].sort((a,b)=> (b.stock>0) - (a.stock>0));
 }
+function carouselCardHTML(p){
+  return `<div class="carousel-item">${productCardHTML(p)}</div>`;
+}
 function renderHome(){
   const featured = sortByStock(PRODUCTS).slice(0,6);
-  document.getElementById('homeFeatured').innerHTML = featured.map(productCardHTML).join('');
+  document.getElementById('homeFeatured').innerHTML = featured.map(carouselCardHTML).join('');
+  initAutoCarousel('homeFeatured', 'homeFeaturedDots');
+
+  const newest = [...PRODUCTS].sort((a,b)=>productSortCode(b)-productSortCode(a)).slice(0,10);
+  document.getElementById('homeNewest').innerHTML = newest.map(carouselCardHTML).join('');
+  initAutoCarousel('homeNewest', 'homeNewestDots');
+
   document.getElementById('homeCatGrid').innerHTML = CATEGORIES.map(c=>`
     <div class="cat-card" onclick="go('/products?cat=${c.id}')">
       ${c.image_url ? `<div style="width:56px; height:56px; border-radius:12px; overflow:hidden; margin:0 auto 10px;"><img src="${c.image_url}" loading="lazy" style="width:100%; height:100%; object-fit:cover;"></div>` : `<div class="ic">${c.emoji||'📦'}</div>`}
@@ -1302,6 +1340,67 @@ function renderHome(){
     </div>`;
   } else {
     heroArt.innerHTML = `<div class="emoji-stack"><span>✂️</span><span>💨</span></div>`;
+  }
+}
+
+const carouselState = {};
+function stopHomeCarousels(){
+  Object.values(carouselState).forEach(st=>{
+    clearInterval(st.timer); clearTimeout(st.resumeT);
+    if(st.observer) st.observer.disconnect();
+  });
+}
+document.addEventListener('visibilitychange', ()=>{
+  Object.values(carouselState).forEach(st=>{ st.tabHidden = document.hidden; });
+});
+function initAutoCarousel(trackId, dotsId){
+  const track = document.getElementById(trackId);
+  if(!track) return;
+  if(!carouselState[trackId]) carouselState[trackId] = { idx:0, paused:false, timer:null, resumeT:null, observer:null, tabHidden:document.hidden };
+  const st = carouselState[trackId];
+  clearInterval(st.timer);
+  if(st.observer) st.observer.disconnect();
+  st.idx = 0;
+
+  const items = Array.from(track.children);
+  const dotsBox = dotsId ? document.getElementById(dotsId) : null;
+  if(dotsBox){
+    dotsBox.innerHTML = items.map((_,i)=>`<span class="carousel-dot ${i===0?'active':''}"></span>`).join('');
+  }
+  if(items.length < 2) return;
+
+  function setActiveDot(i){
+    if(!dotsBox) return;
+    dotsBox.querySelectorAll('.carousel-dot').forEach((d,di)=>d.classList.toggle('active', di===i));
+  }
+
+  st.observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting && entry.intersectionRatio > 0.6){
+        const i = items.indexOf(entry.target);
+        if(i !== -1){ st.idx = i; setActiveDot(i); }
+      }
+    });
+  }, {root: track, threshold:[0.6]});
+  items.forEach(it=>st.observer.observe(it));
+
+  function tick(){
+    if(st.paused || st.tabHidden) return;
+    st.idx = (st.idx + 1) % items.length;
+    items[st.idx].scrollIntoView({behavior:'smooth', inline:'start', block:'nearest'});
+  }
+  st.timer = setInterval(tick, 3000);
+
+  if(!track.dataset.autoInit){
+    track.dataset.autoInit = '1';
+    const pauseAWhile = ()=>{
+      st.paused = true;
+      clearTimeout(st.resumeT);
+      st.resumeT = setTimeout(()=>{ st.paused = false; }, 4500);
+    };
+    track.addEventListener('touchstart', pauseAWhile, {passive:true});
+    track.addEventListener('mousedown', pauseAWhile);
+    track.addEventListener('wheel', pauseAWhile, {passive:true});
   }
 }
 
@@ -2101,6 +2200,7 @@ function printPackagingList(){
     <tr>
       <td style="text-align:center;">${i+1}</td>
       <td>${escapeHtml(o.name)}</td>
+      <td dir="ltr" style="text-align:right;">${escapeHtml(o.phone)}</td>
       <td>${o.items.map(it=>escapeHtml(it.name)+' × '+it.qty).join('<br>')}</td>
     </tr>`).join('');
   const w = window.open('', '_blank');
@@ -2120,7 +2220,7 @@ function printPackagingList(){
     <h3>لیست بسته‌بندی — خانه‌گرم</h3>
     <p class="meta">تعداد سفارش: ${list.length} — تاریخ چاپ: ${new Date().toLocaleDateString('fa-IR')}</p>
     <table>
-      <tr><th>#</th><th>نام مشتری</th><th>اقلام سفارش</th></tr>
+      <tr><th>#</th><th>نام مشتری</th><th>شماره تلفن</th><th>اقلام سفارش</th></tr>
       ${rows}
     </table>
     </body></html>`);
