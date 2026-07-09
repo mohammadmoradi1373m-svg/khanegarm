@@ -123,7 +123,11 @@
   .carousel-track{display:flex; gap:16px; overflow-x:auto; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:2px 2px 10px;}
   .carousel-track::-webkit-scrollbar{height:5px;}
   .carousel-track::-webkit-scrollbar-thumb{background:var(--line); border-radius:10px;}
-  .carousel-item{flex:0 0 200px; scroll-snap-align:start;}
+  .carousel-item{flex:0 0 200px; scroll-snap-align:start; display:flex;}
+  .carousel-item .p-card{height:100%; width:100%; display:flex; flex-direction:column;}
+  .carousel-item .p-card .desc{display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:auto;}
+  .carousel-item .p-card h3{display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;}
+  .carousel-item .p-card .p-foot{margin-top:auto;}
   .p-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:18px; transition:transform .2s ease, box-shadow .2s ease; cursor:pointer; position:relative;}
   .new-badge{position:absolute; top:10px; right:10px; background:var(--teal); color:#fff; font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:100px; z-index:2;}
   .carousel-dots{display:flex; justify-content:center; gap:6px; margin:6px 0 4px;}
@@ -448,6 +452,13 @@
 
 <!-- HOME -->
 <section class="page" data-route="/">
+  <div class="section-head" style="margin-top:24px;">
+    <div class="eyebrow">تازه از راه رسیده</div>
+    <h2>جدیدترین محصولات</h2>
+  </div>
+  <div class="carousel-track" id="homeNewest" style="margin-bottom:8px;"></div>
+  <div class="carousel-dots" id="homeNewestDots" style="margin-bottom:8px;"></div>
+
   <div class="hero">
     <div class="hero-grid">
       <div>
@@ -479,13 +490,6 @@
     <h2>چی نیاز داری؟</h2>
   </div>
   <div class="cat-grid" style="margin-bottom:56px;" id="homeCatGrid"></div>
-
-  <div class="section-head">
-    <div class="eyebrow">تازه از راه رسیده</div>
-    <h2>جدیدترین محصولات</h2>
-  </div>
-  <div class="carousel-track" id="homeNewest" style="margin-bottom:8px;"></div>
-  <div class="carousel-dots" id="homeNewestDots" style="margin-bottom:56px;"></div>
 
   <div class="section-head">
     <div class="eyebrow">پرفروش‌ترین‌ها</div>
@@ -1384,10 +1388,16 @@ function initAutoCarousel(trackId, dotsId){
   }, {root: track, threshold:[0.6]});
   items.forEach(it=>st.observer.observe(it));
 
+  function scrollTrackToItem(item){
+    const trackRect = track.getBoundingClientRect();
+    const itemRect = item.getBoundingClientRect();
+    const delta = itemRect.left - trackRect.left;
+    track.scrollTo({left: track.scrollLeft + delta, behavior:'smooth'});
+  }
   function tick(){
     if(st.paused || st.tabHidden) return;
     st.idx = (st.idx + 1) % items.length;
-    items[st.idx].scrollIntoView({behavior:'smooth', inline:'start', block:'nearest'});
+    scrollTrackToItem(items[st.idx]);
   }
   st.timer = setInterval(tick, 3000);
 
