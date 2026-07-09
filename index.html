@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>خانه‌گرم | ماشین اصلاح و سشوار</title>
 <meta name="description" content="ماشین اصلاح و سشوار با کیفیت مطمئن، به همراه راهنمای خرید و نگهداری.">
+<meta property="og:title" content="خانه‌گرم | ماشین اصلاح و سشوار">
+<meta property="og:description" content="ماشین اصلاح و سشوار با کیفیت مطمئن و قیمت منصفانه، ارسال به سراسر کشور.">
+<meta property="og:image" content="https://mohammadmoradi1373m-svg.github.io/khanegarm/og-image.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <!-- Google Analytics: replace G-XXXXXXXXXX with your real GA4 Measurement ID -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
@@ -14,7 +19,7 @@
   gtag('config', 'G-XXXXXXXXXX');
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#FFF7EC; --bg-alt:#FBEEDD; --card:#FFFDF9;
@@ -99,8 +104,8 @@
   .hero h1 em{font-style:normal; color:var(--rust);}
   .hero p.lead{font-size:16px; color:var(--ink-soft); max-width:440px; margin-bottom:24px;}
   .hero-ctas{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px;}
-  .trust-row{display:flex; gap:18px; flex-wrap:wrap; color:var(--ink-soft); font-size:13px;}
-  .trust-row span{display:flex; align-items:center; gap:6px;}
+  .trust-row{display:flex; gap:18px; flex-wrap:wrap; color:var(--ink-soft); font-size:13.5px; font-weight:600; margin-top:4px;}
+  .trust-row span{display:flex; align-items:center; gap:7px;}
   .dot{width:6px; height:6px; border-radius:50%; background:var(--teal); flex-shrink:0;}
   .hero-art{position:relative; aspect-ratio:1/0.85; border-radius:24px; background:linear-gradient(160deg,var(--amber),var(--rust)); display:flex; align-items:center; justify-content:center; overflow:hidden;}
   .hero-art .emoji-stack{font-size:76px; display:flex; gap:14px; filter:drop-shadow(0 14px 20px rgba(0,0,0,.18));}
@@ -133,7 +138,7 @@
 
   /* product detail */
   .pd-grid{display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start;}
-  .pd-gallery-main{aspect-ratio:1/0.85; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:96px; margin-bottom:12px;}
+  .pd-gallery-main{aspect-ratio:1/0.85; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:96px; margin-bottom:12px; background:var(--bg-alt);}
   .pd-thumbs{display:flex; gap:10px;}
   .pd-thumbs .th{width:56px; height:56px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; border:2px solid transparent;}
   .pd-thumbs .th.active{border-color:var(--rust);}
@@ -189,6 +194,27 @@
   .info-card .ic{font-size:28px; margin-bottom:10px;}
   .info-card h4{font-size:15px; margin-bottom:6px;}
   .info-card p{font-size:14px; color:var(--ink-soft);}
+
+  /* custom autocomplete (province/city) */
+  .autocomplete-list{position:absolute; top:calc(100% + 4px); right:0; left:0; background:var(--card); border:1px solid var(--line); border-radius:12px; max-height:200px; overflow-y:auto; z-index:60; box-shadow:0 14px 30px -14px rgba(0,0,0,.28); display:none;}
+  .autocomplete-list.open{display:block;}
+  .autocomplete-item{padding:11px 14px; font-size:13.5px; cursor:pointer;}
+  .autocomplete-item:hover{background:var(--bg-alt);}
+
+  /* jalali date picker */
+  .jalali-picker-wrap{position:relative; display:inline-block;}
+  .jalali-picker-panel{position:absolute; top:calc(100% + 6px); right:0; background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:0 16px 34px -14px rgba(0,0,0,.3); z-index:80; padding:12px; width:250px; display:none;}
+  .jalali-picker-panel.open{display:block;}
+  .jp-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:13px; font-weight:700;}
+  .jp-nav{background:var(--bg-alt); border:none; width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:13px;}
+  .jp-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:3px; font-size:11.5px; text-align:center;}
+  .jp-dow{color:var(--ink-soft); font-weight:700; padding:4px 0;}
+  .jp-day{padding:7px 0; border-radius:8px; cursor:pointer;}
+  .jp-day:hover{background:var(--bg-alt);}
+  .jp-day.today{border:1px solid var(--rust);}
+  .jp-day.selected{background:var(--rust); color:#fff;}
+  .jp-day.empty{cursor:default;}
+  .jp-clear{width:100%; margin-top:8px; background:none; border:none; color:var(--ink-soft); font-size:12px; cursor:pointer; text-decoration:underline;}
 
   /* checkout form */
   .form-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
@@ -264,8 +290,9 @@
   .modal-box h3{margin-bottom:16px;}
 
   /* toast */
-  .toast{position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:12px 20px; border-radius:100px; font-size:13.5px; font-weight:600; z-index:120; opacity:0; transition:all .25s ease; pointer-events:none; white-space:nowrap; max-width:92vw;}
-  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .toast{position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:12px 20px; border-radius:100px; font-size:13.5px; font-weight:600; z-index:120; opacity:0; transition:all .25s ease; pointer-events:none; white-space:nowrap; max-width:92vw; display:flex; align-items:center; gap:10px;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto;}
+  .toast-action{background:rgba(255,255,255,.18); border:none; color:#fff; padding:6px 12px; border-radius:100px; font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0;}
 
   /* chat widget */
   .chat-fab{position:fixed; bottom:22px; left:22px; width:56px; height:56px; border-radius:50%; background:var(--rust); color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; box-shadow:0 12px 24px -8px rgba(193,68,46,.5); z-index:100; border:none;}
@@ -360,10 +387,14 @@
     <div class="form-grid">
       <input type="text" id="ordName" placeholder="نام و نام خانوادگی">
       <input type="tel" id="ordPhone" placeholder="شماره تلفن (۰۹xxxxxxxxx)" maxlength="11">
-      <input type="text" id="ordProvince" list="provinceList" placeholder="استان (جست‌وجو کنید)" class="full" oninput="onProvinceInput()">
-      <datalist id="provinceList"></datalist>
-      <input type="text" id="ordCity" list="cityList" placeholder="اول استان رو انتخاب کنید" class="full" disabled>
-      <datalist id="cityList"></datalist>
+      <div class="full" style="position:relative;">
+        <input type="text" id="ordProvince" placeholder="استان (تایپ کنید)" class="full" autocomplete="off" oninput="onProvinceInput()" onfocus="onProvinceInput()">
+        <div class="autocomplete-list" id="provinceDropdown"></div>
+      </div>
+      <div class="full" style="position:relative;">
+        <input type="text" id="ordCity" placeholder="اول استان رو انتخاب کنید" class="full" autocomplete="off" disabled oninput="onCityInput()" onfocus="onCityInput()">
+        <div class="autocomplete-list" id="cityDropdown"></div>
+      </div>
       <textarea id="ordAddress" placeholder="آدرس دقیق (خیابان، کوچه، پلاک)"></textarea>
       <input type="text" id="ordPostal" placeholder="کد پستی (۱۰ رقم)" maxlength="10" inputmode="numeric" class="full">
       <div class="full" style="font-size:13.5px; font-weight:700; margin-top:4px;">روش ارسال (پس‌کرایه):</div>
@@ -420,17 +451,18 @@
             style="flex:1; min-width:0; border:1px solid var(--line); border-radius:100px; padding:12px 18px; font-family:inherit; font-size:14px; background:var(--card);">
           <button class="btn-primary" style="padding:12px 20px;" onclick="runHomeSearch()">🔍</button>
         </div>
-        <div class="hero-ctas">
+        <div class="hero-ctas" style="align-items:center;">
           <a class="btn-primary" onclick="go('/products')">خرید محصولات ←</a>
-          <a class="btn-ghost" onclick="go('/guides')">راهنمای خرید</a>
+          <a onclick="go('/guides')" style="font-size:13.5px; font-weight:600; color:var(--ink-soft); text-decoration:underline; cursor:pointer; padding:10px 4px;">راهنمای خرید</a>
         </div>
-        <div class="trust-row">
+        <div class="trust-row" id="whyUsRow">
           <span><i class="dot"></i> پشتیبانی تلفنی</span>
           <span><i class="dot"></i> بازگشت با احترام در صورت مشکل</span>
           <span><i class="dot"></i> ارسال پس‌کرایه</span>
+          <span id="deliveredCountRow" style="display:none;"><i class="dot"></i> <span id="deliveredCountVal"></span></span>
         </div>
       </div>
-      <div class="hero-art"><div class="emoji-stack"><span>✂️</span><span>💨</span></div></div>
+      <div class="hero-art" id="heroArt"><div class="emoji-stack"><span>✂️</span><span>💨</span></div></div>
     </div>
   </div>
 
@@ -466,6 +498,7 @@
 <!-- PRODUCT DETAIL -->
 <section class="page" data-route="/product" hidden>
   <div class="pd-grid" id="productDetailRoot"></div>
+  <div id="relatedProductsBox" style="margin-top:44px;"></div>
   <div class="reviews-box">
     <h3 style="margin-bottom:16px;">نظرات مشتری‌ها</h3>
     <div class="review-form">
@@ -668,6 +701,8 @@
     <div id="adminTab-orders" hidden>
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
         <button class="btn-ghost" style="padding:8px 16px; font-size:12.5px;" onclick="exportOrdersCSV()">📥 دانلود اکسل سفارش‌ها</button>
+        <button class="btn-ghost" style="padding:8px 16px; font-size:12.5px;" onclick="printPackagingList()">🖨️ چاپ لیست بسته‌بندی</button>
+        <button class="btn-ghost" style="padding:8px 16px; font-size:12.5px;" onclick="openSalesReportModal()">📊 گزارش فروش محصولات</button>
         <button class="btn-ghost" style="padding:8px 16px; font-size:12.5px;" onclick="downloadFullBackup()">🗄️ دانلود بک‌آپ کامل دیتابیس</button>
       </div>
       <input type="text" id="adminSearch" placeholder="جست‌وجو با اسم یا شماره تلفن مشتری..." oninput="filterAdminOrders()"
@@ -679,10 +714,22 @@
           <option value="1">تحویل داده‌شده به پست/باربری</option>
           <option value="2">در حال ارسال</option>
         </select>
-        <input type="date" id="filterDateFrom" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
-        <input type="date" id="filterDateTo" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
+        <div class="jalali-picker-wrap">
+          <input type="text" id="filterDateFrom" placeholder="از تاریخ" readonly onclick="toggleJalaliPicker('filterDateFrom')" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:108px; cursor:pointer; background:var(--card);">
+          <div class="jalali-picker-panel" id="filterDateFrom_panel"></div>
+        </div>
+        <div class="jalali-picker-wrap">
+          <input type="text" id="filterDateTo" placeholder="تا تاریخ" readonly onclick="toggleJalaliPicker('filterDateTo')" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:108px; cursor:pointer; background:var(--card);">
+          <div class="jalali-picker-panel" id="filterDateTo_panel"></div>
+        </div>
         <input type="number" id="filterPriceMin" placeholder="از مبلغ" onchange="filterAdminOrders()" style="width:110px; border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
         <input type="number" id="filterPriceMax" placeholder="تا مبلغ" onchange="filterAdminOrders()" style="width:110px; border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
+        <select id="filterPayment" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
+          <option value="">همه‌ی پرداخت‌ها</option>
+          <option value="paid_cod">پس‌کرایه/پرداخت هنگام تحویل</option>
+          <option value="awaiting_confirmation">کارت‌به‌کارت — در انتظار تایید</option>
+          <option value="confirmed">کارت‌به‌کارت — تایید شده</option>
+        </select>
         <button class="btn-ghost" style="padding:9px 14px; font-size:12.5px;" onclick="clearAdminFilters()">پاک کردن فیلترها</button>
       </div>
       <div id="bulkBar" style="display:none; align-items:center; gap:8px; flex-wrap:wrap; background:var(--bg-alt); border-radius:10px; padding:10px 12px; margin-bottom:12px;">
@@ -714,6 +761,8 @@
         <div class="form-grid">
           <input type="text" id="cfName" placeholder="نام دسته (مثلا ماشین اصلاح)">
           <input type="text" id="cfEmoji" placeholder="ایموجی (مثلا ✂️)" maxlength="4">
+          <div class="full" style="font-size:12px; color:var(--ink-soft);">عکس اختیاره؛ اگه نذاری همون ایموجی نشون داده می‌شه</div>
+          <input type="file" id="cfImage" accept="image/*" class="full">
         </div>
         <button class="btn-primary" style="width:100%; margin-top:12px;" onclick="addCategory()">افزودن دسته‌بندی</button>
       </div>
@@ -764,6 +813,37 @@
   </div>
 </div>
 
+<!-- SALES REPORT MODAL -->
+<div class="modal-overlay" id="salesReportModal">
+  <div class="modal-box">
+    <h3>گزارش فروش محصولات (برای حسابداری)</h3>
+    <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+      <div class="jalali-picker-wrap">
+        <input type="text" id="srDateFrom" placeholder="از تاریخ" readonly onclick="toggleJalaliPicker('srDateFrom')" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:130px; cursor:pointer; background:var(--card);">
+        <div class="jalali-picker-panel" id="srDateFrom_panel"></div>
+      </div>
+      <div class="jalali-picker-wrap">
+        <input type="text" id="srDateTo" placeholder="تا تاریخ" readonly onclick="toggleJalaliPicker('srDateTo')" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:130px; cursor:pointer; background:var(--card);">
+        <div class="jalali-picker-panel" id="srDateTo_panel"></div>
+      </div>
+    </div>
+    <label style="display:flex; align-items:center; gap:6px; font-size:13px; margin-bottom:14px; cursor:pointer;">
+      <input type="checkbox" id="srConfirmedOnly"> فقط سفارش‌های با پرداخت تایید‌شده حساب بشه (کارت‌به‌کارت در انتظار تایید حذف بشه)
+    </label>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <span style="font-size:13px; font-weight:700;">انتخاب محصولات</span>
+      <button class="btn-ghost" style="padding:6px 12px; font-size:12px;" onclick="srToggleSelectAll()">انتخاب همه / هیچ‌کدام</button>
+    </div>
+    <div id="srProductList" style="max-height:220px; overflow-y:auto; border:1px solid var(--line); border-radius:10px; padding:8px; margin-bottom:16px;">
+      <p style="text-align:center; color:var(--ink-soft); font-size:13px;">در حال بارگذاری...</p>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn-primary" style="flex:1;" onclick="downloadSalesReport()">📥 دانلود اکسل گزارش</button>
+      <button class="btn-ghost" onclick="document.getElementById('salesReportModal').classList.remove('open')">انصراف</button>
+    </div>
+  </div>
+</div>
+
 <!-- ORDER EDIT MODAL -->
 <div class="modal-overlay" id="orderEditModal">
   <div class="modal-box">
@@ -789,6 +869,8 @@
     <div class="form-grid">
       <input type="text" id="ceName" placeholder="نام دسته" class="full">
       <input type="text" id="ceEmoji" placeholder="ایموجی" maxlength="4">
+      <div class="full" id="ceCurrentImageBox" style="font-size:12px; color:var(--ink-soft);"></div>
+      <input type="file" id="ceImage" accept="image/*" class="full">
     </div>
     <div style="display:flex; gap:10px; margin-top:16px;">
       <button class="btn-primary" style="flex:1;" onclick="saveCategoryEdit()">ذخیره</button>
@@ -940,10 +1022,186 @@ const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
 function toFa(n){ return String(n).replace(/\d/g, d=>faDigits[d]); }
 function formatToman(n){ return toFa(n.toLocaleString('en-US')) + ' تومان'; }
 function findProduct(id){ return PRODUCTS.find(p=>p.id===id); }
+function compressImage(file, maxDim, quality){
+  maxDim = maxDim || 1280; quality = quality || 0.8;
+  return new Promise((resolve)=>{
+    if(!file.type.startsWith('image/')){ resolve(file); return; }
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > maxDim || h > maxDim){
+          if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob((blob)=>{
+          if(!blob){ resolve(file); return; }
+          resolve(new File([blob], file.name.replace(/\.[^.]+$/,'') + '.jpg', {type:'image/jpeg'}));
+        }, 'image/jpeg', quality);
+      };
+      img.onerror = ()=> resolve(file);
+      img.src = e.target.result;
+    };
+    reader.onerror = ()=> resolve(file);
+    reader.readAsDataURL(file);
+  });
+}
 function escapeHtml(str){
   if(str === null || str === undefined) return '';
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
+
+/* ============ JALALI CALENDAR ============ */
+const PERSIAN_MONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+function jalaaliToGregorian(jy, jm, jd){
+  jy += 1595;
+  let days = -355668 + (365 * jy) + (~~(jy / 33) * 8) + ~~(((jy % 33) + 3) / 4) + jd + ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+  let gy = 400 * ~~(days / 146097);
+  days %= 146097;
+  if (days > 36524) {
+    gy += 100 * ~~(--days / 36524);
+    days %= 36524;
+    if (days >= 365) days++;
+  }
+  gy += 4 * ~~(days / 1461);
+  days %= 1461;
+  if (days > 365) {
+    gy += ~~((days - 1) / 365);
+    days = (days - 1) % 365;
+  }
+  let gd = days + 1;
+  const sal_a = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  let gm;
+  for (gm = 0; gm < 13; gm++) {
+    const v = sal_a[gm];
+    if (gd <= v) break;
+    gd -= v;
+  }
+  return [gy, gm, gd];
+}
+function gregorianToJalali(gy, gm, gd){
+  const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+  const gy2 = (gm > 2) ? (gy + 1) : gy;
+  let days = 355666 + (365 * gy) + (~~((gy2 + 3) / 4)) - (~~((gy2 + 99) / 100)) + (~~((gy2 + 399) / 400)) + gd + g_d_m[gm - 1];
+  let jy = -1595 + (33 * ~~(days / 12053));
+  days %= 12053;
+  jy += 4 * ~~(days / 1461);
+  days %= 1461;
+  if (days > 365) {
+    jy += ~~((days - 1) / 365);
+    days = (days - 1) % 365;
+  }
+  let jm, jd;
+  if (days < 186) {
+    jm = 1 + ~~(days / 31);
+    jd = 1 + (days % 31);
+  } else {
+    jm = 7 + ~~((days - 186) / 30);
+    jd = 1 + ((days - 186) % 30);
+  }
+  return [jy, jm, jd];
+}
+function jalaliToGregorianDate(jy, jm, jd){
+  const [gy, gm, gd] = jalaaliToGregorian(jy, jm, jd);
+  return new Date(gy, gm - 1, gd);
+}
+function jalaliMonthLength(jy, jm){
+  if(jm <= 6) return 31;
+  if(jm <= 11) return 30;
+  const d1 = jalaliToGregorianDate(jy, 12, 1);
+  const d2 = jalaliToGregorianDate(jy + 1, 1, 1);
+  return Math.round((d2 - d1) / 86400000);
+}
+let jpState = {};
+function toggleJalaliPicker(inputId){
+  const panel = document.getElementById(inputId + '_panel');
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.jalali-picker-panel.open').forEach(p=>p.classList.remove('open'));
+  if(!isOpen){
+    const inputEl = document.getElementById(inputId);
+    if(inputEl.dataset.iso){
+      const d = new Date(inputEl.dataset.iso);
+      const [jy,jm] = gregorianToJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+      jpState[inputId] = {jy, jm};
+    } else if(!jpState[inputId]){
+      const now = new Date();
+      const [jy,jm] = gregorianToJalali(now.getFullYear(), now.getMonth()+1, now.getDate());
+      jpState[inputId] = {jy, jm};
+    }
+    renderJalaliPanel(inputId);
+    panel.classList.add('open');
+  }
+}
+function jpChangeMonth(inputId, delta){
+  const st = jpState[inputId];
+  st.jm += delta;
+  if(st.jm > 12){ st.jm = 1; st.jy++; }
+  if(st.jm < 1){ st.jm = 12; st.jy--; }
+  renderJalaliPanel(inputId);
+}
+function renderJalaliPanel(inputId){
+  const panel = document.getElementById(inputId + '_panel');
+  const st = jpState[inputId];
+  const len = jalaliMonthLength(st.jy, st.jm);
+  const firstDow = (jalaliToGregorianDate(st.jy, st.jm, 1).getDay() + 1) % 7;
+  const now = new Date();
+  const [tjy,tjm,tjd] = gregorianToJalali(now.getFullYear(), now.getMonth()+1, now.getDate());
+  const inputEl = document.getElementById(inputId);
+  const selIso = inputEl.dataset.iso;
+  let selJd = null;
+  if(selIso){
+    const d = new Date(selIso);
+    const [sjy,sjm,sjd] = gregorianToJalali(d.getFullYear(), d.getMonth()+1, d.getDate());
+    if(sjy===st.jy && sjm===st.jm) selJd = sjd;
+  }
+  let cells = '';
+  for(let i=0;i<firstDow;i++) cells += `<div class="jp-day empty"></div>`;
+  for(let d=1; d<=len; d++){
+    const isToday = (st.jy===tjy && st.jm===tjm && d===tjd);
+    const isSel = (d===selJd);
+    cells += `<div class="jp-day ${isToday?'today':''} ${isSel?'selected':''}" onclick="jpSelectDay('${inputId}',${d})">${toFa(d)}</div>`;
+  }
+  panel.innerHTML = `
+    <div class="jp-head">
+      <button type="button" class="jp-nav" onclick="jpChangeMonth('${inputId}',1)">›</button>
+      <span>${PERSIAN_MONTHS[st.jm-1]} ${toFa(st.jy)}</span>
+      <button type="button" class="jp-nav" onclick="jpChangeMonth('${inputId}',-1)">‹</button>
+    </div>
+    <div class="jp-grid">
+      ${['ش','ی','د','س','چ','پ','ج'].map(d=>`<div class="jp-dow">${d}</div>`).join('')}
+      ${cells}
+    </div>
+    <button type="button" class="jp-clear" onclick="jpClear('${inputId}')">پاک کردن تاریخ</button>
+  `;
+}
+function jpSelectDay(inputId, d){
+  const st = jpState[inputId];
+  const [gy,gm,gd] = jalaaliToGregorian(st.jy, st.jm, d);
+  const iso = `${gy}-${String(gm).padStart(2,'0')}-${String(gd).padStart(2,'0')}`;
+  const inputEl = document.getElementById(inputId);
+  inputEl.value = `${toFa(st.jy)}/${toFa(String(st.jm).padStart(2,'0'))}/${toFa(String(d).padStart(2,'0'))}`;
+  inputEl.dataset.iso = iso;
+  document.getElementById(inputId+'_panel').classList.remove('open');
+  inputEl.dispatchEvent(new Event('change'));
+}
+function jpClear(inputId){
+  const inputEl = document.getElementById(inputId);
+  inputEl.value = '';
+  delete inputEl.dataset.iso;
+  document.getElementById(inputId+'_panel').classList.remove('open');
+  inputEl.dispatchEvent(new Event('change'));
+}
+document.addEventListener('click', (e)=>{
+  document.querySelectorAll('.jalali-picker-panel.open').forEach(panel=>{
+    const wrap = panel.closest('.jalali-picker-wrap');
+    if(wrap && !wrap.contains(e.target)) panel.classList.remove('open');
+  });
+});
 
 /* ============ ROUTER ============ */
 function parseHash(){
@@ -966,7 +1224,7 @@ async function render(){
   if(path === '/' || path === '/products' || path === '/product'){
     await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
   }
-  if(path === '/'){ renderHome(); }
+  if(path === '/'){ renderHome(); renderDeliveredCount(); }
   if(path === '/products'){ renderProductList(params.cat, params.q, params.brand); }
   if(path === '/product'){ renderProductDetail(params.id); }
   if(path === '/track'){ /* results render on demand */ }
@@ -1027,11 +1285,33 @@ function sortByStock(list){
   return [...list].sort((a,b)=> (b.stock>0) - (a.stock>0));
 }
 function renderHome(){
-  document.getElementById('homeFeatured').innerHTML = sortByStock(PRODUCTS).slice(0,3).map(productCardHTML).join('');
+  const featured = sortByStock(PRODUCTS).slice(0,6);
+  document.getElementById('homeFeatured').innerHTML = featured.map(productCardHTML).join('');
   document.getElementById('homeCatGrid').innerHTML = CATEGORIES.map(c=>`
     <div class="cat-card" onclick="go('/products?cat=${c.id}')">
-      <div class="ic">${c.emoji||'📦'}</div><h3>${c.name}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
+      ${c.image_url ? `<div style="width:56px; height:56px; border-radius:12px; overflow:hidden; margin:0 auto 10px;"><img src="${c.image_url}" loading="lazy" style="width:100%; height:100%; object-fit:cover;"></div>` : `<div class="ic">${c.emoji||'📦'}</div>`}
+      <h3>${c.name}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
     </div>`).join('');
+
+  // hero art: dynamic from real product photos if available, otherwise fallback to emoji
+  const heroArt = document.getElementById('heroArt');
+  const withPhotos = featured.filter(p=>p.img).slice(0,2);
+  if(withPhotos.length >= 1){
+    heroArt.innerHTML = `<div style="display:flex; width:100%; height:100%; gap:4px;">
+      ${withPhotos.map(p=>`<img src="${p.img}" alt="${p.name}" loading="lazy" style="flex:1; height:100%; object-fit:cover;">`).join('')}
+    </div>`;
+  } else {
+    heroArt.innerHTML = `<div class="emoji-stack"><span>✂️</span><span>💨</span></div>`;
+  }
+}
+
+async function renderDeliveredCount(){
+  try{
+    const { data, error } = await sbClient.rpc('get_delivered_orders_count');
+    if(error || !data || data < 20) return; // فقط وقتی عدد واقعی و قابل‌ذکره نشون بده
+    document.getElementById('deliveredCountVal').textContent = `+${toFa(data)} سفارش تحویل داده‌شده`;
+    document.getElementById('deliveredCountRow').style.display = 'flex';
+  }catch(e){}
 }
 
 /* ============ RENDER: PRODUCT LIST ============ */
@@ -1095,11 +1375,11 @@ function renderProductDetail(id){
   pdCurrentImages = images;
   root.innerHTML = `
     <div>
-      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${images[0]||''}" alt="${p.name}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:20px;"></div>
+      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${images[0]||''}" alt="${p.name} - ${p.brand||''} ${p.tag||''}" loading="lazy" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
       ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${img}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
     </div>
     <div>
-      <span class="pd-tag">${p.tag}</span>
+      <span class="pd-tag">${p.tag}${p.views>20 ? ` · 👁️ ${toFa(p.views)} بازدید` : ''}</span>
       <h1 class="pd-title">${p.name}</h1>
       <div class="pd-price">${toFa(p.price.toLocaleString('en-US'))} تومان</div>
       <p class="pd-desc">${p.desc}</p>
@@ -1114,7 +1394,22 @@ function renderProductDetail(id){
   pdCurrentId = p.id;
   document.getElementById('pdQtyVal').textContent = '۱';
   renderReviews(p.id);
+  renderRelatedProducts(p);
   sbClient.rpc('increment_product_view', { p_id: p.id }).then(()=>{});
+}
+function renderRelatedProducts(p){
+  const box = document.getElementById('relatedProductsBox');
+  let related = PRODUCTS.filter(x=>x.id!==p.id && x.cat===p.cat && (x.brand===p.brand || !p.brand));
+  if(related.length < 4){
+    const more = PRODUCTS.filter(x=>x.id!==p.id && x.cat===p.cat && !related.includes(x));
+    related = related.concat(more);
+  }
+  related = sortByStock(related).slice(0,4);
+  if(related.length === 0){ box.innerHTML = ''; return; }
+  box.innerHTML = `
+    <div class="section-head" style="margin-bottom:22px;"><h2 style="font-size:20px;">این‌ها رو هم ببین</h2></div>
+    <div class="product-grid">${related.map(productCardHTML).join('')}</div>
+  `;
 }
 let pdCurrentImages = [];
 function pdSwitchImage(i){
@@ -1236,7 +1531,7 @@ function addToCart(id, qty){
   saveJSON('kg_cart', cart);
   renderCart();
   bumpCartCount();
-  showToast(`«${p.name}» به سبد اضافه شد ✅`);
+  showToast(`«${p.name}» به سبد اضافه شد ✅`, 'مشاهده سبد', ()=>openCart());
 }
 function changeCartQty(id, delta){
   const item = cart.find(i=>i.id===id);
@@ -1458,6 +1753,7 @@ async function trackOrder(){
 
 /* ============ ADMIN ============ */
 let adminOrdersCache = [];
+let adminFilteredOrdersCache = [];
 let adminProductsCache = [];
 let adminCurrentTab = 'dashboard';
 
@@ -1523,7 +1819,17 @@ async function renderDashboard(){
     {label:'محصولات ناموجود', val: toFa(outStock), color:'#B15C1E'},
     {label:'مشتریان جدید امروز', val: toFa(newCustomersToday), color:'#7A5AC1'},
   ];
-  box.innerHTML = cards.map(c=>`
+  const lowStockItems = (products||[]).filter(p=>p.stock>0 && p.stock<=3).sort((a,b)=>a.stock-b.stock);
+  const outOfStockItems = (products||[]).filter(p=>p.stock<=0);
+  let alertHtml = '';
+  if(lowStockItems.length > 0 || outOfStockItems.length > 0){
+    alertHtml = `<div class="card" style="grid-column:1/-1; border-right:4px solid var(--rust); margin-bottom:6px;">
+      <div style="font-size:13px; font-weight:700; color:var(--rust); margin-bottom:8px;">⚠️ نیاز به توجه فوری</div>
+      ${lowStockItems.map(p=>`<div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px dashed var(--line);"><span>${escapeHtml(p.name)}</span><b style="color:var(--rust);">فقط ${toFa(p.stock)} عدد</b></div>`).join('')}
+      ${outOfStockItems.map(p=>`<div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px dashed var(--line);"><span>${escapeHtml(p.name)}</span><b style="color:var(--ink-soft);">ناموجود</b></div>`).join('')}
+    </div>`;
+  }
+  box.innerHTML = alertHtml + cards.map(c=>`
     <div class="card" style="border-right:4px solid ${c.color};">
       <div style="font-size:12.5px; color:var(--ink-soft); margin-bottom:6px;">${c.label}</div>
       <div style="font-size:20px; font-weight:800; font-family:'Vazirmatn';">${c.val}</div>
@@ -1571,6 +1877,74 @@ function exportOrdersCSV(){
   URL.revokeObjectURL(url);
 }
 
+let srSelectedProducts = new Set();
+async function openSalesReportModal(){
+  document.getElementById('srProductList').innerHTML = '<p style="text-align:center; color:var(--ink-soft); font-size:13px;">در حال بارگذاری...</p>';
+  document.getElementById('srDateFrom').value=''; delete document.getElementById('srDateFrom').dataset.iso;
+  document.getElementById('srDateTo').value=''; delete document.getElementById('srDateTo').dataset.iso;
+  document.getElementById('srConfirmedOnly').checked = false;
+  document.getElementById('salesReportModal').classList.add('open');
+  const { data, error } = await sbClient.from('products').select('*').order('name');
+  if(error || !data){ document.getElementById('srProductList').innerHTML = '<p style="text-align:center; color:var(--rust); font-size:13px;">خطا در دریافت محصولات</p>'; return; }
+  adminProductsCache = data;
+  srSelectedProducts = new Set(data.map(p=>p.id));
+  document.getElementById('srProductList').innerHTML = data.map(p=>`
+    <label style="display:flex; align-items:center; gap:8px; padding:7px 4px; font-size:13px; cursor:pointer; border-bottom:1px dashed var(--line);">
+      <input type="checkbox" class="sr-check" value="${p.id}" checked onchange="srToggleProduct('${p.id}', this.checked)">
+      ${escapeHtml(p.name)} ${p.brand?'— '+escapeHtml(p.brand):''}
+    </label>
+  `).join('');
+}
+function srToggleProduct(id, checked){
+  if(checked) srSelectedProducts.add(id); else srSelectedProducts.delete(id);
+}
+function srToggleSelectAll(){
+  const checks = document.querySelectorAll('.sr-check');
+  const allSelected = srSelectedProducts.size === checks.length;
+  checks.forEach(cb=>{
+    cb.checked = !allSelected;
+    if(!allSelected) srSelectedProducts.add(cb.value); else srSelectedProducts.delete(cb.value);
+  });
+}
+async function downloadSalesReport(){
+  if(srSelectedProducts.size===0){ showToast('حداقل یک محصول رو انتخاب کن'); return; }
+  const dateFrom = document.getElementById('srDateFrom').dataset.iso;
+  const dateTo = document.getElementById('srDateTo').dataset.iso;
+  const confirmedOnly = document.getElementById('srConfirmedOnly').checked;
+
+  showToast('در حال آماده‌سازی گزارش...');
+  const { data: orders, error } = await sbClient.from('orders').select('*');
+  if(error || !orders){ showToast('خطا در دریافت سفارش‌ها'); return; }
+
+  let filtered = orders;
+  if(dateFrom) filtered = filtered.filter(o => new Date(o.created_at) >= new Date(dateFrom));
+  if(dateTo) filtered = filtered.filter(o => new Date(o.created_at) <= new Date(dateTo + 'T23:59:59'));
+  if(confirmedOnly) filtered = filtered.filter(o => o.payment_status !== 'awaiting_confirmation');
+
+  const tally = {};
+  filtered.forEach(o=>{
+    (o.items||[]).forEach(item=>{
+      if(!srSelectedProducts.has(item.id)) return;
+      if(!tally[item.id]) tally[item.id] = {name:item.name, qty:0, total:0};
+      tally[item.id].qty += item.qty;
+      tally[item.id].total += item.qty * item.price;
+    });
+  });
+
+  const rows = Object.values(tally);
+  if(rows.length === 0){ showToast('در این بازه، فروشی برای محصولات انتخاب‌شده ثبت نشده'); return; }
+
+  const header = ['نام محصول','تعداد فروش‌رفته','جمع مبلغ فروش (تومان)'];
+  let csv = '\uFEFF' + header.join(',') + '\n' + rows.map(r=>[`"${String(r.name).replace(/"/g,'""')}"`, r.qty, r.total].join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `gozaresh_forosh_${confirmedOnly?'tayidshode':'kol'}_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('salesReportModal').classList.remove('open');
+  showToast('گزارش دانلود شد ✅');
+}
+
 async function renderAdmin(){
   const box = document.getElementById('adminOrders');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
@@ -1584,10 +1958,11 @@ function filterAdminOrders(){
   const box = document.getElementById('adminOrders');
   const q = (document.getElementById('adminSearch').value || '').trim().toLowerCase();
   const statusVal = document.getElementById('filterStatus').value;
-  const dateFrom = document.getElementById('filterDateFrom').value;
-  const dateTo = document.getElementById('filterDateTo').value;
+  const dateFrom = document.getElementById('filterDateFrom').dataset.iso || '';
+  const dateTo = document.getElementById('filterDateTo').dataset.iso || '';
   const priceMin = document.getElementById('filterPriceMin').value;
   const priceMax = document.getElementById('filterPriceMax').value;
+  const paymentVal = document.getElementById('filterPayment').value;
 
   let list = adminOrdersCache;
   if(q){ list = list.filter(o => o.name.toLowerCase().includes(q) || o.phone.includes(q)); }
@@ -1596,6 +1971,8 @@ function filterAdminOrders(){
   if(dateTo){ list = list.filter(o => new Date(o.created_at) <= new Date(dateTo + 'T23:59:59')); }
   if(priceMin){ list = list.filter(o => o.subtotal >= parseInt(priceMin, 10)); }
   if(priceMax){ list = list.filter(o => o.subtotal <= parseInt(priceMax, 10)); }
+  if(paymentVal !== ''){ list = list.filter(o => o.payment_status === paymentVal); }
+  adminFilteredOrdersCache = list;
 
   if(list.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">سفارشی پیدا نشد.</p>'; return; }
   box.innerHTML = list.map((o)=>`
@@ -1623,9 +2000,12 @@ function filterAdminOrders(){
 function clearAdminFilters(){
   document.getElementById('filterStatus').value = '';
   document.getElementById('filterDateFrom').value = '';
+  delete document.getElementById('filterDateFrom').dataset.iso;
   document.getElementById('filterDateTo').value = '';
+  delete document.getElementById('filterDateTo').dataset.iso;
   document.getElementById('filterPriceMin').value = '';
   document.getElementById('filterPriceMax').value = '';
+  document.getElementById('filterPayment').value = '';
   filterAdminOrders();
 }
 function toggleOrderSelect(id, checked){
@@ -1662,6 +2042,8 @@ async function applyBulkStatus(){
   if(error){ showToast('خطا در به‌روزرسانی گروهی'); return; }
   showToast(`${toFa(ids.length)} سفارش به‌روزرسانی شد ✅`);
   selectedOrderIds.clear();
+  const selectAllBox = document.getElementById('selectAllOrders');
+  if(selectAllBox) selectAllBox.checked = false;
   await renderAdmin();
 }
 function findOrderById(id){ return adminOrdersCache.find(o=>o.id===id); }
@@ -1708,6 +2090,42 @@ async function saveOrderEdit(){
   document.getElementById('orderEditModal').classList.remove('open');
   showToast('سفارش ویرایش شد ✅');
   await renderAdmin();
+}
+function printPackagingList(){
+  if(!adminFilteredOrdersCache || adminFilteredOrdersCache.length === 0){
+    showToast('سفارشی با فیلتر فعلی برای چاپ نیست');
+    return;
+  }
+  const list = [...adminFilteredOrdersCache].sort((a,b)=> new Date(a.created_at) - new Date(b.created_at));
+  const rows = list.map((o,i)=>`
+    <tr>
+      <td style="text-align:center;">${i+1}</td>
+      <td>${escapeHtml(o.name)}</td>
+      <td>${o.items.map(it=>escapeHtml(it.name)+' × '+it.qty).join('<br>')}</td>
+    </tr>`).join('');
+  const w = window.open('', '_blank');
+  w.document.write(`
+    <html dir="rtl" lang="fa"><head><meta charset="utf-8"><title>لیست بسته‌بندی</title>
+    <style>
+      @page{ size:A5; margin:10mm; }
+      body{font-family:sans-serif; padding:0; font-size:12.5px;}
+      h3{margin-bottom:4px; font-size:15px;}
+      p.meta{color:#555; font-size:11px; margin-bottom:12px;}
+      table{width:100%; border-collapse:collapse;}
+      th, td{border:1px solid #999; padding:6px 8px; font-size:12px; vertical-align:top;}
+      th{background:#eee;}
+      td:first-child, th:first-child{width:26px;}
+    </style>
+    </head><body>
+    <h3>لیست بسته‌بندی — خانه‌گرم</h3>
+    <p class="meta">تعداد سفارش: ${list.length} — تاریخ چاپ: ${new Date().toLocaleDateString('fa-IR')}</p>
+    <table>
+      <tr><th>#</th><th>نام مشتری</th><th>اقلام سفارش</th></tr>
+      ${rows}
+    </table>
+    </body></html>`);
+  w.document.close();
+  w.print();
 }
 function printOrder(id){
   const o = findOrderById(id);
@@ -1811,13 +2229,22 @@ async function renderAdminCategories(){
 async function addCategory(){
   const name = document.getElementById('cfName').value.trim();
   const emoji = document.getElementById('cfEmoji').value.trim() || '📦';
+  const fileInput = document.getElementById('cfImage');
   if(!name){ showToast('لطفا نام دسته رو وارد کنید'); return; }
   const id = 'cat' + Date.now();
   const sort_order = CATEGORIES.length ? Math.max(...CATEGORIES.map(c=>c.sort_order||0)) + 1 : 1;
-  const { error } = await sbClient.from('categories').insert({id, name, emoji, sort_order});
+  let image_url = null;
+  if(fileInput.files && fileInput.files[0]){
+    const file = await compressImage(fileInput.files[0]);
+    const path = `cat_${id}_${Date.now()}.jpg`;
+    const { error: upErr } = await sbClient.storage.from('product-images').upload(path, file, {upsert:true});
+    if(!upErr){ const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); image_url = pub.publicUrl; }
+  }
+  const { error } = await sbClient.from('categories').insert({id, name, emoji, sort_order, image_url});
   if(error){ showToast('خطا در افزودن دسته‌بندی'); return; }
   document.getElementById('cfName').value = '';
   document.getElementById('cfEmoji').value = '';
+  fileInput.value = '';
   showToast('دسته‌بندی افزوده شد ✅');
   await loadCategoriesFromDB();
   renderAdminCategories();
@@ -1829,13 +2256,23 @@ function openCategoryEdit(id){
   categoryEditId = id;
   document.getElementById('ceName').value = c.name;
   document.getElementById('ceEmoji').value = c.emoji || '';
+  document.getElementById('ceImage').value = '';
+  document.getElementById('ceCurrentImageBox').innerHTML = c.image_url ? `عکس فعلی: <img src="${c.image_url}" style="width:30px; height:30px; object-fit:cover; border-radius:6px; vertical-align:middle;">` : 'هنوز عکسی تنظیم نشده';
   document.getElementById('categoryEditModal').classList.add('open');
 }
 async function saveCategoryEdit(){
   const name = document.getElementById('ceName').value.trim();
   const emoji = document.getElementById('ceEmoji').value.trim() || '📦';
+  const fileInput = document.getElementById('ceImage');
   if(!name){ showToast('نام دسته نمی‌تونه خالی باشه'); return; }
-  const { error } = await sbClient.from('categories').update({name, emoji}).eq('id', categoryEditId);
+  const updates = {name, emoji};
+  if(fileInput.files && fileInput.files[0]){
+    const file = await compressImage(fileInput.files[0]);
+    const path = `cat_${categoryEditId}_${Date.now()}.jpg`;
+    const { error: upErr } = await sbClient.storage.from('product-images').upload(path, file, {upsert:true});
+    if(!upErr){ const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); updates.image_url = pub.publicUrl; }
+  }
+  const { error } = await sbClient.from('categories').update(updates).eq('id', categoryEditId);
   if(error){ showToast('خطا در ذخیره تغییرات'); return; }
   document.getElementById('categoryEditModal').classList.remove('open');
   showToast('دسته‌بندی ویرایش شد ✅');
@@ -1942,9 +2379,9 @@ async function saveProduct(){
 
   // upload any newly-added files, keep whatever existing images weren't removed
   const uploadedUrls = [];
-  for(const file of pfNewFiles){
-    const ext = file.name.split('.').pop();
-    const path = `${id}_${Date.now()}_${Math.floor(Math.random()*10000)}.${ext}`;
+  for(const rawFile of pfNewFiles){
+    const file = await compressImage(rawFile);
+    const path = `${id}_${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`;
     const { error: upErr } = await sbClient.storage.from('product-images').upload(path, file, {upsert:true});
     if(upErr){ showToast('خطا در آپلود یکی از عکس‌ها'); btn.disabled=false; btn.textContent='ذخیره'; return; }
     const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path);
@@ -2087,41 +2524,70 @@ async function deleteGuideSubmission(id){
 
 /* ============ TOAST ============ */
 let toastTimer;
-function showToast(msg){
+function showToast(msg, actionLabel, actionFn){
   const toast = document.getElementById('toast');
-  toast.textContent = msg;
+  toast.innerHTML = `<span>${escapeHtml(msg)}</span>`;
+  if(actionLabel && actionFn){
+    const btn = document.createElement('button');
+    btn.className = 'toast-action';
+    btn.textContent = actionLabel;
+    btn.onclick = ()=>{ toast.classList.remove('show'); actionFn(); };
+    toast.appendChild(btn);
+  }
   toast.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>toast.classList.remove('show'), 2600);
+  toastTimer = setTimeout(()=>toast.classList.remove('show'), actionLabel ? 4000 : 2600);
 }
 
 /* ============ PROVINCE/CITY + PHONE VALIDATION ============ */
-function populateProvinceList(){
-  const dl = document.getElementById('provinceList');
-  if(!dl) return;
-  dl.innerHTML = Object.keys(PROVINCE_CITIES).map(p=>`<option value="${p}">`).join('');
-}
 function onProvinceInput(){
   const province = document.getElementById('ordProvince').value.trim();
   const cityInput = document.getElementById('ordCity');
-  const cityList = document.getElementById('cityList');
   if(PROVINCE_CITIES[province]){
-    cityList.innerHTML = PROVINCE_CITIES[province].map(c=>`<option value="${c}">`).join('');
     cityInput.disabled = false;
-    cityInput.placeholder = 'شهر (جست‌وجو کنید)';
+    cityInput.placeholder = 'شهر (تایپ کنید)';
   } else {
-    cityList.innerHTML = '';
     cityInput.disabled = true;
     cityInput.value = '';
     cityInput.placeholder = 'اول استان رو انتخاب کنید';
   }
+  const dd = document.getElementById('provinceDropdown');
+  const matches = Object.keys(PROVINCE_CITIES).filter(p=>p.includes(province));
+  if(matches.length === 0){ dd.classList.remove('open'); dd.innerHTML=''; return; }
+  dd.innerHTML = matches.map(p=>`<div class="autocomplete-item" onmousedown="selectProvince('${p}')">${p}</div>`).join('');
+  dd.classList.add('open');
 }
+function selectProvince(p){
+  document.getElementById('ordProvince').value = p;
+  document.getElementById('provinceDropdown').classList.remove('open');
+  onProvinceInput();
+}
+function onCityInput(){
+  const province = document.getElementById('ordProvince').value.trim();
+  const val = document.getElementById('ordCity').value.trim();
+  const dd = document.getElementById('cityDropdown');
+  const cities = PROVINCE_CITIES[province] || [];
+  const matches = cities.filter(c=>c.includes(val));
+  if(matches.length === 0){ dd.classList.remove('open'); dd.innerHTML=''; return; }
+  dd.innerHTML = matches.map(c=>`<div class="autocomplete-item" onmousedown="selectCity('${c}')">${c}</div>`).join('');
+  dd.classList.add('open');
+}
+function selectCity(c){
+  document.getElementById('ordCity').value = c;
+  document.getElementById('cityDropdown').classList.remove('open');
+}
+document.addEventListener('click', (e)=>{
+  document.querySelectorAll('.autocomplete-list.open').forEach(dd=>{
+    if(!dd.previousElementSibling || !dd.previousElementSibling.contains(e.target)){
+      if(!dd.contains(e.target)) dd.classList.remove('open');
+    }
+  });
+});
 function isValidPhone(phone){
   return /^09[0-9]{9}$/.test(phone);
 }
 
 /* ============ INIT ============ */
-populateProvinceList();
 loadProductsFromDB().then(renderMenuCategories);
 loadCategoriesFromDB();
 if(!location.hash) location.hash = '#/';
