@@ -92,6 +92,7 @@
   .section-head h2{font-size:clamp(23px,3vw,30px); margin-bottom:10px;}
   .section-head p{color:var(--ink-soft); font-size:15px;}
   .btn-primary{background:var(--rust); color:#fff; padding:13px 26px; border-radius:100px; font-weight:700; font-size:14.5px; display:inline-block; border:none; cursor:pointer;}
+  .hero-ctas .btn-primary{background:var(--ink); box-shadow:0 10px 22px -8px rgba(59,42,30,.5);}
   .btn-ghost{border:1.5px solid var(--ink); padding:12px 22px; border-radius:100px; font-weight:600; font-size:14.5px; display:inline-block; background:none; cursor:pointer;}
   .chip{padding:8px 18px; border-radius:100px; border:1.5px solid var(--line); font-size:13.5px; font-weight:600; color:var(--ink-soft); cursor:pointer; background:var(--card); font-family:inherit;}
   .chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
@@ -338,6 +339,7 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 
@@ -430,6 +432,9 @@
         <input type="text" id="payRef" placeholder="۴ رقم آخر کارت یا کد پیگیری تراکنش" style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:14px;">
       </div>
     </div>
+    <div class="full" style="display:flex; justify-content:center; margin-top:14px;">
+      <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf"></div>
+    </div>
     <div style="display:flex; gap:10px; margin-top:18px;">
       <button class="btn-primary" id="submitOrderBtn" style="flex:1;" onclick="submitOrder()">ثبت نهایی سفارش</button>
       <button class="btn-ghost" onclick="closeCheckout()">انصراف</button>
@@ -452,12 +457,14 @@
 
 <!-- HOME -->
 <section class="page" data-route="/">
-  <div class="section-head" style="margin-top:24px;">
-    <div class="eyebrow">تازه از راه رسیده</div>
-    <h2>جدیدترین محصولات</h2>
+  <div id="newestSection">
+    <div class="section-head" style="margin-top:24px;">
+      <div class="eyebrow">تازه از راه رسیده</div>
+      <h2>جدیدترین محصولات</h2>
+    </div>
+    <div class="carousel-track" id="homeNewest" style="margin-bottom:8px;"></div>
+    <div class="carousel-dots" id="homeNewestDots" style="margin-bottom:8px;"></div>
   </div>
-  <div class="carousel-track" id="homeNewest" style="margin-bottom:8px;"></div>
-  <div class="carousel-dots" id="homeNewestDots" style="margin-bottom:8px;"></div>
 
   <div class="hero">
     <div class="hero-grid">
@@ -465,10 +472,10 @@
         <div class="eyebrow">🔥 ارسال به سراسر کشور</div>
         <h1>ماشین اصلاح و سشواری که <em>هر روزتو</em> راحت‌تر می‌کنه</h1>
         <p class="lead">محصولاتی با کیفیت مطمئن و قیمت منصفانه، به همراه راهنمای خرید و نگهداری.</p>
-        <div style="display:flex; gap:8px; margin-bottom:20px; max-width:420px;">
+        <div style="display:flex; align-items:center; gap:0; margin-bottom:20px; max-width:420px; background:var(--card); border:1px solid var(--line); border-radius:100px; padding:4px 4px 4px 20px;">
           <input type="text" id="homeSearch" placeholder="جست‌وجوی محصول..." onkeydown="if(event.key==='Enter') runHomeSearch()"
-            style="flex:1; min-width:0; border:1px solid var(--line); border-radius:100px; padding:12px 18px; font-family:inherit; font-size:14px; background:var(--card);">
-          <button class="btn-primary" style="padding:12px 20px;" onclick="runHomeSearch()">🔍</button>
+            style="flex:1; min-width:0; border:none; outline:none; background:transparent; padding:9px 0; font-family:inherit; font-size:14px;">
+          <button class="btn-primary" style="padding:10px 18px; flex-shrink:0;" onclick="runHomeSearch()">🔍</button>
         </div>
         <div class="hero-ctas" style="align-items:center;">
           <a class="btn-primary" onclick="go('/products')">خرید محصولات ←</a>
@@ -491,12 +498,14 @@
   </div>
   <div class="cat-grid" style="margin-bottom:56px;" id="homeCatGrid"></div>
 
-  <div class="section-head">
-    <div class="eyebrow">پرفروش‌ترین‌ها</div>
-    <h2>محصولات محبوب</h2>
+  <div id="featuredSection">
+    <div class="section-head">
+      <div class="eyebrow">پرفروش‌ترین‌ها</div>
+      <h2>محصولات محبوب</h2>
+    </div>
+    <div class="carousel-track" id="homeFeatured"></div>
+    <div class="carousel-dots" id="homeFeaturedDots"></div>
   </div>
-  <div class="carousel-track" id="homeFeatured"></div>
-  <div class="carousel-dots" id="homeFeaturedDots"></div>
 </section>
 
 <!-- PRODUCTS LIST -->
@@ -528,6 +537,9 @@
         <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
       </div>
       <textarea id="revComment" placeholder="نظرتون رو بنویسید..."></textarea>
+      <div class="full" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
+        <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf"></div>
+      </div>
       <button class="btn-primary full" style="grid-column:1/-1;" onclick="submitReview()">ثبت نظر</button>
     </div>
     <div id="reviewList"></div>
@@ -1082,6 +1094,18 @@ function compressImage(file, maxDim, quality){
     reader.readAsDataURL(file);
   });
 }
+async function verifyTurnstile(token){
+  if(!token) return false;
+  try{
+    const res = await fetch('https://thovhvemaidbiekagome.supabase.co/functions/v1/verify-turnstile', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({token})
+    });
+    const data = await res.json();
+    return !!data.success;
+  }catch(e){ return false; }
+}
 function escapeHtml(str){
   if(str === null || str === undefined) return '';
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -1322,12 +1346,20 @@ function carouselCardHTML(p){
 }
 function renderHome(){
   const featured = sortByStock(PRODUCTS).slice(0,6);
-  document.getElementById('homeFeatured').innerHTML = featured.map(carouselCardHTML).join('');
-  initAutoCarousel('homeFeatured', 'homeFeaturedDots');
+  const featuredSection = document.getElementById('featuredSection');
+  featuredSection.style.display = featured.length ? '' : 'none';
+  if(featured.length){
+    document.getElementById('homeFeatured').innerHTML = featured.map(carouselCardHTML).join('');
+    initAutoCarousel('homeFeatured', 'homeFeaturedDots');
+  }
 
   const newest = [...PRODUCTS].sort((a,b)=>productSortCode(b)-productSortCode(a)).slice(0,10);
-  document.getElementById('homeNewest').innerHTML = newest.map(carouselCardHTML).join('');
-  initAutoCarousel('homeNewest', 'homeNewestDots');
+  const newestSection = document.getElementById('newestSection');
+  newestSection.style.display = newest.length ? '' : 'none';
+  if(newest.length){
+    document.getElementById('homeNewest').innerHTML = newest.map(carouselCardHTML).join('');
+    initAutoCarousel('homeNewest', 'homeNewestDots');
+  }
 
   document.getElementById('homeCatGrid').innerHTML = CATEGORIES.map(c=>`
     <div class="cat-card" onclick="go('/products?cat=${c.id}')">
@@ -1360,7 +1392,7 @@ document.addEventListener('visibilitychange', ()=>{
 function initAutoCarousel(trackId, dotsId){
   const track = document.getElementById(trackId);
   if(!track) return;
-  if(!carouselState[trackId]) carouselState[trackId] = { idx:0, paused:false, timer:null, resumeT:null, observer:null, tabHidden:document.hidden };
+  if(!carouselState[trackId]) carouselState[trackId] = { idx:0, paused:false, timer:null, resumeT:null, observer:null, tabHidden:document.hidden, offScreen:false };
   const st = carouselState[trackId];
   clearInterval(st.timer);
   if(st.observer) st.observer.disconnect();
@@ -1395,7 +1427,7 @@ function initAutoCarousel(trackId, dotsId){
     track.scrollTo({left: track.scrollLeft + delta, behavior:'smooth'});
   }
   function tick(){
-    if(st.paused || st.tabHidden) return;
+    if(st.paused || st.tabHidden || st.offScreen) return;
     st.idx = (st.idx + 1) % items.length;
     scrollTrackToItem(items[st.idx]);
   }
@@ -1411,6 +1443,18 @@ function initAutoCarousel(trackId, dotsId){
     track.addEventListener('touchstart', pauseAWhile, {passive:true});
     track.addEventListener('mousedown', pauseAWhile);
     track.addEventListener('wheel', pauseAWhile, {passive:true});
+
+    // توقف چرخش وقتی کاروسل کاملاً از دید مشتری خارج بشه (اسکرول عمودی صفحه)
+    const viewportObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{ st.offScreen = !entry.isIntersecting; });
+    }, {threshold:0});
+    viewportObserver.observe(track);
+
+    // نشونه‌ی کوچیک اولیه: یه تکون خفیف که مشتری بفهمه قابل اسکرول کردنه
+    setTimeout(()=>{
+      track.scrollBy({left:-24, behavior:'smooth'});
+      setTimeout(()=> track.scrollBy({left:24, behavior:'smooth'}), 380);
+    }, 900);
   }
 }
 
@@ -1573,6 +1617,15 @@ async function submitReview(){
   const comment = document.getElementById('revComment').value.trim();
   if(!phone || !name || !comment || starVal === 0){ showToast('لطفا نام، شماره تلفن، امتیاز و نظر رو کامل کنید'); return; }
   if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
+  const tsInput = document.querySelector('#reviewTurnstileWidget input[name="cf-turnstile-response"]');
+  const tsToken = tsInput ? tsInput.value : '';
+  if(!tsToken){ showToast('لطفا تیک تایید امنیتی رو کامل کنید'); return; }
+  const tsOk = await verifyTurnstile(tsToken);
+  if(!tsOk){
+    showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
+    if(window.turnstile) turnstile.reset(document.getElementById('reviewTurnstileWidget'));
+    return;
+  }
   const { data, error } = await sbClient.rpc('submit_review', {
     p_product_id: pid, p_phone: phone, p_name: name, p_rating: starVal, p_comment: comment
   });
@@ -1583,6 +1636,7 @@ async function submitReview(){
   document.getElementById('revComment').value='';
   starVal = 0;
   document.querySelectorAll('#starPick span').forEach(s=>s.classList.remove('on'));
+  if(window.turnstile) turnstile.reset(document.getElementById('reviewTurnstileWidget'));
   showToast('نظر شما ثبت شد و بعد از بررسی نمایش داده می‌شه ✅');
 }
 
@@ -1764,6 +1818,19 @@ async function submitOrder(){
 
   const shipping = shipEl.value;
 
+  const tsInput = document.querySelector('#checkoutTurnstileWidget input[name="cf-turnstile-response"]');
+  const tsToken = tsInput ? tsInput.value : '';
+  if(!tsToken){
+    showToast('لطفا تیک تایید امنیتی رو کامل کنید');
+    return;
+  }
+  const tsOk = await verifyTurnstile(tsToken);
+  if(!tsOk){
+    showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
+    if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
+    return;
+  }
+
   const items = cart.map(i=>{ const p=findProduct(i.id); return {id:i.id, code:p?(p.code||p.id):i.id, name:p?p.name:i.id, qty:i.qty, price:p?p.price:0}; });
   const subtotal = items.reduce((s,i)=>s + i.price*i.qty, 0);
 
@@ -1810,6 +1877,7 @@ async function submitOrder(){
 
   document.getElementById('confirmCode').textContent = data.order_code;
   document.getElementById('confirmModal').classList.add('open');
+  if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
 
   await loadProductsFromDB();
 }
@@ -1909,6 +1977,7 @@ async function renderDashboard(){
   const { data: orders } = await sbClient.from('orders').select('*');
   const { data: products } = await sbClient.from('products').select('*');
   const { data: customers } = await sbClient.from('customers').select('*');
+  const { data: visits } = await sbClient.from('site_visits').select('*');
 
   const todayStr = new Date().toDateString();
   const now = new Date();
@@ -1921,12 +1990,24 @@ async function renderDashboard(){
   const outStock = (products||[]).filter(p=>p.stock<=0).length;
   const newCustomersToday = (customers||[]).filter(c => new Date(c.created_at).toDateString() === todayStr).length;
 
+  const todayISO = new Date().toISOString().slice(0,10);
+  const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(sevenDaysAgo.getDate()-6);
+  const visitsToday = (visits||[]).find(v=>v.visit_date === todayISO)?.count || 0;
+  const visitsWeek = (visits||[]).filter(v=> new Date(v.visit_date) >= sevenDaysAgo).reduce((s,v)=>s+v.count,0);
+  const visitsMonth = (visits||[]).filter(v=>{
+    const d = new Date(v.visit_date);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).reduce((s,v)=>s+v.count,0);
+
   const cards = [
     {label:'سفارش‌های امروز', val: toFa(ordersToday), color:'#C1442E'},
     {label:'فروش ماه جاری', val: formatToman(salesThisMonth), color:'#3B7A57'},
     {label:'محصولات موجود', val: toFa(inStock), color:'#2C6E8F'},
     {label:'محصولات ناموجود', val: toFa(outStock), color:'#B15C1E'},
     {label:'مشتریان جدید امروز', val: toFa(newCustomersToday), color:'#7A5AC1'},
+    {label:'بازدید امروز', val: toFa(visitsToday), color:'#1F8A70'},
+    {label:'بازدید ۷ روز اخیر', val: toFa(visitsWeek), color:'#1F8A70'},
+    {label:'بازدید ماه جاری', val: toFa(visitsMonth), color:'#1F8A70'},
   ];
   const lowStockItems = (products||[]).filter(p=>p.stock>0 && p.stock<=3).sort((a,b)=>a.stock-b.stock);
   const outOfStockItems = (products||[]).filter(p=>p.stock<=0);
@@ -2700,6 +2781,7 @@ function isValidPhone(phone){
 /* ============ INIT ============ */
 loadProductsFromDB().then(renderMenuCategories);
 loadCategoriesFromDB();
+sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{});
 if(!location.hash) location.hash = '#/';
 render();
 </script>
