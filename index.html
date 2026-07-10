@@ -1594,7 +1594,7 @@ async function renderReviews(pid){
     <div class="review-item">
       <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
       <p>${escapeHtml(r.comment)}</p>
-      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${maskPhone(r.phone)}</div>
+      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${maskPhone(escapeHtml(r.phone))}</div>
     </div>`).join('');
 }
 function maskPhone(phone){
@@ -2606,7 +2606,7 @@ async function renderAdminReviews(){
   box.innerHTML = visible.map(r=>`
     <div class="admin-order">
       <div class="row"><b>${escapeHtml(r.name)||'بدون نام'}</b><span class="status-badge">${r.status==='approved'?'تاییدشده':'در انتظار بررسی'}</span></div>
-      <div class="row"><span>📞 ${r.phone}</span><span>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
+      <div class="row"><span>📞 ${escapeHtml(r.phone)}</span><span>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
       <textarea id="revEdit-${r.id}" style="width:100%; margin:8px 0; border:1px solid var(--line); border-radius:8px; padding:8px; font-family:inherit; font-size:13px;">${escapeHtml(r.comment)}</textarea>
       <div class="btns">
         ${r.status!=='approved' ? `<button onclick="approveReview('${r.id}')">✅ تایید</button>` : ''}
