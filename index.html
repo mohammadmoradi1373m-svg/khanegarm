@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>خانه‌گرم | ماشین اصلاح و سشوار</title>
-<meta name="description" content="ماشین اصلاح و سشوار با کیفیت مطمئن، به همراه راهنمای خرید و نگهداری.">
-<meta property="og:title" content="خانه‌گرم | ماشین اصلاح و سشوار">
-<meta property="og:description" content="ماشین اصلاح و سشوار با کیفیت مطمئن و پشتیبانی واقعی، ارسال به سراسر کشور.">
+<title>خانه‌گرم | فروشگاه لوازم خانگی و شخصی</title>
+<meta name="description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی.">
+<meta property="og:title" content="خانه‌گرم | فروشگاه لوازم خانگی و شخصی">
+<meta property="og:description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی، ارسال به سراسر کشور.">
 <meta property="og:image" content="https://mohammadmoradi1373m-svg.github.io/khanegarm/og-image.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
@@ -245,6 +245,8 @@
   .field-error{border-color:var(--rust) !important; box-shadow:0 0 0 2px rgba(193,68,46,.16) !important;}
   .ship-options.field-error{border:1.5px solid var(--rust); border-radius:12px; padding:8px; box-shadow:none !important;}
   .field-error-label{display:block; color:var(--rust); font-size:11.5px; font-weight:700; margin:-6px 0 4px;}
+  .field-label{display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:4px;}
+  .field-label .req{color:var(--rust); font-weight:800;}
   .ship-opt input{accent-color:var(--rust);}
   .ship-opt.checked{border-color:var(--rust); background:var(--bg-alt);}
 
@@ -407,7 +409,7 @@
   <div class="cart-foot" id="cartFoot" style="display:none;">
     <div class="cart-subtotal"><span>جمع کل</span><span class="val" id="cartSubtotal" style="font-family:'Vazirmatn'; font-weight:800; font-size:18px;">۰ تومان</span></div>
     <button class="cart-checkout" onclick="openCheckout()">ثبت سفارش</button>
-    <p class="cart-note">هزینه ارسال پس‌کرایه‌ست و هنگام تحویل پرداخت می‌شود.</p>
+    <p class="cart-note">هزینه بسته‌بندی و ارسال رو در مرحله‌ی بعد انتخاب می‌کنید.</p>
   </div>
 </aside>
 
@@ -415,19 +417,33 @@
   <div class="modal-box">
     <h3>تکمیل سفارش</h3>
     <div class="form-grid">
-      <input type="text" id="ordName" placeholder="نام و نام خانوادگی">
-      <input type="tel" id="ordPhone" placeholder="شماره تلفن (۰۹xxxxxxxxx)" maxlength="11">
+      <div>
+        <span class="field-label">نام و نام خانوادگی <span class="req">*</span></span>
+        <input type="text" id="ordName" placeholder="مثلاً علی محمدی">
+      </div>
+      <div>
+        <span class="field-label">شماره تلفن <span class="req">*</span></span>
+        <input type="tel" id="ordPhone" placeholder="۰۹xxxxxxxxx" maxlength="11">
+      </div>
       <div class="full" style="position:relative;">
-        <input type="text" id="ordProvince" placeholder="استان (تایپ کنید)" class="full" autocomplete="off" oninput="onProvinceInput()" onfocus="onProvinceInput()">
+        <span class="field-label">استان <span class="req">*</span></span>
+        <input type="text" id="ordProvince" placeholder="تایپ کنید" class="full" autocomplete="off" oninput="onProvinceInput()" onfocus="onProvinceInput()">
         <div class="autocomplete-list" id="provinceDropdown"></div>
       </div>
       <div class="full" style="position:relative;">
+        <span class="field-label">شهر <span class="req">*</span></span>
         <input type="text" id="ordCity" placeholder="اول استان رو انتخاب کنید" class="full" autocomplete="off" disabled oninput="onCityInput()" onfocus="onCityInput()">
         <div class="autocomplete-list" id="cityDropdown"></div>
       </div>
-      <textarea id="ordAddress" placeholder="آدرس دقیق (خیابان، کوچه، پلاک)"></textarea>
-      <input type="text" id="ordPostal" placeholder="کد پستی (۱۰ رقم)" maxlength="10" inputmode="numeric" class="full">
-      <div class="full" style="font-size:13.5px; font-weight:700; margin-top:4px;">روش ارسال (پس‌کرایه):</div>
+      <div class="full">
+        <span class="field-label">آدرس دقیق <span class="req">*</span></span>
+        <textarea id="ordAddress" placeholder="خیابان، کوچه، پلاک" class="full"></textarea>
+      </div>
+      <div class="full">
+        <span class="field-label">کد پستی <span class="req">*</span></span>
+        <input type="text" id="ordPostal" placeholder="۱۰ رقم" maxlength="10" inputmode="numeric" class="full">
+      </div>
+      <div class="full" style="font-size:13.5px; font-weight:700; margin-top:4px;">روش ارسال <span class="req">*</span></div>
       <div class="ship-options" id="shipOptions">
         <label class="ship-opt"><input type="radio" name="ship" value="پست"> پست</label>
         <label class="ship-opt"><input type="radio" name="ship" value="دکاپست"> دکاپست</label>
@@ -435,14 +451,24 @@
         <label class="ship-opt"><input type="radio" name="ship" value="تیپاکس"> تیپاکس</label>
         <label class="ship-opt"><input type="radio" name="ship" value="چاپار"> چاپار</label>
       </div>
-      <div class="full" style="font-size:13.5px; font-weight:700; margin-top:10px;">روش پرداخت:</div>
+      <div class="full" style="font-size:13.5px; font-weight:700; margin-top:10px;">هزینه بسته‌بندی و ارسال <span class="req">*</span></div>
+      <div class="ship-options" id="packagingOptions">
+        <label class="ship-opt"><input type="radio" name="packaging" value="prepaid" onchange="onPackagingChange()"> پرداخت بسته‌بندی و ارسال (۳۰۰,۰۰۰ تومان) همراه سفارش</label>
+        <label class="ship-opt"><input type="radio" name="packaging" value="postpay" onchange="onPackagingChange()"> پس‌کرایه (هزینه واقعی ارسال رو موقع تحویل بسته به مأمور پست/باربری می‌دید)</label>
+      </div>
+      <div class="full" id="checkoutTotalsBox" style="display:none; font-size:13.5px; background:var(--bg-alt); border-radius:10px; padding:12px 14px; margin-top:6px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>جمع محصولات</span><span id="ctProductsVal"></span></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px;" id="ctPackagingRow"><span>هزینه بسته‌بندی و ارسال</span><span id="ctPackagingVal"></span></div>
+        <div style="display:flex; justify-content:space-between; font-weight:800; border-top:1px dashed var(--line); padding-top:6px;"><span>مبلغ قابل پرداخت</span><span id="ctTotalVal"></span></div>
+      </div>
+      <div class="full" style="font-size:13.5px; font-weight:700; margin-top:10px;">روش پرداخت <span class="req">*</span></div>
       <div class="ship-options" id="payOptions">
-        <label class="ship-opt"><input type="radio" name="pay" value="cod" checked onchange="onPayMethodChange()"> پرداخت هنگام تحویل (نقدی به مأمور پست)</label>
-        <label class="ship-opt"><input type="radio" name="pay" value="card" onchange="onPayMethodChange()"> کارت به کارت</label>
+        <label class="ship-opt"><input type="radio" name="pay" value="card" checked onchange="onPayMethodChange()"> کارت به کارت</label>
         <label class="ship-opt" style="opacity:.55;"><input type="radio" name="pay" value="online" disabled> پرداخت آنلاین (به‌زودی)</label>
       </div>
-      <div id="cardPayBox" class="full" style="display:none; background:var(--bg-alt); border-radius:12px; padding:14px; font-size:13.5px;">
-        <p style="margin-bottom:8px;">لطفاً مبلغ سفارش رو به شماره کارت زیر واریز کنید:</p>
+      <div id="cardPayBox" class="full" style="display:block; background:var(--bg-alt); border-radius:12px; padding:14px; font-size:13.5px;">
+        <p style="margin-bottom:8px;">لطفاً مبلغ زیر رو به شماره کارت زیر واریز کنید:</p>
+        <p id="cardPayAmount" style="text-align:center; font-weight:800; font-size:15px; color:var(--rust); margin-bottom:8px;"></p>
         <p style="font-family:'Vazirmatn'; font-weight:800; font-size:16px; direction:ltr; text-align:center; margin-bottom:4px;">6219-8619-2328-5364</p>
         <p style="text-align:center; color:var(--ink-soft); margin-bottom:12px;">به نام محمد جلیل مرادی</p>
         <input type="text" id="payRef" placeholder="۴ رقم آخر کارت یا کد پیگیری تراکنش" style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:14px;">
@@ -500,7 +526,7 @@
         <div class="trust-row" id="whyUsRow">
           <span><i class="dot"></i> پشتیبانی تلفنی</span>
           <span><i class="dot"></i> بازگشت با احترام در صورت مشکل</span>
-          <span><i class="dot"></i> ارسال پس‌کرایه</span>
+          <span><i class="dot"></i> بسته‌بندی ثابت یا پس‌کرایه، به انتخاب شما</span>
           <span id="deliveredCountRow" style="display:none;"><i class="dot"></i> <span id="deliveredCountVal"></span></span>
         </div>
       </div>
@@ -668,7 +694,7 @@
     <h2>ما کی هستیم؟</h2>
   </div>
   <div style="max-width:640px; margin:0 auto; text-align:center; color:var(--ink-soft); font-size:15px;">
-    <p style="margin-bottom:14px;">خانه‌گرم با هدف عرضه‌ی ماشین اصلاح و سشوار با کیفیت مطمئن و پشتیبانی واقعی راه‌اندازی شده. تمرکز ما روی انتخاب دقیق محصول و توضیح شفاف‌ه، نه فقط فروش.</p>
+    <p style="margin-bottom:14px;">خانه‌گرم با هدف عرضه‌ی لوازم خانگی و شخصی با کیفیت مطمئن و پشتیبانی واقعی راه‌اندازی شده. تمرکز ما روی انتخاب دقیق محصول و توضیح شفاف‌ه، نه فقط فروش.</p>
     <p>محصولات ما مستقیم از فارس، کازرون ارسال می‌شن و تیم پشتیبانی همیشه پاسخگوی سوالات شماست.</p>
   </div>
 </section>
@@ -682,7 +708,6 @@
   <div class="info-grid" style="max-width:640px; margin:0 auto;">
     <div class="info-card"><div class="ic">📞</div><h4>تلفن پشتیبانی</h4><p dir="ltr" style="text-align:right;">۰۹۹۹۹۴۳۹۵۳۴</p></div>
     <div class="info-card"><div class="ic">📍</div><h4>آدرس</h4><p>فارس، کازرون</p></div>
-    <div class="info-card"><div class="ic">✉️</div><h4>ایمیل</h4><p>info@khanegarm.ir</p></div>
     <div class="info-card"><div class="ic">💬</div><h4>چت آنلاین</h4><p>از دکمه‌ی گفتگو پایین صفحه استفاده کنید</p></div>
   </div>
 </section>
@@ -694,13 +719,13 @@
   </div>
   <div style="max-width:640px; margin:0 auto; color:var(--ink-soft); font-size:14.5px; line-height:2;">
     <h3 style="color:var(--ink); font-size:16px; margin-bottom:8px;">شرایط بازگشت کالا</h3>
-    <p style="margin-bottom:20px;">در صورت بروز هرگونه مشکل، بسته با کمال احترام پس گرفته می‌شود. کافیه با شماره پشتیبانی (۰۹۹۹۹۴۳۹۵۳۴) تماس بگیرید تا هماهنگ بشه.</p>
+    <p style="margin-bottom:20px;">در صورت بروز هرگونه مشکل، بسته با کمال احترام پس گرفته می‌شود. کافیه از طریق صفحه‌ی «تماس با ما» با پشتیبانی هماهنگ کنید.</p>
     <h3 style="color:var(--ink); font-size:16px; margin-bottom:8px;">هزینه و روش ارسال</h3>
-    <p style="margin-bottom:20px;">هزینه ارسال به‌صورت پس‌کرایه (پرداخت هنگام تحویل توسط شرکت پستی/باربری) محاسبه می‌شود. هزینه بسته‌بندی از قبل در قیمت محصول لحاظ شده است.</p>
+    <p style="margin-bottom:20px;">هنگام تکمیل سفارش می‌تونید یکی از این دو روش رو برای هزینه‌ی بسته‌بندی و ارسال انتخاب کنید: پرداخت هزینه‌ی ثابت بسته‌بندی و ارسال به همراه مبلغ سفارش، یا پس‌کرایه (پرداخت هزینه‌ی واقعی ارسال توسط خودتان هنگام تحویل بسته به مأمور پست/باربری).</p>
     <h3 style="color:var(--ink); font-size:16px; margin-bottom:8px;">حریم خصوصی اطلاعات مشتری</h3>
     <p style="margin-bottom:20px;">اطلاعاتی که هنگام ثبت سفارش (نام، شماره تلفن، آدرس) وارد می‌کنید فقط برای پردازش و ارسال سفارش شما استفاده می‌شود و در اختیار هیچ شخص یا سازمان ثالثی قرار نمی‌گیرد.</p>
     <h3 style="color:var(--ink); font-size:16px; margin-bottom:8px;">پرداخت</h3>
-    <p>پرداخت می‌تواند به‌صورت نقدی هنگام تحویل یا کارت‌به‌کارت انجام شود. در حالت کارت‌به‌کارت، سفارش پس از تایید واریز توسط تیم خانه‌گرم وارد مرحله‌ی پردازش می‌شود.</p>
+    <p>پرداخت به‌صورت کارت‌به‌کارت انجام می‌شود. سفارش پس از تایید واریز توسط تیم خانه‌گرم وارد مرحله‌ی پردازش می‌شود.</p>
   </div>
 </section>
 
@@ -780,7 +805,7 @@
         <input type="number" id="filterPriceMax" placeholder="تا مبلغ" onchange="filterAdminOrders()" style="width:110px; border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
         <select id="filterPayment" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px;">
           <option value="">همه‌ی پرداخت‌ها</option>
-          <option value="paid_cod">پس‌کرایه/پرداخت هنگام تحویل</option>
+          <option value="paid_cod">پرداخت هنگام تحویل (سفارش‌های قدیمی)</option>
           <option value="awaiting_confirmation">کارت‌به‌کارت — در انتظار تایید</option>
           <option value="confirmed">کارت‌به‌کارت — تایید شده</option>
         </select>
@@ -947,13 +972,13 @@
 <footer>
   <div class="wrap">
     <div class="trust-bar">
-      <div class="trust-item"><div class="trust-ic">🚚</div><div><h5>ارسال به سراسر کشور</h5><span>پس‌کرایه، تحویل توسط پست/باربری</span></div></div>
+      <div class="trust-item"><div class="trust-ic">🚚</div><div><h5>ارسال به سراسر کشور</h5><span>بسته‌بندی ثابت یا پس‌کرایه</span></div></div>
       <div class="trust-item"><div class="trust-ic">✅</div><div><h5>کیفیت مطمئن</h5><span>محصولات بررسی و تاییدشده</span></div></div>
       <div class="trust-item"><div class="trust-ic">📞</div><div><h5>پشتیبانی واقعی</h5><span>پاسخگو تلفنی و واتساپ</span></div></div>
       <div class="trust-item"><div class="trust-ic">🔄</div><div><h5>بازگشت با احترام</h5><span>در صورت بروز هرگونه مشکل</span></div></div>
     </div>
     <div class="foot-grid">
-      <div><div class="logo" style="margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C1442E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>خانه<span>گرم</span></div><p style="color:var(--ink-soft); font-size:13px;">ماشین اصلاح و سشوار، با راهنمای خرید و نگهداری.</p></div>
+      <div><div class="logo" style="margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C1442E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>خانه<span>گرم</span></div><p style="color:var(--ink-soft); font-size:13px;">لوازم خانگی و شخصی، با راهنمای خرید و نگهداری.</p></div>
       <div><h5>دسترسی سریع</h5><ul>
         <li><a onclick="go('/products')" style="cursor:pointer;">فروشگاه</a></li>
         <li><a onclick="go('/guides')" style="cursor:pointer;">یادداشت‌ها</a></li>
@@ -1012,7 +1037,7 @@ const PROVINCE_CITIES = {
 };
 
 const FAQS = [
-  {q:'هزینه ارسال چطور محاسبه می‌شه؟', a:'هزینه ارسال به‌صورت پس‌کرایه است، یعنی هنگام تحویل بسته توسط شرکت پستی/باربری از شما دریافت می‌شود. هزینه بسته‌بندی از قبل در قیمت محصول لحاظ شده.'},
+  {q:'هزینه ارسال چطور محاسبه می‌شه؟', a:'موقع تکمیل سفارش می‌تونید یکی از این دو حالت رو انتخاب کنید: پرداخت هزینه‌ی ثابت بسته‌بندی و ارسال (۳۰۰,۰۰۰ تومان) همراه با مبلغ سفارش، یا پس‌کرایه (پرداخت هزینه‌ی واقعی ارسال هنگام تحویل بسته به مأمور پست/باربری).'},
   {q:'چقدر طول می‌کشه سفارشم برسه؟', a:'بسته به روش ارسال انتخابی (پست، دکاپست، ماهکس، تیپاکس یا چاپار) معمولاً بین ۲ تا ۵ روز کاری طول می‌کشد.'},
   {q:'اگه از محصول راضی نبودم چیکار کنم؟', a:'در صورت بروز هرگونه مشکل، بسته با کمال احترام پس گرفته می‌شود. کافیه با شماره پشتیبانی تماس بگیرید.'},
   {q:'چطور می‌تونم سفارشمو پیگیری کنم؟', a:'از منوی «پیگیری سفارش» شماره تلفنی که هنگام ثبت سفارش وارد کردید رو وارد کنید تا مرحله‌ی فعلی سفارشتون رو ببینید.'},
@@ -1137,6 +1162,11 @@ async function verifyTurnstile(token){
 function escapeHtml(str){
   if(str === null || str === undefined) return '';
   return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function csvCell(val){
+  let s = String(val ?? '');
+  if(/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return `"${s.replace(/"/g,'""')}"`;
 }
 
 /* ============ JALALI CALENDAR ============ */
@@ -1773,22 +1803,55 @@ function bumpCartCount(){
 }
 
 /* ============ CHECKOUT ============ */
+const PACKAGING_FEE = 300000;
+function computeCheckoutTotals(){
+  const productsTotal = cart.reduce((s,i)=>{ const p=findProduct(i.id); return s + (p?p.price*i.qty:0); },0);
+  const packagingEl = document.querySelector('input[name="packaging"]:checked');
+  const packagingChoice = packagingEl ? packagingEl.value : null;
+  const packagingFee = packagingChoice === 'prepaid' ? PACKAGING_FEE : 0;
+  return { productsTotal, packagingChoice, packagingFee, grandTotal: productsTotal + packagingFee };
+}
+function renderCheckoutTotals(){
+  const t = computeCheckoutTotals();
+  const box = document.getElementById('checkoutTotalsBox');
+  document.getElementById('ctProductsVal').textContent = formatToman(t.productsTotal);
+  const packagingRow = document.getElementById('ctPackagingRow');
+  if(t.packagingChoice === 'postpay'){
+    document.getElementById('ctPackagingVal').textContent = 'پس‌کرایه (نزد مأمور پست)';
+  } else {
+    document.getElementById('ctPackagingVal').textContent = t.packagingChoice === 'prepaid' ? formatToman(t.packagingFee) : '—';
+  }
+  document.getElementById('ctTotalVal').textContent = formatToman(t.grandTotal);
+  box.style.display = t.packagingChoice ? 'block' : 'none';
+  const amountEl = document.getElementById('cardPayAmount');
+  if(amountEl) amountEl.textContent = t.packagingChoice ? `مبلغ قابل پرداخت: ${formatToman(t.grandTotal)}` : '';
+}
+function onPackagingChange(){
+  document.getElementById('packagingOptions').classList.remove('field-error');
+  renderCheckoutTotals();
+}
 function openCheckout(){
   if(cart.length===0){ showToast('سبد خرید خالیه'); return; }
   closeCart();
+  onPayMethodChange();
+  renderCheckoutTotals();
   document.getElementById('checkoutModal').classList.add('open');
 }
 function closeCheckout(){ document.getElementById('checkoutModal').classList.remove('open'); }
 document.getElementById('shipOptions').addEventListener('change', ()=>{
-  document.querySelectorAll('.ship-opt').forEach(o=>o.classList.toggle('checked', o.querySelector('input').checked));
+  document.querySelectorAll('#shipOptions .ship-opt').forEach(o=>o.classList.toggle('checked', o.querySelector('input').checked));
   document.getElementById('shipOptions').classList.remove('field-error');
+});
+document.getElementById('packagingOptions').addEventListener('change', ()=>{
+  document.querySelectorAll('#packagingOptions .ship-opt').forEach(o=>o.classList.toggle('checked', o.querySelector('input').checked));
 });
 ['ordName','ordPhone','ordProvince','ordCity','ordAddress','ordPostal','payRef'].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener('input', ()=> el.classList.remove('field-error'));
 });
 function onPayMethodChange(){
-  const method = document.querySelector('input[name="pay"]:checked').value;
+  const payEl = document.querySelector('input[name="pay"]:checked');
+  const method = payEl ? payEl.value : 'card';
   document.getElementById('cardPayBox').style.display = method === 'card' ? 'block' : 'none';
 }
 async function submitOrder(){
@@ -1799,6 +1862,7 @@ async function submitOrder(){
   const addressEl = document.getElementById('ordAddress');
   const postalEl = document.getElementById('ordPostal');
   const shipBox = document.getElementById('shipOptions');
+  const packagingBox = document.getElementById('packagingOptions');
   const payRefEl = document.getElementById('payRef');
 
   const name = nameEl.value.trim();
@@ -1808,10 +1872,12 @@ async function submitOrder(){
   const address = addressEl.value.trim();
   const postalCode = postalEl.value.trim();
   const shipEl = document.querySelector('input[name="ship"]:checked');
+  const packagingEl = document.querySelector('input[name="packaging"]:checked');
   const payEl = document.querySelector('input[name="pay"]:checked');
 
   [nameEl, phoneEl, provinceEl, cityEl, addressEl, postalEl, payRefEl].forEach(el=>el.classList.remove('field-error'));
   shipBox.classList.remove('field-error');
+  packagingBox.classList.remove('field-error');
 
   let firstInvalid = null;
   const flag = (el, bad)=>{ if(bad){ el.classList.add('field-error'); if(!firstInvalid) firstInvalid = el; } };
@@ -1823,8 +1889,9 @@ async function submitOrder(){
   flag(addressEl, !address || address.length < 15);
   flag(postalEl, !/^[0-9]{10}$/.test(postalCode));
   if(!shipEl){ shipBox.classList.add('field-error'); if(!firstInvalid) firstInvalid = shipBox; }
+  if(!packagingEl){ packagingBox.classList.add('field-error'); if(!firstInvalid) firstInvalid = packagingBox; }
 
-  const paymentMethod = payEl ? payEl.value : 'cod';
+  const paymentMethod = payEl ? payEl.value : 'card';
   let paymentRef = null;
   if(paymentMethod === 'card'){
     paymentRef = payRefEl.value.trim();
@@ -1861,6 +1928,8 @@ async function submitOrder(){
 
   const items = cart.map(i=>{ const p=findProduct(i.id); return {id:i.id, code:p?(p.code||p.id):i.id, name:p?p.name:i.id, qty:i.qty, price:p?p.price:0}; });
   const subtotal = items.reduce((s,i)=>s + i.price*i.qty, 0);
+  const packagingOption = packagingEl.value;
+  const packagingFee = packagingOption === 'prepaid' ? PACKAGING_FEE : 0;
 
   const btn = document.getElementById('submitOrderBtn');
   btn.disabled = true;
@@ -1869,7 +1938,8 @@ async function submitOrder(){
   const { data, error } = await sbClient.rpc('create_order', {
     p_name: name, p_phone: phone, p_address: address, p_shipping: shipping,
     p_items: items, p_subtotal: subtotal, p_payment_method: paymentMethod, p_payment_ref: paymentRef,
-    p_province: province, p_city: city, p_postal_code: postalCode
+    p_province: province, p_city: city, p_postal_code: postalCode,
+    p_packaging_option: packagingOption, p_packaging_fee: packagingFee
   });
 
   btn.disabled = false;
@@ -1899,9 +1969,12 @@ async function submitOrder(){
   document.getElementById('ordAddress').value='';
   document.getElementById('ordPostal').value='';
   document.querySelectorAll('input[name="ship"]').forEach(i=>i.checked=false);
+  document.querySelectorAll('input[name="packaging"]').forEach(i=>i.checked=false);
+  document.querySelectorAll('#shipOptions .ship-opt, #packagingOptions .ship-opt').forEach(o=>o.classList.remove('checked'));
   document.getElementById('payRef').value='';
-  document.querySelector('input[name="pay"][value="cod"]').checked = true;
-  document.getElementById('cardPayBox').style.display = 'none';
+  document.querySelector('input[name="pay"][value="card"]').checked = true;
+  document.getElementById('cardPayBox').style.display = 'block';
+  document.getElementById('checkoutTotalsBox').style.display = 'none';
 
   document.getElementById('confirmCode').textContent = data.order_code;
   document.getElementById('confirmModal').classList.add('open');
@@ -1914,6 +1987,7 @@ async function submitOrder(){
 const STAGE_NAMES = ['در حال بسته‌بندی','تحویل داده‌شده به پست/باربری','در حال ارسال'];
 const PAY_LABELS = { cod:'پرداخت هنگام تحویل', card:'کارت به کارت', online:'پرداخت آنلاین' };
 const PAY_STATUS_LABELS = { paid_cod:'پرداخت هنگام تحویل', awaiting_confirmation:'در انتظار تایید واریز', confirmed:'پرداخت تایید شد' };
+const PACKAGING_LABELS = { prepaid:'پیش‌پرداخت بسته‌بندی/ارسال', postpay:'پس‌کرایه' };
 async function trackOrder(){
   const phone = document.getElementById('trackPhone').value.trim();
   const result = document.getElementById('trackResult');
@@ -2081,13 +2155,13 @@ function downloadFullBackup(){
 
 function exportOrdersCSV(){
   if(adminOrdersCache.length === 0){ showToast('سفارشی برای خروجی گرفتن نیست'); return; }
-  const header = ['کد سفارش','نام','تلفن','آدرس','کد پستی','روش ارسال','وضعیت','پرداخت','کد رهگیری','جمع کل','اقلام','تاریخ'];
+  const header = ['کد سفارش','نام','تلفن','آدرس','کد پستی','روش ارسال','بسته‌بندی/ارسال','هزینه بسته‌بندی','وضعیت','پرداخت','کد رهگیری','جمع محصولات','جمع نهایی','اقلام','تاریخ'];
   const rows = adminOrdersCache.map(o=>[
-    o.order_code, o.name, o.phone, o.address, o.postal_code||'', o.shipping, STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)],
-    PAY_STATUS_LABELS[o.payment_status]||o.payment_status, o.tracking_code||'', o.subtotal,
+    o.order_code, o.name, o.phone, o.address, o.postal_code||'', o.shipping, PACKAGING_LABELS[o.packaging_option]||o.packaging_option||'', o.packaging_fee||0, STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)],
+    PAY_STATUS_LABELS[o.payment_status]||o.payment_status, o.tracking_code||'', o.subtotal, (o.subtotal||0)+(o.packaging_fee||0),
     o.items.map(i=>`${i.name} x${i.qty}`).join(' | '), new Date(o.created_at).toLocaleDateString('fa-IR')
   ]);
-  let csv = '\uFEFF' + header.join(',') + '\n' + rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  let csv = '\uFEFF' + header.join(',') + '\n' + rows.map(r=>r.map(csvCell).join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -2153,7 +2227,7 @@ async function downloadSalesReport(){
   if(rows.length === 0){ showToast('در این بازه، فروشی برای محصولات انتخاب‌شده ثبت نشده'); return; }
 
   const header = ['نام محصول','تعداد فروش‌رفته','جمع مبلغ فروش (تومان)'];
-  let csv = '\uFEFF' + header.join(',') + '\n' + rows.map(r=>[`"${String(r.name).replace(/"/g,'""')}"`, r.qty, r.total].join(',')).join('\n');
+  let csv = '\uFEFF' + header.join(',') + '\n' + rows.map(r=>[csvCell(r.name), r.qty, r.total].join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -2201,7 +2275,9 @@ function filterAdminOrders(){
       <div class="row"><span>📍 ${o.province?escapeHtml(o.province)+'، ':''}${o.city?escapeHtml(o.city)+' — ':''}${escapeHtml(o.address)}</span></div>
       ${o.postal_code ? `<div class="row" style="font-size:12px; color:var(--ink-soft);"><span>📮 کد پستی: ${escapeHtml(o.postal_code)}</span></div>` : ''}
       <div class="items">${o.items.map(i=>`${escapeHtml(i.name)} × ${toFa(i.qty)}`).join('، ')}</div>
-      <div class="row"><span>جمع کل</span><b>${formatToman(o.subtotal)}</b></div>
+      <div class="row"><span>📦 ${PACKAGING_LABELS[o.packaging_option]||'—'}</span><span>${o.packaging_fee>0 ? formatToman(o.packaging_fee) : ''}</span></div>
+      <div class="row"><span>جمع محصولات</span><b>${formatToman(o.subtotal)}</b></div>
+      <div class="row"><span>مبلغ نهایی</span><b>${formatToman((o.subtotal||0)+(o.packaging_fee||0))}</b></div>
       <div class="row"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status]||o.payment_status}${o.payment_ref ? ' ('+escapeHtml(o.payment_ref)+')' : ''}</b></div>
       ${o.tracking_code ? `<div class="row"><span>کد رهگیری</span><b style="font-family:'Vazirmatn';">${escapeHtml(o.tracking_code)}</b></div>` : ''}
       <div class="btns">
@@ -2321,6 +2397,7 @@ function printPackagingList(){
       <td>${escapeHtml(o.name)}</td>
       <td dir="ltr" style="text-align:right;">${escapeHtml(o.phone)}</td>
       <td>${o.items.map(it=>escapeHtml(it.name)+' × '+it.qty).join('<br>')}</td>
+      <td>${PACKAGING_LABELS[o.packaging_option]||'—'}</td>
     </tr>`).join('');
   const w = window.open('', '_blank');
   w.document.write(`
@@ -2339,7 +2416,7 @@ function printPackagingList(){
     <h3>لیست بسته‌بندی — خانه‌گرم</h3>
     <p class="meta">تعداد سفارش: ${list.length} — تاریخ چاپ: ${new Date().toLocaleDateString('fa-IR')}</p>
     <table>
-      <tr><th>#</th><th>نام مشتری</th><th>شماره تلفن</th><th>اقلام سفارش</th></tr>
+      <tr><th>#</th><th>نام مشتری</th><th>شماره تلفن</th><th>اقلام سفارش</th><th>بسته‌بندی/ارسال</th></tr>
       ${rows}
     </table>
     </body></html>`);
@@ -2363,6 +2440,7 @@ function printOrder(id){
     <div class="box" style="display:flex; justify-content:space-between; font-size:12px; padding:8px 12px;"><span>تاریخ ثبت سفارش</span><b>${new Date(o.created_at).toLocaleDateString('fa-IR')} — ${new Date(o.created_at).toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'})}</b></div>
     <div class="box"><b>فرستنده:</b> خانه‌گرم — فارس، کازرون — ۰۹۹۹۹۴۳۹۵۳۴</div>
     <div class="box"><b>گیرنده:</b> ${escapeHtml(o.name)} — ${escapeHtml(o.phone)}<br>${o.province?escapeHtml(o.province)+'، ':''}${o.city?escapeHtml(o.city)+' — ':''}${escapeHtml(o.address)}${o.postal_code?'<br>کد پستی: '+escapeHtml(o.postal_code):''}<br>روش ارسال: ${escapeHtml(o.shipping)}</div>
+    <div class="box"><b>بسته‌بندی/ارسال:</b> ${PACKAGING_LABELS[o.packaging_option]||'—'}${o.packaging_fee>0 ? ' ('+formatToman(o.packaging_fee)+')' : ''}</div>
     <div class="box items-box"><b>اقلام سفارش:</b><br>${o.items.map(i=>escapeHtml(i.name)+' × '+i.qty).join('<br>')}</div>
     </body></html>`);
   w.document.close();
