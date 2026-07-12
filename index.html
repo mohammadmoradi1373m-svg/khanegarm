@@ -1093,7 +1093,7 @@ function renderMenuCategories(){
     const hasBrands = brands.length > 0;
     return `<div class="menu-cat-row">
       <div class="menu-cat-row-head">
-        <a class="menu-item" onclick="navGo('/products?cat=${c.id}')">${c.emoji||'📦'} ${c.name}</a>
+        <a class="menu-item" onclick="navGo('/products?cat=${c.id}')">${c.emoji||'📦'} ${escapeHtml(c.name)}</a>
         ${hasBrands ? `<button type="button" class="menu-cat-caret" onclick="toggleBrandSub(this)">▾</button>` : ''}
       </div>
       ${hasBrands ? `<div class="menu-sub-brand">${brands.map(b=>`<a class="menu-item" onclick="navGo('/products?cat=${c.id}&brand=${encodeURIComponent(b)}')">${escapeHtml(b)}</a>`).join('')}</div>` : ''}
@@ -1385,10 +1385,10 @@ function productCardHTML(p){
   const isNew = NEWEST_PRODUCT_IDS.has(p.id);
   return `<div class="p-card" style="${out?'opacity:.5;':''}" onclick="go('/product?id=${p.id}')">
     ${isNew ? `<span class="new-badge">جدید</span>` : ''}
-    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${p.img}" alt="${p.name}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
-    <span class="p-tag">${p.tag}</span>
-    <h3>${p.name}</h3>
-    <p class="desc">${p.desc}</p>
+    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${p.img}" alt="${escapeHtml(p.name)}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
+    <span class="p-tag">${escapeHtml(p.tag)}</span>
+    <h3>${escapeHtml(p.name)}</h3>
+    <p class="desc">${escapeHtml(p.desc)}</p>
     <div class="p-foot">
       <div class="price">${toFa(p.price.toLocaleString('en-US'))}<small> تومان</small></div>
       <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.id}')" aria-label="افزودن به سبد" ${out?'disabled style="opacity:.4; cursor:not-allowed;"':''}>+</button>
@@ -1421,8 +1421,8 @@ function renderHome(){
 
   document.getElementById('homeCatGrid').innerHTML = CATEGORIES.map(c=>`
     <div class="cat-card" onclick="go('/products?cat=${c.id}')">
-      <div class="cat-ic-wrap">${c.image_url ? `<img src="${c.image_url}" loading="lazy" alt="${c.name}">` : `<span>${c.emoji||'📦'}</span>`}</div>
-      <h3>${c.name}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
+      <div class="cat-ic-wrap">${c.image_url ? `<img src="${c.image_url}" loading="lazy" alt="${escapeHtml(c.name)}">` : `<span>${c.emoji||'📦'}</span>`}</div>
+      <h3>${escapeHtml(c.name)}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
     </div>`).join('');
 
   // hero art: dynamic from real product photos if available, otherwise fallback to emoji
@@ -1430,7 +1430,7 @@ function renderHome(){
   const withPhotos = featured.filter(p=>p.img).slice(0,2);
   if(withPhotos.length >= 1){
     heroArt.innerHTML = `<div style="display:flex; width:100%; height:100%; gap:4px;">
-      ${withPhotos.map(p=>`<img src="${p.img}" alt="${p.name}" loading="lazy" style="flex:1; height:100%; object-fit:cover;">`).join('')}
+      ${withPhotos.map(p=>`<img src="${p.img}" alt="${escapeHtml(p.name)}" loading="lazy" style="flex:1; height:100%; object-fit:cover;">`).join('')}
     </div>`;
   } else {
     heroArt.innerHTML = `<div class="emoji-stack"><span>✂️</span><span>💨</span></div>`;
@@ -1556,7 +1556,7 @@ function renderProductList(cat, presetQuery, brand){
   const filterRow = document.getElementById('prodFilterRow');
   if(filterRow){
     filterRow.innerHTML = `<button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products')">همه</button>` +
-      CATEGORIES.map(c=>`<button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products?cat=${c.id}')">${c.emoji||''} ${c.name}</button>`).join('');
+      CATEGORIES.map(c=>`<button class="btn-ghost" style="padding:8px 18px; font-size:13.5px;" onclick="go('/products?cat=${c.id}')">${c.emoji||''} ${escapeHtml(c.name)}</button>`).join('');
   }
   if(list.length === 0){
     grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--ink-soft); padding:30px 0;">${query ? 'محصولی با این عنوان پیدا نشد.' : 'به‌زودی محصولات این دسته اضافه می‌شن.'}</div>`;
@@ -1586,15 +1586,15 @@ function renderProductDetail(id){
   pdCurrentImages = images;
   root.innerHTML = `
     <div>
-      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${images[0]||''}" alt="${p.name} - ${p.brand||''} ${p.tag||''}" loading="lazy" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
+      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${images[0]||''}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="lazy" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
       ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${img}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
     </div>
     <div>
-      <span class="pd-tag">${p.tag}${p.views>20 ? ` · 👁️ ${toFa(p.views)} بازدید` : ''}</span>
-      <h1 class="pd-title">${p.name}</h1>
+      <span class="pd-tag">${escapeHtml(p.tag)}${p.views>20 ? ` · 👁️ ${toFa(p.views)} بازدید` : ''}</span>
+      <h1 class="pd-title">${escapeHtml(p.name)}</h1>
       <div class="pd-price">${toFa(p.price.toLocaleString('en-US'))} تومان</div>
-      <p class="pd-desc">${p.desc}</p>
-      <ul class="pd-features">${p.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+      <p class="pd-desc">${escapeHtml(p.desc)}</p>
+      <ul class="pd-features">${p.features.map(f=>`<li>${escapeHtml(f)}</li>`).join('')}</ul>
       <div class="stock-note ${p.stock<=5?'low':''}" style="margin-bottom:14px;">${p.stock>0 ? (p.stock<=5?'تنها '+toFa(p.stock)+' عدد باقی مانده':'موجود در انبار') : 'ناموجود'}</div>
       <div class="pd-qty">
         <button onclick="pdQty(-1)">−</button><span id="pdQtyVal">۱</span><button onclick="pdQty(1)">+</button>
@@ -1785,7 +1785,7 @@ function renderCart(){
     if(!p) return '';
     return `<div class="cart-item">
       <div class="ci-thumb" style="padding:0; overflow:hidden;"><img src="${p.img}" alt="" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></div>
-      <div class="ci-info"><h4>${p.name}</h4><div class="ci-price">${formatToman(p.price)}</div></div>
+      <div class="ci-info"><h4>${escapeHtml(p.name)}</h4><div class="ci-price">${formatToman(p.price)}</div></div>
       <div class="ci-controls">
         <button class="qty-btn" onclick="changeCartQty('${p.id}',-1)">−</button>
         <span style="font-family:'Vazirmatn'; font-weight:700; font-size:13px;">${toFa(item.qty)}</span>
@@ -2452,11 +2452,11 @@ function productAdminCardHTML(p){
   return `
     <div class="admin-order">
       <div class="row">
-        <b>${p.name}</b>
+        <b>${escapeHtml(p.name)}</b>
         <span class="status-badge" style="${p.stock<=3 ? 'background:#F3D2C6; color:var(--rust);' : ''}">${p.stock<=3 ? '⚠️ موجودی کم: ' : 'موجودی: '}${toFa(p.stock)}</span>
       </div>
-      <div class="row"><span>${formatToman(p.price)}</span><span>${p.tag||''}</span></div>
-      <div class="row" style="font-size:12.5px; color:var(--ink-soft);"><span>${p.brand ? '🏷️ '+p.brand : ''}</span><span>👁️ ${toFa(p.views||0)} بازدید</span></div>
+      <div class="row"><span>${formatToman(p.price)}</span><span>${escapeHtml(p.tag||'')}</span></div>
+      <div class="row" style="font-size:12.5px; color:var(--ink-soft);"><span>${p.brand ? '🏷️ '+escapeHtml(p.brand) : ''}</span><span>👁️ ${toFa(p.views||0)} بازدید</span></div>
       <div class="btns">
         <button onclick="openProductForm('${p.id}')">✏️ ویرایش</button>
         <button onclick="deleteProduct('${p.id}')" style="color:var(--rust);">🗑️ حذف</button>
@@ -2486,7 +2486,7 @@ async function renderAdminProducts(){
     const cat = CATEGORIES.find(c=>c.id===catId);
     html += `<div style="display:flex; align-items:center; gap:8px; margin:20px 0 10px; padding-bottom:8px; border-bottom:2px solid var(--line);">
       <span style="font-size:20px;">${cat?cat.emoji||'📦':'📦'}</span>
-      <h3 style="font-size:16px;">${cat?cat.name:catId}</h3>
+      <h3 style="font-size:16px;">${cat?escapeHtml(cat.name):escapeHtml(catId)}</h3>
       <span style="font-size:12px; color:var(--ink-soft);">(${toFa(catProducts.length)} محصول)</span>
     </div>`;
 
@@ -2494,7 +2494,7 @@ async function renderAdminProducts(){
     brands.forEach(brand=>{
       const brandProducts = catProducts.filter(p=>(p.brand||'بدون برند')===brand);
       if(brands.length>1 || brand!=='بدون برند'){
-        html += `<div style="font-size:12.5px; font-weight:700; color:var(--teal); margin:10px 0 6px; padding-right:4px;">🏷️ ${brand}</div>`;
+        html += `<div style="font-size:12.5px; font-weight:700; color:var(--teal); margin:10px 0 6px; padding-right:4px;">🏷️ ${escapeHtml(brand)}</div>`;
       }
       html += brandProducts.map(productAdminCardHTML).join('');
     });
@@ -2514,7 +2514,7 @@ async function renderAdminCategories(){
   if(!data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز دسته‌بندی‌ای ثبت نشده.</p>'; return; }
   box.innerHTML = data.map(c=>`
     <div class="admin-order">
-      <div class="row"><b>${c.emoji||'📦'} ${c.name}</b><span class="status-badge">${toFa(counts[c.id]||0)} محصول</span></div>
+      <div class="row"><b>${c.emoji||'📦'} ${escapeHtml(c.name)}</b><span class="status-badge">${toFa(counts[c.id]||0)} محصول</span></div>
       <div class="btns">
         <button onclick="openProductForm(null, '${c.id}'); switchAdminTab('products');">+ افزودن محصول در این دسته</button>
         <button onclick="openCategoryEdit('${c.id}')">✏️ ویرایش</button>
@@ -2619,7 +2619,7 @@ function removePfNewFile(i){ pfNewFiles.splice(i,1); renderPfImagePreview(); }
 async function openProductForm(id, presetCat){
   document.getElementById('pfImage').value = '';
   pfNewFiles = [];
-  document.getElementById('pfCat').innerHTML = CATEGORIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('pfCat').innerHTML = CATEGORIES.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
   if(id){
     const p = adminProductsCache.find(x=>x.id===id);
     document.getElementById('productModalTitle').textContent = 'ویرایش محصول';
