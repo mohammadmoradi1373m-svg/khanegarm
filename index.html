@@ -476,6 +476,10 @@
     <div class="full" style="display:flex; justify-content:center; margin-top:14px;">
       <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf"></div>
     </div>
+    <div class="full" id="turnstileFallbackBox" style="display:none; margin-top:10px; background:var(--bg-alt); border-radius:12px; padding:12px 14px; font-size:13px; text-align:center;">
+      <p style="margin-bottom:8px; color:var(--ink-soft);">تایید امنیتی لود نشد؟ می‌تونید سفارشتون رو از طریق واتساپ نهایی کنید.</p>
+      <a id="turnstileFallbackLink" href="#" target="_blank" rel="noopener" class="btn-primary" style="display:inline-block; padding:10px 20px; font-size:13px; text-decoration:none;">💬 ثبت سفارش از طریق واتساپ</a>
+    </div>
     <div style="display:flex; gap:10px; margin-top:18px;">
       <button class="btn-primary" id="submitOrderBtn" style="flex:1;" onclick="submitOrder()">ثبت نهایی سفارش</button>
       <button class="btn-ghost" onclick="closeCheckout()">انصراف</button>
@@ -1830,14 +1834,39 @@ function onPackagingChange(){
   document.getElementById('packagingOptions').classList.remove('field-error');
   renderCheckoutTotals();
 }
+let turnstileFallbackTimer = null;
+function buildFallbackWhatsAppLink(){
+  const lines = cart.map(i=>{ const p=findProduct(i.id); return p ? `${p.name} × ${toFa(i.qty)}` : ''; }).filter(Boolean);
+  const msg = `سلام، می‌خوام این سفارش رو ثبت کنم ولی تایید امنیتی سایت برام لود نشد:\n${lines.join('\n')}`;
+  return `https://wa.me/989999439534?text=${encodeURIComponent(msg)}`;
+}
+function checkTurnstileFallback(){
+  const box = document.getElementById('checkoutTurnstileWidget');
+  const fallback = document.getElementById('turnstileFallbackBox');
+  if(!box || !fallback) return;
+  const rendered = box.querySelector('iframe') !== null;
+  if(!rendered){
+    document.getElementById('turnstileFallbackLink').href = buildFallbackWhatsAppLink();
+    fallback.style.display = 'block';
+  } else {
+    fallback.style.display = 'none';
+  }
+}
 function openCheckout(){
   if(cart.length===0){ showToast('سبد خرید خالیه'); return; }
   closeCart();
   onPayMethodChange();
   renderCheckoutTotals();
+  document.getElementById('turnstileFallbackBox').style.display = 'none';
+  clearTimeout(turnstileFallbackTimer);
+  turnstileFallbackTimer = setTimeout(checkTurnstileFallback, 7000);
   document.getElementById('checkoutModal').classList.add('open');
 }
-function closeCheckout(){ document.getElementById('checkoutModal').classList.remove('open'); }
+function closeCheckout(){
+  document.getElementById('checkoutModal').classList.remove('open');
+  clearTimeout(turnstileFallbackTimer);
+  document.getElementById('turnstileFallbackBox').style.display = 'none';
+}
 document.getElementById('shipOptions').addEventListener('change', ()=>{
   document.querySelectorAll('#shipOptions .ship-opt').forEach(o=>o.classList.toggle('checked', o.querySelector('input').checked));
   document.getElementById('shipOptions').classList.remove('field-error');
