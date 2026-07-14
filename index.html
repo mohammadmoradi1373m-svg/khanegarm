@@ -1337,6 +1337,32 @@ function runHomeSearch(){
   go('/products?q=' + encodeURIComponent(q));
 }
 function go(hash){ location.hash = hash; }
+function updatePageTitle(path, params){
+  const base = 'خانه‌گرم';
+  let title = base + ' | فروشگاه لوازم خانگی و شخصی';
+  if(path === '/products'){
+    const catPart = params.cat ? catName(params.cat) : 'همه محصولات';
+    title = catPart + ' | ' + base;
+  } else if(path === '/product'){
+    const p = findProduct(params.id);
+    title = p ? (p.name + ' | ' + base) : (base + ' | محصول');
+  } else if(path === '/guides'){
+    title = 'راهنمای خرید و نگهداری | ' + base;
+  } else if(path === '/faq'){
+    title = 'سوالات متداول | ' + base;
+  } else if(path === '/about'){
+    title = 'درباره ما | ' + base;
+  } else if(path === '/contact'){
+    title = 'تماس با ما | ' + base;
+  } else if(path === '/terms'){
+    title = 'قوانین و حریم خصوصی | ' + base;
+  } else if(path === '/track'){
+    title = 'پیگیری سفارش | ' + base;
+  } else if(path === '/admin'){
+    title = 'پنل مدیریت | ' + base;
+  }
+  document.title = title;
+}
 async function render(){
   const {path, params} = parseHash();
   document.querySelectorAll('.page').forEach(sec=>{
@@ -1352,6 +1378,7 @@ async function render(){
   if(path === '/admin'){ await renderAdminRoute(); }
   if(path === '/faq'){ renderFaq(); }
   if(path === '/guides'){ renderCommunityGuides(); }
+  updatePageTitle(path, params);
   window.scrollTo({top:0, behavior:'instant'});
   renderCart();
   renderMenuCategories();
