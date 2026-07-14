@@ -1048,7 +1048,12 @@ const SUPABASE_URL = 'https://thovhvemaidbiekagome.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_bX7ApIxbBzjXkQNiLw2wDw_m0TzJ6Wb';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function loadProductsFromDB(){
+let productsLastFetch = 0;
+const PRODUCTS_CACHE_MS = 45000;
+async function loadProductsFromDB(force){
+  if(!force && PRODUCTS.length && (Date.now() - productsLastFetch) < PRODUCTS_CACHE_MS){
+    return;
+  }
   try{
     const { data, error } = await sbClient.from('products').select('*');
     if(error || !data){ PRODUCTS = []; return; }
@@ -1059,6 +1064,7 @@ async function loadProductsFromDB(){
       views: row.views || 0,
       features: Array.isArray(row.features) ? row.features : []
     }));
+    productsLastFetch = Date.now();
   }catch(e){ PRODUCTS = []; }
   updateNewestIds();
 }
@@ -1722,8 +1728,10 @@ async function submitGuide(){
   const title = document.getElementById('subTitle').value.trim();
   const body = document.getElementById('subBody').value.trim();
   if(!name || !phone || !title || !body){ showToast('لطفا همه فیلدها رو تکمیل کنید'); return; }
-  const { error } = await sbClient.from('guide_submissions').insert({name, phone, title, body});
+  if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
+  const { data, error } = await sbClient.rpc('submit_guide_suggestion', { p_name: name, p_phone: phone, p_title: title, p_body: body });
   if(error){ showToast('ارسال با خطا مواجه شد'); return; }
+  if(data === 'limit_reached'){ showToast('شما امروز ۳ پیشنهاد ثبت کردید؛ فردا دوباره امتحان کنید'); return; }
   document.getElementById('subName').value='';
   document.getElementById('subPhone').value='';
   document.getElementById('subTitle').value='';
@@ -1948,7 +1956,7 @@ async function submitOrder(){
   if(error){
     if((error.message||'').includes('OUT_OF_STOCK')){
       showToast('متاسفانه موجودی یکی از محصولات سبدتون تموم شده، لطفاً سبد رو به‌روزرسانی کنید');
-      await loadProductsFromDB();
+      await loadProductsFromDB(true);
       renderCart();
     } else {
       showToast('ثبت سفارش با خطا مواجه شد، دوباره امتحان کنید');
@@ -1980,7 +1988,7 @@ async function submitOrder(){
   document.getElementById('confirmModal').classList.add('open');
   if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
 
-  await loadProductsFromDB();
+  await loadProductsFromDB(true);
 }
 
 /* ============ ORDER TRACKING ============ */
@@ -2711,7 +2719,7 @@ async function saveProduct(){
   pfExistingImages = []; pfNewFiles = [];
   closeProductForm();
   showToast('محصول ذخیره شد ✅');
-  await loadProductsFromDB();
+  await loadProductsFromDB(true);
   renderAdminProducts();
 }
 async function deleteProduct(id){
@@ -2719,7 +2727,7 @@ async function deleteProduct(id){
   const { error } = await sbClient.from('products').delete().eq('id', id);
   if(error){ showToast('خطا در حذف محصول'); return; }
   showToast('محصول حذف شد');
-  await loadProductsFromDB();
+  await loadProductsFromDB(true);
   renderAdminProducts();
 }
 
