@@ -10,6 +10,7 @@
 <meta property="og:image" content="https://mohammadmoradi1373m-svg.github.io/khanegarm/og-image.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="enamad" content="184790006" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -488,15 +489,8 @@
   <div class="modal-box" style="text-align:center;">
     <div style="font-size:48px; margin-bottom:10px;">✅</div>
     <h3>سفارش شما ثبت شد!</h3>
-    <p style="color:var(--ink-soft); font-size:14px; margin-bottom:10px;">کد پیگیری سفارش شما:</p>
-    <div style="background:var(--bg-alt); border:1.5px dashed var(--amber-deep); border-radius:12px; padding:14px; margin-bottom:6px;">
-      <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
-        <b id="confirmCode" style="font-family:'Vazirmatn'; font-size:19px; letter-spacing:0.5px;"></b>
-        <button type="button" onclick="copyConfirmCode()" style="background:var(--card); border:1px solid var(--line); border-radius:100px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer;">📋 کپی</button>
-      </div>
-      <p style="font-size:12.5px; color:var(--amber-deep); font-weight:700; margin-top:10px;">این کد رو حتماً یادداشت یا اسکرین‌شات کنید. برای پیگیری سفارش تو سایت، همراه با شماره تلفنتون بهش نیاز دارید.</p>
-    </div>
-    <button class="btn-primary" style="margin-top:8px;" onclick="document.getElementById('confirmModal').classList.remove('open')">متوجه شدم</button>
+    <p style="color:var(--ink-soft); font-size:14px; margin-bottom:10px;">کد پیگیری سفارش شما: <b id="confirmCode" style="font-family:'Vazirmatn';"></b></p>
+    <button class="btn-primary" style="margin-top:14px;" onclick="document.getElementById('confirmModal').classList.remove('open')">متوجه شدم</button>
   </div>
 </div>
 
@@ -741,13 +735,12 @@
   <div class="section-head">
     <div class="eyebrow">پنل مشتری</div>
     <h2>سفارش‌های من</h2>
-    <p>شماره تلفن و کد پیگیری سفارش (که هنگام ثبت سفارش بهتون نمایش داده شد، مثل KG-123456) رو وارد کنید.</p>
+    <p>شماره تلفنی که هنگام سفارش وارد کردید رو وارد کنید تا سفارش‌هاتون رو ببینید.</p>
   </div>
   <div class="track-box">
-    <div style="display:flex; flex-direction:column; gap:10px;">
-      <input type="tel" id="trackPhone" placeholder="شماره تلفن" style="border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
-      <input type="text" id="trackCode" placeholder="کد پیگیری سفارش (مثلا KG-123456)" style="border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
-      <button class="btn-primary" onclick="trackOrder()" style="width:100%;">پیگیری سفارش</button>
+    <div style="display:flex; gap:10px;">
+      <input type="tel" id="trackPhone" placeholder="شماره تلفن" style="flex:1; min-width:0; border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
+      <button class="btn-primary" onclick="trackOrder()">ورود</button>
     </div>
     <div id="trackResult" style="margin-top:26px;"></div>
   </div>
@@ -1659,7 +1652,7 @@ document.getElementById('starPick').addEventListener('click', (e)=>{
 async function renderReviews(pid){
   const box = document.getElementById('reviewList');
   box.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">در حال بارگذاری نظرات...</p>';
-  const { data, error } = await sbClient.rpc('get_product_reviews', { p_product_id: pid });
+  const { data, error } = await sbClient.from('reviews').select('*').eq('product_id', pid).order('created_at', {ascending:false});
   if(error || !data || data.length === 0){
     box.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">هنوز نظری ثبت نشده. اولین نفر باشید!</p>';
     return;
@@ -1668,8 +1661,12 @@ async function renderReviews(pid){
     <div class="review-item">
       <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
       <p>${escapeHtml(r.comment)}</p>
-      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${escapeHtml(r.phone_masked)}</div>
+      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${maskPhone(escapeHtml(r.phone))}</div>
     </div>`).join('');
+}
+function maskPhone(phone){
+  if(!phone || phone.length < 4) return phone||'';
+  return phone.slice(0,4) + '***' + phone.slice(-2);
 }
 async function submitReview(){
   const {params} = parseHash();
@@ -1987,27 +1984,6 @@ async function submitOrder(){
   await loadProductsFromDB();
 }
 
-function copyConfirmCode(){
-  const code = document.getElementById('confirmCode').textContent.trim();
-  if(!code) return;
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(code).then(()=> showToast('کد کپی شد ✅')).catch(()=> fallbackCopyText(code));
-  } else {
-    fallbackCopyText(code);
-  }
-}
-function fallbackCopyText(text){
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.select();
-  try{ document.execCommand('copy'); showToast('کد کپی شد ✅'); }
-  catch(e){ showToast('کپی خودکار کار نکرد، کد رو دستی یادداشت کنید'); }
-  document.body.removeChild(ta);
-}
-
 /* ============ ORDER TRACKING ============ */
 const STAGE_NAMES = ['در حال بسته‌بندی','تحویل داده‌شده به پست/باربری','در حال ارسال'];
 const PAY_LABELS = { cod:'پرداخت هنگام تحویل', card:'کارت به کارت', online:'پرداخت آنلاین' };
@@ -2015,28 +1991,30 @@ const PAY_STATUS_LABELS = { paid_cod:'پرداخت هنگام تحویل', await
 const PACKAGING_LABELS = { prepaid:'پیش‌پرداخت بسته‌بندی/ارسال', postpay:'پس‌کرایه' };
 async function trackOrder(){
   const phone = document.getElementById('trackPhone').value.trim();
-  const code = document.getElementById('trackCode').value.trim();
   const result = document.getElementById('trackResult');
-  if(!phone || !code){ showToast('لطفا شماره تلفن و کد پیگیری سفارش رو وارد کنید'); return; }
-  if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
+  if(!phone){ showToast('لطفا شماره تلفن رو وارد کنید'); return; }
   result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال جست‌وجو...</p>';
 
-  const { data, error } = await sbClient.rpc('get_order_by_phone_code', { p_phone: phone, p_order_code: code });
+  const { data: custData } = await sbClient.rpc('get_customer', { p_phone: phone });
+  const { data: ordersData, error } = await sbClient.rpc('get_customer_orders', { p_phone: phone });
 
-  if(error || !data || data.length === 0){
-    result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">سفارشی با این شماره تلفن و کد پیگیری پیدا نشد. لطفا هر دو مورد رو دوباره چک کنید.</p>';
+  if(error || !ordersData || ordersData.length === 0){
+    result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز سفارشی با این شماره ثبت نشده. اگه تازه سفارش دادید، چند لحظه صبر کنید و دوباره امتحان کنید.</p>';
     return;
   }
 
-  const o = data[0];
-  let html = `<div class="card" style="margin-bottom:20px;">
-    <div style="font-weight:700; margin-bottom:4px;">${escapeHtml(o.name)}</div>
-    <div style="font-size:13px; color:var(--ink-soft);">${o.province?escapeHtml(o.province)+'، ':''}${o.city?escapeHtml(o.city)+' — ':''}${escapeHtml(o.address)}</div>
-  </div>`;
+  const cust = (custData && custData[0]) ? custData[0] : null;
+  let html = '';
+  if(cust){
+    html += `<div class="card" style="margin-bottom:20px;">
+      <div style="font-weight:700; margin-bottom:4px;">${escapeHtml(cust.name)}</div>
+      <div style="font-size:13px; color:var(--ink-soft);">${escapeHtml(cust.address)}</div>
+    </div>`;
+  }
 
-  html += `
+  html += ordersData.map(o=>`
     <div class="card" style="margin-bottom:16px;">
-      <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>کد سفارش</span><b style="font-family:'Vazirmatn';">${escapeHtml(o.order_code)}</b></div>
+      <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>کد سفارش</span><b style="font-family:'Vazirmatn';">${o.order_code}</b></div>
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>روش ارسال</span><b>${escapeHtml(o.shipping)}</b></div>
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:${o.tracking_code?'6px':'0'};"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status] || o.payment_status}</b></div>
       ${o.tracking_code ? `<div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>کد رهگیری پستی</span><b style="font-family:'Vazirmatn';">${escapeHtml(o.tracking_code)}</b></div><p style="font-size:12px; color:var(--ink-soft); margin-top:6px;">برای اطلاع از زمان دقیق تحویل، با همین کد رهگیری از سایت شرکت پستی/باربری مربوطه پیگیری کنید.</p>` : ''}
@@ -2048,7 +2026,7 @@ async function trackOrder(){
           </div>`).join('')}
       </div>
     </div>
-  `;
+  `).join('');
 
   result.innerHTML = html;
 }
