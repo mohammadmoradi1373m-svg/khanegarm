@@ -7,9 +7,11 @@
 <meta name="description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی.">
 <meta property="og:title" content="خانه‌گرم | فروشگاه لوازم خانگی و شخصی">
 <meta property="og:description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی، ارسال به سراسر کشور.">
-<meta property="og:image" content="https://mohammadmoradi1373m-svg.github.io/khanegarm/og-image.jpg">
+<meta property="og:url" content="https://owli.ir/">
+<meta property="og:image" content="https://owli.ir/og-image.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://owli.ir/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -1055,6 +1057,26 @@ const FAQS = [
   {q:'چطور می‌تونم سفارشمو پیگیری کنم؟', a:'از منوی «پیگیری سفارش» شماره تلفنی که هنگام ثبت سفارش وارد کردید رو وارد کنید تا مرحله‌ی فعلی سفارشتون رو ببینید.'},
 ];
 
+const ROUTE_TITLES = {
+  '/': 'خانه‌گرم | فروشگاه لوازم خانگی و شخصی',
+  '/products': 'محصولات | خانه‌گرم',
+  '/guides': 'راهنمای خرید و نگهداری | خانه‌گرم',
+  '/faq': 'سوالات متداول | خانه‌گرم',
+  '/about': 'درباره ما | خانه‌گرم',
+  '/contact': 'تماس با ما | خانه‌گرم',
+  '/terms': 'قوانین و حریم خصوصی | خانه‌گرم',
+  '/track': 'پیگیری سفارش | خانه‌گرم',
+  '/admin': 'پنل مدیریت | خانه‌گرم',
+};
+function setPageTitle(path, params){
+  if(path === '/products' && params.cat){
+    document.title = `${catName(params.cat)} | خانه‌گرم`;
+    return;
+  }
+  if(path === '/product'){ return; } // خودش تو renderProductDetail ست می‌شه
+  document.title = ROUTE_TITLES[path] || 'خانه‌گرم | فروشگاه لوازم خانگی و شخصی';
+}
+
 /* ============ SUPABASE ============ */
 const SUPABASE_URL = 'https://thovhvemaidbiekagome.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_bX7ApIxbBzjXkQNiLw2wDw_m0TzJ6Wb';
@@ -1387,6 +1409,7 @@ async function render(){
   if(path === '/' || path === '/products' || path === '/product'){
     await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
   }
+  setPageTitle(path, params);
   if(path === '/'){ renderHome(); renderDeliveredCount(); } else { stopHomeCarousels(); }
   if(path === '/products'){ renderProductList(params.cat, params.q, params.brand); }
   if(path === '/product'){ renderProductDetail(params.id); }
@@ -1631,7 +1654,8 @@ function renderProductList(cat, presetQuery, brand){
 function renderProductDetail(id){
   const p = findProduct(id);
   const root = document.getElementById('productDetailRoot');
-  if(!p){ root.innerHTML = '<p>محصول پیدا نشد.</p>'; return; }
+  if(!p){ root.innerHTML = '<p>محصول پیدا نشد.</p>'; document.title = 'محصول پیدا نشد | خانه‌گرم'; return; }
+  document.title = `${p.name} | خانه‌گرم`;
   const images = (p.images && p.images.length) ? p.images : (p.img ? [p.img] : []);
   pdCurrentImages = images;
   root.innerHTML = `
