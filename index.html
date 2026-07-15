@@ -5,11 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>خانه‌گرم | فروشگاه لوازم خانگی و شخصی</title>
 <meta name="description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی.">
-<link rel="canonical" href="https://owli.ir/">
 <meta property="og:title" content="خانه‌گرم | فروشگاه لوازم خانگی و شخصی">
 <meta property="og:description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی، ارسال به سراسر کشور.">
-<meta property="og:image" content="https://owli.ir/og-image.jpg">
-<meta property="og:url" content="https://owli.ir/">
+<meta property="og:image" content="https://mohammadmoradi1373m-svg.github.io/khanegarm/og-image.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -340,6 +338,11 @@
   .chat-input-row input{flex:1; border:1px solid var(--line); border-radius:100px; padding:9px 14px; font-family:inherit; font-size:13px;}
   .chat-input-row button{background:var(--rust); color:#fff; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:14px;}
 
+  /* data load error banner */
+  #dataErrorBanner{display:none; align-items:center; justify-content:center; gap:10px; background:var(--rust); color:#fff; padding:10px 16px; font-size:13px; font-weight:600; position:sticky; top:0; z-index:65; flex-wrap:wrap; text-align:center;}
+  #dataErrorBanner button{background:#fff; color:var(--rust); border:none; padding:6px 14px; border-radius:100px; font-weight:700; font-size:12.5px; cursor:pointer; flex-shrink:0;}
+  #dataErrorBanner button:disabled{opacity:.6; cursor:default;}
+
   @media (max-width:860px){
     .hero-grid{grid-template-columns:1fr;}
     .nav-links{display:none;}
@@ -374,6 +377,11 @@
     </div>
   </div>
 </header>
+
+<div id="dataErrorBanner">
+  <span>⚠️ مشکل در اتصال به سرور، اطلاعات لود نشد.</span>
+  <button id="dataErrorRetryBtn" onclick="retryDataLoad()">تلاش دوباره</button>
+</div>
 
 <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 <nav class="menu-panel" id="menuPanel">
@@ -1003,6 +1011,8 @@
 /* ============ DATA ============ */
 let PRODUCTS = [];
 let CATEGORIES = [];
+let productsLoadError = false;
+let categoriesLoadError = false;
 
 const PROVINCE_CITIES = {
   'تهران':['تهران','ری','اسلامشهر','شهریار','ورامین','پاکدشت'],
@@ -1050,15 +1060,17 @@ const SUPABASE_URL = 'https://thovhvemaidbiekagome.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_bX7ApIxbBzjXkQNiLw2wDw_m0TzJ6Wb';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let productsLastFetch = 0;
-const PRODUCTS_CACHE_MS = 45000;
-async function loadProductsFromDB(force){
-  if(!force && PRODUCTS.length && (Date.now() - productsLastFetch) < PRODUCTS_CACHE_MS){
-    return;
-  }
+async function loadProductsFromDB(){
   try{
     const { data, error } = await sbClient.from('products').select('*');
-    if(error || !data){ PRODUCTS = []; return; }
+    if(error || !data){
+      console.error('loadProductsFromDB: خطا در دریافت محصولات از Supabase', error);
+      PRODUCTS = [];
+      productsLoadError = true;
+      updateNewestIds();
+      updateDataErrorBanner();
+      return;
+    }
     PRODUCTS = data.map(row => ({
       id: row.id, cat: row.cat, tag: row.tag, code: row.code, name: row.name, price: row.price,
       stock: row.stock, img: row.img_url, images: Array.isArray(row.images) ? row.images : [],
@@ -1066,9 +1078,14 @@ async function loadProductsFromDB(force){
       views: row.views || 0,
       features: Array.isArray(row.features) ? row.features : []
     }));
-    productsLastFetch = Date.now();
-  }catch(e){ PRODUCTS = []; }
+    productsLoadError = false;
+  }catch(e){
+    console.error('loadProductsFromDB: استثنای غیرمنتظره (احتمالاً قطعی شبکه یا بلاک بودن Supabase)', e);
+    PRODUCTS = [];
+    productsLoadError = true;
+  }
   updateNewestIds();
+  updateDataErrorBanner();
 }
 function productSortCode(p){
   const c = parseInt(p.code, 10);
@@ -1084,10 +1101,35 @@ function updateNewestIds(){
 async function loadCategoriesFromDB(){
   try{
     const { data, error } = await sbClient.from('categories').select('*').order('sort_order');
-    if(error || !data){ CATEGORIES = []; return; }
+    if(error || !data){
+      console.error('loadCategoriesFromDB: خطا در دریافت دسته‌بندی‌ها از Supabase', error);
+      CATEGORIES = [];
+      categoriesLoadError = true;
+      renderMenuCategories();
+      updateDataErrorBanner();
+      return;
+    }
     CATEGORIES = data;
-  }catch(e){ CATEGORIES = []; }
+    categoriesLoadError = false;
+  }catch(e){
+    console.error('loadCategoriesFromDB: استثنای غیرمنتظره (احتمالاً قطعی شبکه یا بلاک بودن Supabase)', e);
+    CATEGORIES = [];
+    categoriesLoadError = true;
+  }
   renderMenuCategories();
+  updateDataErrorBanner();
+}
+function updateDataErrorBanner(){
+  const banner = document.getElementById('dataErrorBanner');
+  if(!banner) return;
+  banner.style.display = (productsLoadError || categoriesLoadError) ? 'flex' : 'none';
+}
+async function retryDataLoad(){
+  const btn = document.getElementById('dataErrorRetryBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'در حال تلاش...'; }
+  await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
+  if(btn){ btn.disabled = false; btn.textContent = 'تلاش دوباره'; }
+  await render();
 }
 function catName(id){
   const c = CATEGORIES.find(c=>c.id===id);
@@ -1337,32 +1379,6 @@ function runHomeSearch(){
   go('/products?q=' + encodeURIComponent(q));
 }
 function go(hash){ location.hash = hash; }
-function updatePageTitle(path, params){
-  const base = 'خانه‌گرم';
-  let title = base + ' | فروشگاه لوازم خانگی و شخصی';
-  if(path === '/products'){
-    const catPart = params.cat ? catName(params.cat) : 'همه محصولات';
-    title = catPart + ' | ' + base;
-  } else if(path === '/product'){
-    const p = findProduct(params.id);
-    title = p ? (p.name + ' | ' + base) : (base + ' | محصول');
-  } else if(path === '/guides'){
-    title = 'راهنمای خرید و نگهداری | ' + base;
-  } else if(path === '/faq'){
-    title = 'سوالات متداول | ' + base;
-  } else if(path === '/about'){
-    title = 'درباره ما | ' + base;
-  } else if(path === '/contact'){
-    title = 'تماس با ما | ' + base;
-  } else if(path === '/terms'){
-    title = 'قوانین و حریم خصوصی | ' + base;
-  } else if(path === '/track'){
-    title = 'پیگیری سفارش | ' + base;
-  } else if(path === '/admin'){
-    title = 'پنل مدیریت | ' + base;
-  }
-  document.title = title;
-}
 async function render(){
   const {path, params} = parseHash();
   document.querySelectorAll('.page').forEach(sec=>{
@@ -1378,7 +1394,6 @@ async function render(){
   if(path === '/admin'){ await renderAdminRoute(); }
   if(path === '/faq'){ renderFaq(); }
   if(path === '/guides'){ renderCommunityGuides(); }
-  updatePageTitle(path, params);
   window.scrollTo({top:0, behavior:'instant'});
   renderCart();
   renderMenuCategories();
@@ -1757,10 +1772,8 @@ async function submitGuide(){
   const title = document.getElementById('subTitle').value.trim();
   const body = document.getElementById('subBody').value.trim();
   if(!name || !phone || !title || !body){ showToast('لطفا همه فیلدها رو تکمیل کنید'); return; }
-  if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
-  const { data, error } = await sbClient.rpc('submit_guide_suggestion', { p_name: name, p_phone: phone, p_title: title, p_body: body });
+  const { error } = await sbClient.from('guide_submissions').insert({name, phone, title, body});
   if(error){ showToast('ارسال با خطا مواجه شد'); return; }
-  if(data === 'limit_reached'){ showToast('شما امروز ۳ پیشنهاد ثبت کردید؛ فردا دوباره امتحان کنید'); return; }
   document.getElementById('subName').value='';
   document.getElementById('subPhone').value='';
   document.getElementById('subTitle').value='';
@@ -1985,7 +1998,7 @@ async function submitOrder(){
   if(error){
     if((error.message||'').includes('OUT_OF_STOCK')){
       showToast('متاسفانه موجودی یکی از محصولات سبدتون تموم شده، لطفاً سبد رو به‌روزرسانی کنید');
-      await loadProductsFromDB(true);
+      await loadProductsFromDB();
       renderCart();
     } else {
       showToast('ثبت سفارش با خطا مواجه شد، دوباره امتحان کنید');
@@ -2017,7 +2030,7 @@ async function submitOrder(){
   document.getElementById('confirmModal').classList.add('open');
   if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
 
-  await loadProductsFromDB(true);
+  await loadProductsFromDB();
 }
 
 /* ============ ORDER TRACKING ============ */
@@ -2117,7 +2130,6 @@ async function renderDashboard(){
   const { data: products } = await sbClient.from('products').select('*');
   const { data: customers } = await sbClient.from('customers').select('*');
   const { data: visits } = await sbClient.from('site_visits').select('*');
-  const { data: backupMeta } = await sbClient.from('admin_meta').select('*').eq('key','last_backup_at').maybeSingle();
 
   const todayStr = new Date().toDateString();
   const now = new Date();
@@ -2149,17 +2161,6 @@ async function renderDashboard(){
     {label:'بازدید ۷ روز اخیر', val: toFa(visitsWeek), color:'#1F8A70'},
     {label:'بازدید ماه جاری', val: toFa(visitsMonth), color:'#1F8A70'},
   ];
-  let backupHtml = '';
-  const lastBackupRaw = (backupMeta && backupMeta.value) ? backupMeta.value : null;
-  const daysSinceBackup = lastBackupRaw ? Math.floor((now - new Date(lastBackupRaw)) / 86400000) : null;
-  if(daysSinceBackup === null || daysSinceBackup >= 7){
-    const isUrgent = daysSinceBackup === null || daysSinceBackup >= 14;
-    const label = daysSinceBackup === null ? 'هنوز هیچ بک‌آپی نگرفتی' : `${toFa(daysSinceBackup)} روزه بک‌آپ نگرفتی`;
-    backupHtml = `<div class="card" style="grid-column:1/-1; border-right:4px solid ${isUrgent?'var(--rust)':'var(--amber-deep)'}; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-      <div><div style="font-size:13px; font-weight:700; color:${isUrgent?'var(--rust)':'var(--amber-deep)'};">🗄️ ${label}</div><div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">پیشنهاد می‌شه هفته‌ای یه‌بار بک‌آپ کامل رو دانلود و یه‌جای امن (گوگل درایو) نگه داری.</div></div>
-      <button class="btn-ghost" style="padding:8px 16px; font-size:12.5px; flex-shrink:0;" onclick="switchAdminTab('orders'); downloadFullBackup();">📥 دانلود الان</button>
-    </div>`;
-  }
   const lowStockItems = (products||[]).filter(p=>p.stock>0 && p.stock<=3).sort((a,b)=>a.stock-b.stock);
   const outOfStockItems = (products||[]).filter(p=>p.stock<=0);
   let alertHtml = '';
@@ -2170,7 +2171,7 @@ async function renderDashboard(){
       ${outOfStockItems.map(p=>`<div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px dashed var(--line);"><span>${escapeHtml(p.name)}</span><b style="color:var(--ink-soft);">ناموجود</b></div>`).join('')}
     </div>`;
   }
-  box.innerHTML = backupHtml + alertHtml + cards.map(c=>`
+  box.innerHTML = alertHtml + cards.map(c=>`
     <div class="card" style="border-right:4px solid ${c.color};">
       <div style="font-size:12.5px; color:var(--ink-soft); margin-bottom:6px;">${c.label}</div>
       <div style="font-size:20px; font-weight:800; font-family:'Vazirmatn';">${c.val}</div>
@@ -2198,9 +2199,7 @@ function downloadFullBackup(){
     const a = document.createElement('a');
     a.href = url; a.download = `khanegarm_backup_${new Date().toISOString().slice(0,10)}.json`; a.click();
     URL.revokeObjectURL(url);
-    await sbClient.from('admin_meta').upsert({ key:'last_backup_at', value: new Date().toISOString(), updated_at: new Date().toISOString() });
     showToast('بک‌آپ دانلود شد ✅');
-    if(adminCurrentTab === 'dashboard') renderDashboard();
   })();
 }
 
@@ -2748,7 +2747,7 @@ async function saveProduct(){
   pfExistingImages = []; pfNewFiles = [];
   closeProductForm();
   showToast('محصول ذخیره شد ✅');
-  await loadProductsFromDB(true);
+  await loadProductsFromDB();
   renderAdminProducts();
 }
 async function deleteProduct(id){
@@ -2756,7 +2755,7 @@ async function deleteProduct(id){
   const { error } = await sbClient.from('products').delete().eq('id', id);
   if(error){ showToast('خطا در حذف محصول'); return; }
   showToast('محصول حذف شد');
-  await loadProductsFromDB(true);
+  await loadProductsFromDB();
   renderAdminProducts();
 }
 
