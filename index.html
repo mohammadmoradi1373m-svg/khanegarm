@@ -7,11 +7,9 @@
 <meta name="description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی.">
 <meta property="og:title" content="خانه‌گرم | فروشگاه لوازم خانگی و شخصی">
 <meta property="og:description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی، ارسال به سراسر کشور.">
-<meta property="og:url" content="https://owli.ir/">
-<meta property="og:image" content="https://owli.ir/og-image.jpg">
+<meta property="og:image" content="https://mohammadmoradi1373m-svg.github.io/khanegarm/og-image.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://owli.ir/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -340,14 +338,6 @@
   .chat-input-row input{flex:1; border:1px solid var(--line); border-radius:100px; padding:9px 14px; font-family:inherit; font-size:13px;}
   .chat-input-row button{background:var(--rust); color:#fff; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:14px;}
 
-  /* data load error banner */
-  #dataErrorBanner{display:none; align-items:center; justify-content:center; gap:10px; background:var(--rust); color:#fff; padding:10px 16px; font-size:13px; font-weight:600; position:sticky; top:0; z-index:65; flex-wrap:wrap; text-align:center;}
-  #dataErrorBanner button{background:#fff; color:var(--rust); border:none; padding:6px 14px; border-radius:100px; font-weight:700; font-size:12.5px; cursor:pointer; flex-shrink:0;}
-  #dataErrorBanner button:disabled{opacity:.6; cursor:default;}
-
-  /* honeypot: نامرئی برای انسان، ولی بات‌های ساده معمولاً پرش می‌کنن */
-  .hp-field{position:absolute; left:-9999px; top:-9999px; width:0; height:0; overflow:hidden; opacity:0;}
-
   @media (max-width:860px){
     .hero-grid{grid-template-columns:1fr;}
     .nav-links{display:none;}
@@ -382,14 +372,6 @@
     </div>
   </div>
 </header>
-
-<div id="dataErrorBanner">
-  <div style="display:flex; flex-direction:column; gap:3px; text-align:center;">
-    <span>⚠️ مشکل در اتصال به سرور، اطلاعات لود نشد.</span>
-    <span id="dataErrorDetail" style="font-size:11px; font-weight:400; opacity:.9; direction:ltr; word-break:break-all;"></span>
-  </div>
-  <button id="dataErrorRetryBtn" onclick="retryDataLoad()">تلاش دوباره</button>
-</div>
 
 <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 <nav class="menu-panel" id="menuPanel">
@@ -492,8 +474,7 @@
         <input type="text" id="payRef" placeholder="۴ رقم آخر کارت یا کد پیگیری تراکنش" style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:14px;">
       </div>
     </div>
-    <input type="text" id="ordHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-    <div class="full" id="checkoutTurnstileWrap" style="display:flex; justify-content:center; margin-top:14px;">
+    <div class="full" style="display:flex; justify-content:center; margin-top:14px;">
       <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf"></div>
     </div>
     <div style="display:flex; gap:10px; margin-top:18px;">
@@ -507,8 +488,15 @@
   <div class="modal-box" style="text-align:center;">
     <div style="font-size:48px; margin-bottom:10px;">✅</div>
     <h3>سفارش شما ثبت شد!</h3>
-    <p style="color:var(--ink-soft); font-size:14px; margin-bottom:10px;">کد پیگیری سفارش شما: <b id="confirmCode" style="font-family:'Vazirmatn';"></b></p>
-    <button class="btn-primary" style="margin-top:14px;" onclick="document.getElementById('confirmModal').classList.remove('open')">متوجه شدم</button>
+    <p style="color:var(--ink-soft); font-size:14px; margin-bottom:10px;">کد پیگیری سفارش شما:</p>
+    <div style="background:var(--bg-alt); border:1.5px dashed var(--amber-deep); border-radius:12px; padding:14px; margin-bottom:6px;">
+      <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+        <b id="confirmCode" style="font-family:'Vazirmatn'; font-size:19px; letter-spacing:0.5px;"></b>
+        <button type="button" onclick="copyConfirmCode()" style="background:var(--card); border:1px solid var(--line); border-radius:100px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer;">📋 کپی</button>
+      </div>
+      <p style="font-size:12.5px; color:var(--amber-deep); font-weight:700; margin-top:10px;">این کد رو حتماً یادداشت یا اسکرین‌شات کنید. برای پیگیری سفارش تو سایت، همراه با شماره تلفنتون بهش نیاز دارید.</p>
+    </div>
+    <button class="btn-primary" style="margin-top:8px;" onclick="document.getElementById('confirmModal').classList.remove('open')">متوجه شدم</button>
   </div>
 </div>
 
@@ -604,8 +592,7 @@
         <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
       </div>
       <textarea id="revComment" placeholder="نظرتون رو بنویسید..."></textarea>
-      <input type="text" id="revHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <div class="full" id="reviewTurnstileWrap" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
+      <div class="full" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
         <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf"></div>
       </div>
       <button class="btn-primary full" style="grid-column:1/-1;" onclick="submitReview()">ثبت نظر</button>
@@ -754,12 +741,13 @@
   <div class="section-head">
     <div class="eyebrow">پنل مشتری</div>
     <h2>سفارش‌های من</h2>
-    <p>شماره تلفنی که هنگام سفارش وارد کردید رو وارد کنید تا سفارش‌هاتون رو ببینید.</p>
+    <p>شماره تلفن و کد پیگیری سفارش (که هنگام ثبت سفارش بهتون نمایش داده شد، مثل KG-123456) رو وارد کنید.</p>
   </div>
   <div class="track-box">
-    <div style="display:flex; gap:10px;">
-      <input type="tel" id="trackPhone" placeholder="شماره تلفن" style="flex:1; min-width:0; border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
-      <button class="btn-primary" onclick="trackOrder()">ورود</button>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <input type="tel" id="trackPhone" placeholder="شماره تلفن" style="border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
+      <input type="text" id="trackCode" placeholder="کد پیگیری سفارش (مثلا KG-123456)" style="border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
+      <button class="btn-primary" onclick="trackOrder()" style="width:100%;">پیگیری سفارش</button>
     </div>
     <div id="trackResult" style="margin-top:26px;"></div>
   </div>
@@ -1021,8 +1009,6 @@
 /* ============ DATA ============ */
 let PRODUCTS = [];
 let CATEGORIES = [];
-let productsLoadError = false;
-let categoriesLoadError = false;
 
 const PROVINCE_CITIES = {
   'تهران':['تهران','ری','اسلامشهر','شهریار','ورامین','پاکدشت'],
@@ -1065,51 +1051,15 @@ const FAQS = [
   {q:'چطور می‌تونم سفارشمو پیگیری کنم؟', a:'از منوی «پیگیری سفارش» شماره تلفنی که هنگام ثبت سفارش وارد کردید رو وارد کنید تا مرحله‌ی فعلی سفارشتون رو ببینید.'},
 ];
 
-const ROUTE_TITLES = {
-  '/': 'خانه‌گرم | فروشگاه لوازم خانگی و شخصی',
-  '/products': 'محصولات | خانه‌گرم',
-  '/guides': 'راهنمای خرید و نگهداری | خانه‌گرم',
-  '/faq': 'سوالات متداول | خانه‌گرم',
-  '/about': 'درباره ما | خانه‌گرم',
-  '/contact': 'تماس با ما | خانه‌گرم',
-  '/terms': 'قوانین و حریم خصوصی | خانه‌گرم',
-  '/track': 'پیگیری سفارش | خانه‌گرم',
-  '/admin': 'پنل مدیریت | خانه‌گرم',
-};
-function setPageTitle(path, params){
-  if(path === '/products' && params.cat){
-    document.title = `${catName(params.cat)} | خانه‌گرم`;
-    return;
-  }
-  if(path === '/product'){ return; } // خودش تو renderProductDetail ست می‌شه
-  document.title = ROUTE_TITLES[path] || 'خانه‌گرم | فروشگاه لوازم خانگی و شخصی';
-}
-
 /* ============ SUPABASE ============ */
 const SUPABASE_URL = 'https://thovhvemaidbiekagome.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_bX7ApIxbBzjXkQNiLw2wDw_m0TzJ6Wb';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let lastDataErrorDetail = '';
-function describeLoadError(e){
-  if(!e) return 'نامشخص';
-  if(typeof e === 'string') return e;
-  if(e.message) return e.message + (e.code ? ' (کد: '+e.code+')' : '');
-  if(e.name) return e.name;
-  try{ return JSON.stringify(e).slice(0,200); }catch(_){ return String(e); }
-}
 async function loadProductsFromDB(){
   try{
     const { data, error } = await sbClient.from('products').select('*');
-    if(error || !data){
-      console.error('loadProductsFromDB: خطا در دریافت محصولات از Supabase', error);
-      PRODUCTS = [];
-      productsLoadError = true;
-      lastDataErrorDetail = describeLoadError(error);
-      updateNewestIds();
-      updateDataErrorBanner();
-      return;
-    }
+    if(error || !data){ PRODUCTS = []; return; }
     PRODUCTS = data.map(row => ({
       id: row.id, cat: row.cat, tag: row.tag, code: row.code, name: row.name, price: row.price,
       stock: row.stock, img: row.img_url, images: Array.isArray(row.images) ? row.images : [],
@@ -1117,15 +1067,8 @@ async function loadProductsFromDB(){
       views: row.views || 0,
       features: Array.isArray(row.features) ? row.features : []
     }));
-    productsLoadError = false;
-  }catch(e){
-    console.error('loadProductsFromDB: استثنای غیرمنتظره (احتمالاً قطعی شبکه یا بلاک بودن Supabase)', e);
-    PRODUCTS = [];
-    productsLoadError = true;
-    lastDataErrorDetail = describeLoadError(e);
-  }
+  }catch(e){ PRODUCTS = []; }
   updateNewestIds();
-  updateDataErrorBanner();
 }
 function productSortCode(p){
   const c = parseInt(p.code, 10);
@@ -1141,40 +1084,10 @@ function updateNewestIds(){
 async function loadCategoriesFromDB(){
   try{
     const { data, error } = await sbClient.from('categories').select('*').order('sort_order');
-    if(error || !data){
-      console.error('loadCategoriesFromDB: خطا در دریافت دسته‌بندی‌ها از Supabase', error);
-      CATEGORIES = [];
-      categoriesLoadError = true;
-      lastDataErrorDetail = describeLoadError(error);
-      renderMenuCategories();
-      updateDataErrorBanner();
-      return;
-    }
+    if(error || !data){ CATEGORIES = []; return; }
     CATEGORIES = data;
-    categoriesLoadError = false;
-  }catch(e){
-    console.error('loadCategoriesFromDB: استثنای غیرمنتظره (احتمالاً قطعی شبکه یا بلاک بودن Supabase)', e);
-    CATEGORIES = [];
-    categoriesLoadError = true;
-    lastDataErrorDetail = describeLoadError(e);
-  }
+  }catch(e){ CATEGORIES = []; }
   renderMenuCategories();
-  updateDataErrorBanner();
-}
-function updateDataErrorBanner(){
-  const banner = document.getElementById('dataErrorBanner');
-  const detailEl = document.getElementById('dataErrorDetail');
-  if(!banner) return;
-  const hasError = productsLoadError || categoriesLoadError;
-  banner.style.display = hasError ? 'flex' : 'none';
-  if(detailEl) detailEl.textContent = hasError ? ('جزئیات فنی: ' + lastDataErrorDetail) : '';
-}
-async function retryDataLoad(){
-  const btn = document.getElementById('dataErrorRetryBtn');
-  if(btn){ btn.disabled = true; btn.textContent = 'در حال تلاش...'; }
-  await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
-  if(btn){ btn.disabled = false; btn.textContent = 'تلاش دوباره'; }
-  await render();
 }
 function catName(id){
   const c = CATEGORIES.find(c=>c.id===id);
@@ -1253,43 +1166,6 @@ async function verifyTurnstile(token){
     const data = await res.json();
     return !!data.success;
   }catch(e){ return false; }
-}
-
-/* ============ TURNSTILE FALLBACK (fail-open) ============
-   اگه اسکریپت Turnstile (از challenges.cloudflare.com) به هر دلیلی (مثلاً فیلترینگ) لود نشه،
-   کاربر رو تو تیک امنیتی گیر نمی‌ندازیم؛ به‌جاش یه فیلد honeypot نامرئی جایگزینش می‌شه. */
-let turnstileBlocked = false;
-function applyTurnstileFallbackUI(){
-  const wraps = ['checkoutTurnstileWrap', 'reviewTurnstileWrap'];
-  wraps.forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.style.display = 'none';
-  });
-}
-const turnstileCheckPromise = new Promise(resolve=>{
-  setTimeout(()=>{
-    turnstileBlocked = (typeof window.turnstile === 'undefined');
-    if(turnstileBlocked){
-      console.warn('Turnstile fail-open: اسکریپت کلادفلر لود نشد (احتمالاً فیلترینگ)، حالت جایگزین (honeypot) فعال شد');
-      applyTurnstileFallbackUI();
-    }
-    resolve(turnstileBlocked);
-  }, 3500);
-});
-/* برمی‌گردونه: {ok:true} یعنی اجازه‌ی ادامه هست، {ok:false} یعنی رد بشه (بدون افشای دلیل به بات‌ها) */
-async function checkAntiSpam(widgetId, honeypotId){
-  await turnstileCheckPromise;
-  if(!turnstileBlocked){
-    const tsInput = document.querySelector('#'+widgetId+' input[name="cf-turnstile-response"]');
-    const tsToken = tsInput ? tsInput.value : '';
-    if(!tsToken) return {ok:false, reason:'no_token'};
-    const tsOk = await verifyTurnstile(tsToken);
-    if(!tsOk) return {ok:false, reason:'invalid_token'};
-    return {ok:true};
-  }
-  const honeypotEl = document.getElementById(honeypotId);
-  if(honeypotEl && honeypotEl.value){ return {ok:false, reason:'honeypot'}; }
-  return {ok:true};
 }
 function escapeHtml(str){
   if(str === null || str === undefined) return '';
@@ -1469,7 +1345,6 @@ async function render(){
   if(path === '/' || path === '/products' || path === '/product'){
     await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
   }
-  setPageTitle(path, params);
   if(path === '/'){ renderHome(); renderDeliveredCount(); } else { stopHomeCarousels(); }
   if(path === '/products'){ renderProductList(params.cat, params.q, params.brand); }
   if(path === '/product'){ renderProductDetail(params.id); }
@@ -1714,8 +1589,7 @@ function renderProductList(cat, presetQuery, brand){
 function renderProductDetail(id){
   const p = findProduct(id);
   const root = document.getElementById('productDetailRoot');
-  if(!p){ root.innerHTML = '<p>محصول پیدا نشد.</p>'; document.title = 'محصول پیدا نشد | خانه‌گرم'; return; }
-  document.title = `${p.name} | خانه‌گرم`;
+  if(!p){ root.innerHTML = '<p>محصول پیدا نشد.</p>'; return; }
   const images = (p.images && p.images.length) ? p.images : (p.img ? [p.img] : []);
   pdCurrentImages = images;
   root.innerHTML = `
@@ -1785,7 +1659,7 @@ document.getElementById('starPick').addEventListener('click', (e)=>{
 async function renderReviews(pid){
   const box = document.getElementById('reviewList');
   box.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">در حال بارگذاری نظرات...</p>';
-  const { data, error } = await sbClient.from('reviews').select('*').eq('product_id', pid).order('created_at', {ascending:false});
+  const { data, error } = await sbClient.rpc('get_product_reviews', { p_product_id: pid });
   if(error || !data || data.length === 0){
     box.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">هنوز نظری ثبت نشده. اولین نفر باشید!</p>';
     return;
@@ -1794,12 +1668,8 @@ async function renderReviews(pid){
     <div class="review-item">
       <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
       <p>${escapeHtml(r.comment)}</p>
-      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${maskPhone(escapeHtml(r.phone))}</div>
+      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${escapeHtml(r.phone_masked)}</div>
     </div>`).join('');
-}
-function maskPhone(phone){
-  if(!phone || phone.length < 4) return phone||'';
-  return phone.slice(0,4) + '***' + phone.slice(-2);
 }
 async function submitReview(){
   const {params} = parseHash();
@@ -1809,15 +1679,13 @@ async function submitReview(){
   const comment = document.getElementById('revComment').value.trim();
   if(!phone || !name || !comment || starVal === 0){ showToast('لطفا نام، شماره تلفن، امتیاز و نظر رو کامل کنید'); return; }
   if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
-  const spamCheck = await checkAntiSpam('reviewTurnstileWidget', 'revHoneypot');
-  if(!spamCheck.ok){
-    if(spamCheck.reason === 'no_token'){ showToast('لطفا تیک تایید امنیتی رو کامل کنید'); return; }
-    if(spamCheck.reason === 'invalid_token'){
-      showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
-      if(window.turnstile) turnstile.reset(document.getElementById('reviewTurnstileWidget'));
-      return;
-    }
-    showToast('ثبت نظر با خطا مواجه شد'); // honeypot: بدون افشای دلیل واقعی
+  const tsInput = document.querySelector('#reviewTurnstileWidget input[name="cf-turnstile-response"]');
+  const tsToken = tsInput ? tsInput.value : '';
+  if(!tsToken){ showToast('لطفا تیک تایید امنیتی رو کامل کنید'); return; }
+  const tsOk = await verifyTurnstile(tsToken);
+  if(!tsOk){
+    showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
+    if(window.turnstile) turnstile.reset(document.getElementById('reviewTurnstileWidget'));
     return;
   }
   const { data, error } = await sbClient.rpc('submit_review', {
@@ -2049,18 +1917,16 @@ async function submitOrder(){
 
   const shipping = shipEl.value;
 
-  const spamCheck = await checkAntiSpam('checkoutTurnstileWidget', 'ordHoneypot');
-  if(!spamCheck.ok){
-    if(spamCheck.reason === 'no_token'){
-      showToast('لطفا تیک تایید امنیتی رو کامل کنید');
-      return;
-    }
-    if(spamCheck.reason === 'invalid_token'){
-      showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
-      if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
-      return;
-    }
-    showToast('ثبت سفارش با خطا مواجه شد، دوباره امتحان کنید'); // honeypot: بدون افشای دلیل واقعی
+  const tsInput = document.querySelector('#checkoutTurnstileWidget input[name="cf-turnstile-response"]');
+  const tsToken = tsInput ? tsInput.value : '';
+  if(!tsToken){
+    showToast('لطفا تیک تایید امنیتی رو کامل کنید');
+    return;
+  }
+  const tsOk = await verifyTurnstile(tsToken);
+  if(!tsOk){
+    showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
+    if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
     return;
   }
 
@@ -2121,6 +1987,27 @@ async function submitOrder(){
   await loadProductsFromDB();
 }
 
+function copyConfirmCode(){
+  const code = document.getElementById('confirmCode').textContent.trim();
+  if(!code) return;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(()=> showToast('کد کپی شد ✅')).catch(()=> fallbackCopyText(code));
+  } else {
+    fallbackCopyText(code);
+  }
+}
+function fallbackCopyText(text){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); showToast('کد کپی شد ✅'); }
+  catch(e){ showToast('کپی خودکار کار نکرد، کد رو دستی یادداشت کنید'); }
+  document.body.removeChild(ta);
+}
+
 /* ============ ORDER TRACKING ============ */
 const STAGE_NAMES = ['در حال بسته‌بندی','تحویل داده‌شده به پست/باربری','در حال ارسال'];
 const PAY_LABELS = { cod:'پرداخت هنگام تحویل', card:'کارت به کارت', online:'پرداخت آنلاین' };
@@ -2128,30 +2015,28 @@ const PAY_STATUS_LABELS = { paid_cod:'پرداخت هنگام تحویل', await
 const PACKAGING_LABELS = { prepaid:'پیش‌پرداخت بسته‌بندی/ارسال', postpay:'پس‌کرایه' };
 async function trackOrder(){
   const phone = document.getElementById('trackPhone').value.trim();
+  const code = document.getElementById('trackCode').value.trim();
   const result = document.getElementById('trackResult');
-  if(!phone){ showToast('لطفا شماره تلفن رو وارد کنید'); return; }
+  if(!phone || !code){ showToast('لطفا شماره تلفن و کد پیگیری سفارش رو وارد کنید'); return; }
+  if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
   result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال جست‌وجو...</p>';
 
-  const { data: custData } = await sbClient.rpc('get_customer', { p_phone: phone });
-  const { data: ordersData, error } = await sbClient.rpc('get_customer_orders', { p_phone: phone });
+  const { data, error } = await sbClient.rpc('get_order_by_phone_code', { p_phone: phone, p_order_code: code });
 
-  if(error || !ordersData || ordersData.length === 0){
-    result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز سفارشی با این شماره ثبت نشده. اگه تازه سفارش دادید، چند لحظه صبر کنید و دوباره امتحان کنید.</p>';
+  if(error || !data || data.length === 0){
+    result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">سفارشی با این شماره تلفن و کد پیگیری پیدا نشد. لطفا هر دو مورد رو دوباره چک کنید.</p>';
     return;
   }
 
-  const cust = (custData && custData[0]) ? custData[0] : null;
-  let html = '';
-  if(cust){
-    html += `<div class="card" style="margin-bottom:20px;">
-      <div style="font-weight:700; margin-bottom:4px;">${escapeHtml(cust.name)}</div>
-      <div style="font-size:13px; color:var(--ink-soft);">${escapeHtml(cust.address)}</div>
-    </div>`;
-  }
+  const o = data[0];
+  let html = `<div class="card" style="margin-bottom:20px;">
+    <div style="font-weight:700; margin-bottom:4px;">${escapeHtml(o.name)}</div>
+    <div style="font-size:13px; color:var(--ink-soft);">${o.province?escapeHtml(o.province)+'، ':''}${o.city?escapeHtml(o.city)+' — ':''}${escapeHtml(o.address)}</div>
+  </div>`;
 
-  html += ordersData.map(o=>`
+  html += `
     <div class="card" style="margin-bottom:16px;">
-      <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>کد سفارش</span><b style="font-family:'Vazirmatn';">${o.order_code}</b></div>
+      <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>کد سفارش</span><b style="font-family:'Vazirmatn';">${escapeHtml(o.order_code)}</b></div>
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>روش ارسال</span><b>${escapeHtml(o.shipping)}</b></div>
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:${o.tracking_code?'6px':'0'};"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status] || o.payment_status}</b></div>
       ${o.tracking_code ? `<div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>کد رهگیری پستی</span><b style="font-family:'Vazirmatn';">${escapeHtml(o.tracking_code)}</b></div><p style="font-size:12px; color:var(--ink-soft); margin-top:6px;">برای اطلاع از زمان دقیق تحویل، با همین کد رهگیری از سایت شرکت پستی/باربری مربوطه پیگیری کنید.</p>` : ''}
@@ -2163,7 +2048,7 @@ async function trackOrder(){
           </div>`).join('')}
       </div>
     </div>
-  `).join('');
+  `;
 
   result.innerHTML = html;
 }
