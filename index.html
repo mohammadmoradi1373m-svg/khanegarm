@@ -345,6 +345,9 @@
   #dataErrorBanner button{background:#fff; color:var(--rust); border:none; padding:6px 14px; border-radius:100px; font-weight:700; font-size:12.5px; cursor:pointer; flex-shrink:0;}
   #dataErrorBanner button:disabled{opacity:.6; cursor:default;}
 
+  /* honeypot: نامرئی برای انسان، ولی بات‌های ساده معمولاً پرش می‌کنن */
+  .hp-field{position:absolute; left:-9999px; top:-9999px; width:0; height:0; overflow:hidden; opacity:0;}
+
   @media (max-width:860px){
     .hero-grid{grid-template-columns:1fr;}
     .nav-links{display:none;}
@@ -381,7 +384,10 @@
 </header>
 
 <div id="dataErrorBanner">
-  <span>⚠️ مشکل در اتصال به سرور، اطلاعات لود نشد.</span>
+  <div style="display:flex; flex-direction:column; gap:3px; text-align:center;">
+    <span>⚠️ مشکل در اتصال به سرور، اطلاعات لود نشد.</span>
+    <span id="dataErrorDetail" style="font-size:11px; font-weight:400; opacity:.9; direction:ltr; word-break:break-all;"></span>
+  </div>
   <button id="dataErrorRetryBtn" onclick="retryDataLoad()">تلاش دوباره</button>
 </div>
 
@@ -486,7 +492,8 @@
         <input type="text" id="payRef" placeholder="۴ رقم آخر کارت یا کد پیگیری تراکنش" style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:14px;">
       </div>
     </div>
-    <div class="full" style="display:flex; justify-content:center; margin-top:14px;">
+    <input type="text" id="ordHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="full" id="checkoutTurnstileWrap" style="display:flex; justify-content:center; margin-top:14px;">
       <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf"></div>
     </div>
     <div style="display:flex; gap:10px; margin-top:18px;">
@@ -597,7 +604,8 @@
         <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
       </div>
       <textarea id="revComment" placeholder="نظرتون رو بنویسید..."></textarea>
-      <div class="full" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
+      <input type="text" id="revHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="full" id="reviewTurnstileWrap" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
         <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf"></div>
       </div>
       <button class="btn-primary full" style="grid-column:1/-1;" onclick="submitReview()">ثبت نظر</button>
@@ -1082,6 +1090,14 @@ const SUPABASE_URL = 'https://thovhvemaidbiekagome.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_bX7ApIxbBzjXkQNiLw2wDw_m0TzJ6Wb';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+let lastDataErrorDetail = '';
+function describeLoadError(e){
+  if(!e) return 'نامشخص';
+  if(typeof e === 'string') return e;
+  if(e.message) return e.message + (e.code ? ' (کد: '+e.code+')' : '');
+  if(e.name) return e.name;
+  try{ return JSON.stringify(e).slice(0,200); }catch(_){ return String(e); }
+}
 async function loadProductsFromDB(){
   try{
     const { data, error } = await sbClient.from('products').select('*');
@@ -1089,6 +1105,7 @@ async function loadProductsFromDB(){
       console.error('loadProductsFromDB: خطا در دریافت محصولات از Supabase', error);
       PRODUCTS = [];
       productsLoadError = true;
+      lastDataErrorDetail = describeLoadError(error);
       updateNewestIds();
       updateDataErrorBanner();
       return;
@@ -1105,6 +1122,7 @@ async function loadProductsFromDB(){
     console.error('loadProductsFromDB: استثنای غیرمنتظره (احتمالاً قطعی شبکه یا بلاک بودن Supabase)', e);
     PRODUCTS = [];
     productsLoadError = true;
+    lastDataErrorDetail = describeLoadError(e);
   }
   updateNewestIds();
   updateDataErrorBanner();
@@ -1127,6 +1145,7 @@ async function loadCategoriesFromDB(){
       console.error('loadCategoriesFromDB: خطا در دریافت دسته‌بندی‌ها از Supabase', error);
       CATEGORIES = [];
       categoriesLoadError = true;
+      lastDataErrorDetail = describeLoadError(error);
       renderMenuCategories();
       updateDataErrorBanner();
       return;
@@ -1137,14 +1156,18 @@ async function loadCategoriesFromDB(){
     console.error('loadCategoriesFromDB: استثنای غیرمنتظره (احتمالاً قطعی شبکه یا بلاک بودن Supabase)', e);
     CATEGORIES = [];
     categoriesLoadError = true;
+    lastDataErrorDetail = describeLoadError(e);
   }
   renderMenuCategories();
   updateDataErrorBanner();
 }
 function updateDataErrorBanner(){
   const banner = document.getElementById('dataErrorBanner');
+  const detailEl = document.getElementById('dataErrorDetail');
   if(!banner) return;
-  banner.style.display = (productsLoadError || categoriesLoadError) ? 'flex' : 'none';
+  const hasError = productsLoadError || categoriesLoadError;
+  banner.style.display = hasError ? 'flex' : 'none';
+  if(detailEl) detailEl.textContent = hasError ? ('جزئیات فنی: ' + lastDataErrorDetail) : '';
 }
 async function retryDataLoad(){
   const btn = document.getElementById('dataErrorRetryBtn');
@@ -1230,6 +1253,43 @@ async function verifyTurnstile(token){
     const data = await res.json();
     return !!data.success;
   }catch(e){ return false; }
+}
+
+/* ============ TURNSTILE FALLBACK (fail-open) ============
+   اگه اسکریپت Turnstile (از challenges.cloudflare.com) به هر دلیلی (مثلاً فیلترینگ) لود نشه،
+   کاربر رو تو تیک امنیتی گیر نمی‌ندازیم؛ به‌جاش یه فیلد honeypot نامرئی جایگزینش می‌شه. */
+let turnstileBlocked = false;
+function applyTurnstileFallbackUI(){
+  const wraps = ['checkoutTurnstileWrap', 'reviewTurnstileWrap'];
+  wraps.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.style.display = 'none';
+  });
+}
+const turnstileCheckPromise = new Promise(resolve=>{
+  setTimeout(()=>{
+    turnstileBlocked = (typeof window.turnstile === 'undefined');
+    if(turnstileBlocked){
+      console.warn('Turnstile fail-open: اسکریپت کلادفلر لود نشد (احتمالاً فیلترینگ)، حالت جایگزین (honeypot) فعال شد');
+      applyTurnstileFallbackUI();
+    }
+    resolve(turnstileBlocked);
+  }, 3500);
+});
+/* برمی‌گردونه: {ok:true} یعنی اجازه‌ی ادامه هست، {ok:false} یعنی رد بشه (بدون افشای دلیل به بات‌ها) */
+async function checkAntiSpam(widgetId, honeypotId){
+  await turnstileCheckPromise;
+  if(!turnstileBlocked){
+    const tsInput = document.querySelector('#'+widgetId+' input[name="cf-turnstile-response"]');
+    const tsToken = tsInput ? tsInput.value : '';
+    if(!tsToken) return {ok:false, reason:'no_token'};
+    const tsOk = await verifyTurnstile(tsToken);
+    if(!tsOk) return {ok:false, reason:'invalid_token'};
+    return {ok:true};
+  }
+  const honeypotEl = document.getElementById(honeypotId);
+  if(honeypotEl && honeypotEl.value){ return {ok:false, reason:'honeypot'}; }
+  return {ok:true};
 }
 function escapeHtml(str){
   if(str === null || str === undefined) return '';
@@ -1749,13 +1809,15 @@ async function submitReview(){
   const comment = document.getElementById('revComment').value.trim();
   if(!phone || !name || !comment || starVal === 0){ showToast('لطفا نام، شماره تلفن، امتیاز و نظر رو کامل کنید'); return; }
   if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
-  const tsInput = document.querySelector('#reviewTurnstileWidget input[name="cf-turnstile-response"]');
-  const tsToken = tsInput ? tsInput.value : '';
-  if(!tsToken){ showToast('لطفا تیک تایید امنیتی رو کامل کنید'); return; }
-  const tsOk = await verifyTurnstile(tsToken);
-  if(!tsOk){
-    showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
-    if(window.turnstile) turnstile.reset(document.getElementById('reviewTurnstileWidget'));
+  const spamCheck = await checkAntiSpam('reviewTurnstileWidget', 'revHoneypot');
+  if(!spamCheck.ok){
+    if(spamCheck.reason === 'no_token'){ showToast('لطفا تیک تایید امنیتی رو کامل کنید'); return; }
+    if(spamCheck.reason === 'invalid_token'){
+      showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
+      if(window.turnstile) turnstile.reset(document.getElementById('reviewTurnstileWidget'));
+      return;
+    }
+    showToast('ثبت نظر با خطا مواجه شد'); // honeypot: بدون افشای دلیل واقعی
     return;
   }
   const { data, error } = await sbClient.rpc('submit_review', {
@@ -1987,16 +2049,18 @@ async function submitOrder(){
 
   const shipping = shipEl.value;
 
-  const tsInput = document.querySelector('#checkoutTurnstileWidget input[name="cf-turnstile-response"]');
-  const tsToken = tsInput ? tsInput.value : '';
-  if(!tsToken){
-    showToast('لطفا تیک تایید امنیتی رو کامل کنید');
-    return;
-  }
-  const tsOk = await verifyTurnstile(tsToken);
-  if(!tsOk){
-    showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
-    if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
+  const spamCheck = await checkAntiSpam('checkoutTurnstileWidget', 'ordHoneypot');
+  if(!spamCheck.ok){
+    if(spamCheck.reason === 'no_token'){
+      showToast('لطفا تیک تایید امنیتی رو کامل کنید');
+      return;
+    }
+    if(spamCheck.reason === 'invalid_token'){
+      showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
+      if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
+      return;
+    }
+    showToast('ثبت سفارش با خطا مواجه شد، دوباره امتحان کنید'); // honeypot: بدون افشای دلیل واقعی
     return;
   }
 
