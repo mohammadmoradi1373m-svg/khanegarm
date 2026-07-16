@@ -7,10 +7,12 @@
 <meta name="description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی.">
 <meta property="og:title" content="خانه‌گرم | فروشگاه لوازم خانگی و شخصی">
 <meta property="og:description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی، ارسال به سراسر کشور.">
-<meta property="og:image" content="https://mohammadmoradi1373m-svg.github.io/khanegarm/og-image.jpg">
+<meta property="og:image" content="https://owli.ir/og-image.jpg">
+<meta property="og:url" content="https://owli.ir/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="enamad" content="18479006" />
+<link rel="canonical" href="https://owli.ir/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -992,6 +994,11 @@
         <li>فارس، کازرون</li>
       </ul></div>
     </div>
+    <div style="display:flex; justify-content:center; margin-bottom:20px;">
+      <a referrerpolicy="origin" target="_blank" href="https://trustseal.enamad.ir/?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK">
+        <img referrerpolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK" alt="نماد اعتماد الکترونیکی" style="cursor:pointer; width:80px; height:80px;" code="WjmLO94Leg1r6jcKtAov4ZTxyxywxroK">
+      </a>
+    </div>
     <div class="foot-bottom"><span>© ۱۴۰۴ خانه‌گرم</span><span>ساخته‌شده با ❤️</span></div>
   </div>
 </footer>
@@ -1346,9 +1353,33 @@ async function render(){
   if(path === '/admin'){ await renderAdminRoute(); }
   if(path === '/faq'){ renderFaq(); }
   if(path === '/guides'){ renderCommunityGuides(); }
+  updatePageTitle(path, params);
   window.scrollTo({top:0, behavior:'instant'});
   renderCart();
   renderMenuCategories();
+}
+const PAGE_TITLES = {
+  '/': 'خانه‌گرم | فروشگاه لوازم خانگی و شخصی',
+  '/products': 'محصولات | خانه‌گرم',
+  '/guides': 'یادداشت‌ها و راهنمای خرید | خانه‌گرم',
+  '/faq': 'سوالات متداول | خانه‌گرم',
+  '/about': 'درباره ما | خانه‌گرم',
+  '/contact': 'تماس با ما | خانه‌گرم',
+  '/terms': 'قوانین و حریم خصوصی | خانه‌گرم',
+  '/track': 'پیگیری سفارش | خانه‌گرم',
+  '/admin': 'پنل مدیریت | خانه‌گرم'
+};
+function updatePageTitle(path, params){
+  if(path === '/product' && params.id){
+    const p = findProduct(params.id);
+    document.title = p ? `${p.name} | خانه‌گرم` : 'محصول | خانه‌گرم';
+    return;
+  }
+  if(path === '/products' && params.cat){
+    document.title = `${catName(params.cat)} | خانه‌گرم`;
+    return;
+  }
+  document.title = PAGE_TITLES[path] || 'خانه‌گرم | فروشگاه لوازم خانگی و شخصی';
 }
 window.addEventListener('hashchange', render);
 
