@@ -735,11 +735,12 @@
   <div class="section-head">
     <div class="eyebrow">پنل مشتری</div>
     <h2>سفارش‌های من</h2>
-    <p>شماره تلفنی که هنگام سفارش وارد کردید رو وارد کنید تا سفارش‌هاتون رو ببینید.</p>
+    <p>شماره تلفن و کد پیگیری‌ای که هنگام ثبت سفارش بهتون داده شد رو وارد کنید.</p>
   </div>
   <div class="track-box">
-    <div style="display:flex; gap:10px;">
-      <input type="tel" id="trackPhone" placeholder="شماره تلفن" style="flex:1; min-width:0; border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <input type="tel" id="trackPhone" placeholder="شماره تلفن" maxlength="11" style="border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
+      <input type="text" id="trackOrderCode" placeholder="کد پیگیری سفارش (مثلاً KG-123456)" style="border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;">
       <button class="btn-primary" onclick="trackOrder()">ورود</button>
     </div>
     <div id="trackResult" style="margin-top:26px;"></div>
@@ -1991,30 +1992,24 @@ const PAY_STATUS_LABELS = { paid_cod:'پرداخت هنگام تحویل', await
 const PACKAGING_LABELS = { prepaid:'پیش‌پرداخت بسته‌بندی/ارسال', postpay:'پس‌کرایه' };
 async function trackOrder(){
   const phone = document.getElementById('trackPhone').value.trim();
+  const orderCode = document.getElementById('trackOrderCode').value.trim();
   const result = document.getElementById('trackResult');
-  if(!phone){ showToast('لطفا شماره تلفن رو وارد کنید'); return; }
+  if(!phone || !isValidPhone(phone)){ showToast('لطفا شماره تلفن معتبر وارد کنید'); return; }
+  if(!orderCode){ showToast('لطفا کد پیگیری سفارش رو وارد کنید'); return; }
   result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال جست‌وجو...</p>';
 
-  const { data: custData } = await sbClient.rpc('get_customer', { p_phone: phone });
-  const { data: ordersData, error } = await sbClient.rpc('get_customer_orders', { p_phone: phone });
+  const { data: ordersData, error } = await sbClient.rpc('get_order_by_phone_code', { p_phone: phone, p_order_code: orderCode });
 
   if(error || !ordersData || ordersData.length === 0){
-    result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز سفارشی با این شماره ثبت نشده. اگه تازه سفارش دادید، چند لحظه صبر کنید و دوباره امتحان کنید.</p>';
+    result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">سفارشی با این شماره تلفن و کد پیگیری پیدا نشد. لطفا دوباره چک کنید.</p>';
     return;
   }
 
-  const cust = (custData && custData[0]) ? custData[0] : null;
-  let html = '';
-  if(cust){
-    html += `<div class="card" style="margin-bottom:20px;">
-      <div style="font-weight:700; margin-bottom:4px;">${escapeHtml(cust.name)}</div>
-      <div style="font-size:13px; color:var(--ink-soft);">${escapeHtml(cust.address)}</div>
-    </div>`;
-  }
-
-  html += ordersData.map(o=>`
+  const html = ordersData.map(o=>`
     <div class="card" style="margin-bottom:16px;">
-      <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>کد سفارش</span><b style="font-family:'Vazirmatn';">${o.order_code}</b></div>
+      <div style="font-weight:700; margin-bottom:4px;">${escapeHtml(o.name)}</div>
+      <div style="font-size:13px; color:var(--ink-soft); margin-bottom:14px;">${o.province?escapeHtml(o.province)+'، ':''}${o.city?escapeHtml(o.city)+' — ':''}${escapeHtml(o.address)}</div>
+      <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>کد سفارش</span><b style="font-family:'Vazirmatn';">${escapeHtml(o.order_code)}</b></div>
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;"><span>روش ارسال</span><b>${escapeHtml(o.shipping)}</b></div>
       <div style="display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:${o.tracking_code?'6px':'0'};"><span>پرداخت</span><b>${PAY_STATUS_LABELS[o.payment_status] || o.payment_status}</b></div>
       ${o.tracking_code ? `<div style="display:flex; justify-content:space-between; font-size:13.5px;"><span>کد رهگیری پستی</span><b style="font-family:'Vazirmatn';">${escapeHtml(o.tracking_code)}</b></div><p style="font-size:12px; color:var(--ink-soft); margin-top:6px;">برای اطلاع از زمان دقیق تحویل، با همین کد رهگیری از سایت شرکت پستی/باربری مربوطه پیگیری کنید.</p>` : ''}
