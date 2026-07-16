@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>خانه‌گرم | فروشگاه لوازم خانگی و شخصی</title>
-<meta name="description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی.">
+<meta name="description" id="metaDescTag" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی.">
 <meta property="og:title" content="خانه‌گرم | فروشگاه لوازم خانگی و شخصی">
 <meta property="og:description" content="از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی، ارسال به سراسر کشور.">
-<meta property="og:image" content="https://mohammadmoradi1373m-svg.github.io/khanegarm/og-image.jpg">
+<meta property="og:image" content="https://owli.ir/og-image.jpg">
+<meta property="og:url" content="https://owli.ir/">
+<link rel="canonical" href="https://owli.ir/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="enamad" content="18479006" />
@@ -1318,6 +1320,46 @@ document.addEventListener('click', (e)=>{
   });
 });
 
+/* ============ SEO: دینامیک‌کردن عنوان و توضیحات صفحه ============ */
+const SITE_TITLE = 'خانه‌گرم | فروشگاه لوازم خانگی و شخصی';
+const DEFAULT_DESC = 'از ابزار مراقبت شخصی تا لوازم خانگی، با کیفیت مطمئن و پشتیبانی واقعی.';
+function setPageMeta(title, description){
+  document.title = title || SITE_TITLE;
+  const tag = document.getElementById('metaDescTag');
+  if(tag) tag.setAttribute('content', description || DEFAULT_DESC);
+}
+function truncateDesc(text, max){
+  max = max || 155;
+  if(!text) return DEFAULT_DESC;
+  return text.length > max ? text.slice(0, max - 1).trim() + '…' : text;
+}
+function updatePageMeta(path, params){
+  if(path === '/'){
+    setPageMeta(SITE_TITLE, DEFAULT_DESC);
+  } else if(path === '/products'){
+    const cat = params.cat ? catName(params.cat) : null;
+    setPageMeta(cat ? `${cat} | خانه‌گرم` : `همه محصولات | خانه‌گرم`, DEFAULT_DESC);
+  } else if(path === '/product'){
+    const p = findProduct(params.id);
+    if(p){ setPageMeta(`${p.name} | خانه‌گرم`, truncateDesc(p.desc)); }
+    else { setPageMeta(`محصول | خانه‌گرم`, DEFAULT_DESC); }
+  } else if(path === '/guides'){
+    setPageMeta('راهنمای خرید و نگهداری | خانه‌گرم', 'چند نکته‌ی کاربردی قبل از خرید و برای نگهداری بهتر لوازم خانگی و شخصی.');
+  } else if(path === '/faq'){
+    setPageMeta('سوالات متداول | خانه‌گرم', 'پاسخ به پرتکرارترین سوالات درباره‌ی ارسال، بازگشت کالا و پیگیری سفارش.');
+  } else if(path === '/about'){
+    setPageMeta('درباره ما | خانه‌گرم', 'خانه‌گرم؛ عرضه‌ی لوازم خانگی و شخصی با کیفیت مطمئن و پشتیبانی واقعی، مستقر در فارس، کازرون.');
+  } else if(path === '/contact'){
+    setPageMeta('تماس با ما | خانه‌گرم', 'راه‌های ارتباط با پشتیبانی خانه‌گرم؛ تلفن، واتساپ و آدرس.');
+  } else if(path === '/terms'){
+    setPageMeta('قوانین و حریم خصوصی | خانه‌گرم', DEFAULT_DESC);
+  } else if(path === '/track'){
+    setPageMeta('پیگیری سفارش | خانه‌گرم', DEFAULT_DESC);
+  } else {
+    setPageMeta(SITE_TITLE, DEFAULT_DESC);
+  }
+}
+
 /* ============ ROUTER ============ */
 function parseHash(){
   let h = location.hash.replace(/^#/,'') || '/';
@@ -1346,6 +1388,7 @@ async function render(){
   if(path === '/admin'){ await renderAdminRoute(); }
   if(path === '/faq'){ renderFaq(); }
   if(path === '/guides'){ renderCommunityGuides(); }
+  updatePageMeta(path, params);
   window.scrollTo({top:0, behavior:'instant'});
   renderCart();
   renderMenuCategories();
