@@ -36,6 +36,10 @@
 
   /* header + hamburger menu */
   header{position:sticky; top:0; z-index:60; background:rgba(255,247,236,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  #dataErrorBanner{display:none; align-items:center; justify-content:center; gap:10px; background:var(--rust); color:#fff; padding:8px 16px; font-size:12.5px; font-weight:600; flex-wrap:wrap; text-align:center;}
+  #dataErrorBanner button{background:#fff; color:var(--rust); border:none; padding:6px 14px; border-radius:100px; font-weight:700; font-size:12px; cursor:pointer; flex-shrink:0;}
+  #dataErrorBanner button:disabled{opacity:.6; cursor:default;}
+  .hp-field{position:absolute; left:-9999px; top:-9999px; width:0; height:0; overflow:hidden; opacity:0;}
   .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 24px; gap:12px;}
   .nav-left{display:flex; align-items:center; gap:10px;}
   .burger{
@@ -372,6 +376,13 @@
       <button class="cart-btn" onclick="openCart()" aria-label="سبد خرید">🛍️ سبد خرید<span class="cart-count" id="cartCount" style="display:none;">۰</span></button>
     </div>
   </div>
+  <div id="dataErrorBanner">
+    <div style="display:flex; flex-direction:column; gap:3px; text-align:center;">
+      <span>⚠️ مشکل در اتصال به سرور، اطلاعات لود نشد.</span>
+      <span id="dataErrorDetail" style="font-size:11px; font-weight:400; opacity:.9; direction:ltr; word-break:break-all;"></span>
+    </div>
+    <button id="dataErrorRetryBtn" onclick="retryDataLoad()">تلاش دوباره</button>
+  </div>
 </header>
 
 <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
@@ -475,8 +486,9 @@
         <input type="text" id="payRef" placeholder="۴ رقم آخر کارت یا کد پیگیری تراکنش" style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:14px;">
       </div>
     </div>
-    <div class="full" style="display:flex; justify-content:center; margin-top:14px;">
-      <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf"></div>
+    <input type="text" id="ordHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="full" id="checkoutTurnstileWrap" style="display:flex; justify-content:center; margin-top:14px;">
+      <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf" data-error-callback="onTurnstileScriptError"></div>
     </div>
     <div style="display:flex; gap:10px; margin-top:18px;">
       <button class="btn-primary" id="submitOrderBtn" style="flex:1;" onclick="submitOrder()">ثبت نهایی سفارش</button>
@@ -586,8 +598,9 @@
         <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
       </div>
       <textarea id="revComment" placeholder="نظرتون رو بنویسید..."></textarea>
-      <div class="full" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
-        <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf"></div>
+      <input type="text" id="revHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="full" id="reviewTurnstileWrap" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
+        <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf" data-error-callback="onTurnstileScriptError"></div>
       </div>
       <button class="btn-primary full" style="grid-column:1/-1;" onclick="submitReview()">ثبت نظر</button>
     </div>
@@ -1003,7 +1016,37 @@
 <a class="chat-fab" href="https://wa.me/989999439534?text=%D8%B3%D9%84%D8%A7%D9%85%D8%8C%20%D8%B3%D9%88%D8%A7%D9%84%DB%8C%20%D8%AF%D8%A7%D8%B4%D8%AA%D9%85" target="_blank" rel="noopener" aria-label="گفتگو در واتساپ" style="text-decoration:none;">💬</a>
 
 <script src="supabase.min.js"></script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script>
+  /* این بخش زودتر از اسکریپت Turnstile تعریف می‌شه تا onload/onerror و data-error-callback همیشه پیداش کنن
+     (چون async باعث می‌شه اجرای اسکریپت کلادفلر گاهی خیلی زود اتفاق بیفته) */
+  window.turnstileBlocked = false;
+  window.turnstileResolved = false;
+  let _resolveTurnstileCheck;
+  window.turnstileCheckPromise = new Promise(resolve=>{ _resolveTurnstileCheck = resolve; });
+  function applyTurnstileFallbackUI(){
+    ['checkoutTurnstileWrap', 'reviewTurnstileWrap'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.style.display = 'none';
+    });
+  }
+  function finalizeTurnstileCheck(blocked){
+    if(window.turnstileResolved) return;
+    window.turnstileResolved = true;
+    window.turnstileBlocked = blocked;
+    if(blocked){
+      console.warn('Turnstile fail-open: اسکریپت/ویجت کلادفلر لود نشد (احتمالاً فیلترینگ)، حالت جایگزین (honeypot) فعال شد');
+      applyTurnstileFallbackUI();
+    }
+    _resolveTurnstileCheck(blocked);
+  }
+  function onTurnstileScriptLoad(){ finalizeTurnstileCheck(false); }
+  function onTurnstileScriptError(){ finalizeTurnstileCheck(true); }
+  document.addEventListener('DOMContentLoaded', ()=>{ if(window.turnstileBlocked) applyTurnstileFallbackUI(); });
+  // backstop: بعضی وقتا سانسور نه لود می‌کنه نه ارور می‌ده (فقط بی‌نهایت معطل می‌مونه)؛
+  // اگه بعد از ۶ ثانیه هنوز مشخص نشده بود، فرض می‌کنیم بلاکه
+  setTimeout(()=> finalizeTurnstileCheck(typeof window.turnstile === 'undefined'), 6000);
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer onload="onTurnstileScriptLoad()" onerror="onTurnstileScriptError()"></script>
 <script>
 /* ============ DATA ============ */
 let PRODUCTS = [];
@@ -1055,10 +1098,47 @@ const SUPABASE_URL = 'https://thovhvemaidbiekagome.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_bX7ApIxbBzjXkQNiLw2wDw_m0TzJ6Wb';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+let productsLoadError = false;
+let categoriesLoadError = false;
+function describeLoadError(e){
+  if(!e) return 'نامشخص';
+  if(typeof e === 'string') return e;
+  if(e.message) return e.message + (e.code ? ' (کد: '+e.code+')' : '');
+  if(e.name) return e.name;
+  try{ return JSON.stringify(e).slice(0,200); }catch(_){ return String(e); }
+}
+function updateDataErrorBanner(){
+  const banner = document.getElementById('dataErrorBanner');
+  const detail = document.getElementById('dataErrorDetail');
+  if(!banner) return;
+  const hasError = productsLoadError || categoriesLoadError;
+  banner.style.display = hasError ? 'flex' : 'none';
+  if(hasError && detail) detail.textContent = lastDataErrorDetail || '';
+}
+async function retryDataLoad(){
+  const btn = document.getElementById('dataErrorRetryBtn');
+  if(btn){ btn.disabled = true; btn.textContent = 'در حال تلاش...'; }
+  await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
+  if(btn){ btn.disabled = false; btn.textContent = 'تلاش دوباره'; }
+  if(!productsLoadError && !categoriesLoadError){
+    showToast('اتصال برقرار شد ✅');
+    render();
+  }
+}
+let lastDataErrorDetail = '';
 async function loadProductsFromDB(){
   try{
     const { data, error } = await sbClient.from('products').select('*');
-    if(error || !data){ PRODUCTS = []; return; }
+    if(error || !data){
+      console.error('loadProductsFromDB: خطا در دریافت محصولات از Supabase', error);
+      PRODUCTS = [];
+      productsLoadError = true;
+      lastDataErrorDetail = describeLoadError(error);
+      updateNewestIds();
+      updateDataErrorBanner();
+      return;
+    }
+    productsLoadError = false;
     PRODUCTS = data.map(row => ({
       id: row.id, cat: row.cat, tag: row.tag, code: row.code, name: row.name, price: row.price,
       stock: row.stock, img: row.img_url, images: Array.isArray(row.images) ? row.images : [],
@@ -1066,8 +1146,14 @@ async function loadProductsFromDB(){
       views: row.views || 0,
       features: Array.isArray(row.features) ? row.features : []
     }));
-  }catch(e){ PRODUCTS = []; }
+  }catch(e){
+    console.error('loadProductsFromDB: exception', e);
+    PRODUCTS = [];
+    productsLoadError = true;
+    lastDataErrorDetail = describeLoadError(e);
+  }
   updateNewestIds();
+  updateDataErrorBanner();
 }
 function productSortCode(p){
   const c = parseInt(p.code, 10);
@@ -1083,9 +1169,24 @@ function updateNewestIds(){
 async function loadCategoriesFromDB(){
   try{
     const { data, error } = await sbClient.from('categories').select('*').order('sort_order');
-    if(error || !data){ CATEGORIES = []; return; }
+    if(error || !data){
+      console.error('loadCategoriesFromDB: خطا در دریافت دسته‌بندی‌ها از Supabase', error);
+      CATEGORIES = [];
+      categoriesLoadError = true;
+      lastDataErrorDetail = lastDataErrorDetail || describeLoadError(error);
+      updateDataErrorBanner();
+      renderMenuCategories();
+      return;
+    }
+    categoriesLoadError = false;
     CATEGORIES = data;
-  }catch(e){ CATEGORIES = []; }
+  }catch(e){
+    console.error('loadCategoriesFromDB: exception', e);
+    CATEGORIES = [];
+    categoriesLoadError = true;
+    lastDataErrorDetail = lastDataErrorDetail || describeLoadError(e);
+  }
+  updateDataErrorBanner();
   renderMenuCategories();
 }
 function catName(id){
@@ -1165,6 +1266,23 @@ async function verifyTurnstile(token){
     const data = await res.json();
     return !!data.success;
   }catch(e){ return false; }
+}
+/* هانی‌پات همیشه چک می‌شه (چه Turnstile فعال باشه چه نه) — لایه‌ی اضافه‌ی رایگان.
+   Turnstile فقط وقتی که واقعاً بلاک (فیلتر) تشخیص داده بشه دور زده می‌شه.
+   برمی‌گردونه: {ok:true, viaFallback} یا {ok:false, reason} (بدون افشای دلیل دقیق به بات‌ها تو پیام) */
+async function checkAntiSpam(widgetId, honeypotId){
+  const honeypotEl = document.getElementById(honeypotId);
+  if(honeypotEl && honeypotEl.value){ return {ok:false, reason:'honeypot'}; }
+  await window.turnstileCheckPromise;
+  if(!window.turnstileBlocked){
+    const tsInput = document.querySelector('#'+widgetId+' input[name="cf-turnstile-response"]');
+    const tsToken = tsInput ? tsInput.value : '';
+    if(!tsToken) return {ok:false, reason:'no_token'};
+    const tsOk = await verifyTurnstile(tsToken);
+    if(!tsOk) return {ok:false, reason:'invalid_token'};
+    return {ok:true, viaFallback:false};
+  }
+  return {ok:true, viaFallback:true};
 }
 function escapeHtml(str){
   if(str === null || str === undefined) return '';
@@ -1577,6 +1695,11 @@ async function renderDeliveredCount(){
 let currentProdCat = undefined;
 let productPage = 1;
 const PRODUCTS_PER_PAGE = 12;
+function removeBrandFilter(el){
+  // مقدار cat رو از data-attribute می‌خونیم (نه از تزریق مستقیم تو رشته‌ی onclick) تا از XSS جلوگیری بشه
+  const cat = el.getAttribute('data-cat');
+  go('/products' + (cat ? '?cat=' + encodeURIComponent(cat) : ''));
+}
 function goToProductPage(n){
   productPage = n;
   renderProductList(currentProdCat, undefined, currentProdBrand);
@@ -1599,7 +1722,7 @@ function renderProductList(cat, presetQuery, brand){
   if(query){ list = list.filter(p=> p.name.toLowerCase().includes(query) || (p.tag||'').toLowerCase().includes(query) || (p.brand||'').toLowerCase().includes(query)); }
   title.textContent = cat ? catName(cat) : 'همه محصولات'; // textContent است، نیازی به escape ندارد
   if(brandChipBox){
-    brandChipBox.innerHTML = brand ? `<div style="display:inline-flex; align-items:center; gap:6px; background:var(--bg-alt); border:1px solid var(--line); border-radius:100px; padding:6px 12px; font-size:13px; margin-top:8px;">🏷️ ${escapeHtml(brand)} <span style="cursor:pointer; color:var(--rust); font-weight:700;" onclick="go('/products${cat?'?cat='+cat:''}')">✕</span></div>` : '';
+    brandChipBox.innerHTML = brand ? `<div style="display:inline-flex; align-items:center; gap:6px; background:var(--bg-alt); border:1px solid var(--line); border-radius:100px; padding:6px 12px; font-size:13px; margin-top:8px;">🏷️ ${escapeHtml(brand)} <span style="cursor:pointer; color:var(--rust); font-weight:700;" data-cat="${escapeHtml(cat||'')}" onclick="removeBrandFilter(this)">✕</span></div>` : '';
   }
   const filterRow = document.getElementById('prodFilterRow');
   if(filterRow){
@@ -1708,7 +1831,7 @@ async function renderReviews(pid){
     <div class="review-item">
       <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
       <p>${escapeHtml(r.comment)}</p>
-      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${maskPhone(escapeHtml(r.phone))}</div>
+      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${escapeHtml(maskPhone(r.phone))}</div>
     </div>`).join('');
 }
 function maskPhone(phone){
@@ -1723,20 +1846,23 @@ async function submitReview(){
   const comment = document.getElementById('revComment').value.trim();
   if(!phone || !name || !comment || starVal === 0){ showToast('لطفا نام، شماره تلفن، امتیاز و نظر رو کامل کنید'); return; }
   if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
-  const tsInput = document.querySelector('#reviewTurnstileWidget input[name="cf-turnstile-response"]');
-  const tsToken = tsInput ? tsInput.value : '';
-  if(!tsToken){ showToast('لطفا تیک تایید امنیتی رو کامل کنید'); return; }
-  const tsOk = await verifyTurnstile(tsToken);
-  if(!tsOk){
-    showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
-    if(window.turnstile) turnstile.reset(document.getElementById('reviewTurnstileWidget'));
+  const spamCheck = await checkAntiSpam('reviewTurnstileWidget', 'revHoneypot');
+  if(!spamCheck.ok){
+    if(spamCheck.reason === 'no_token'){ showToast('لطفا تیک تایید امنیتی رو کامل کنید'); return; }
+    if(spamCheck.reason === 'invalid_token'){
+      showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
+      if(window.turnstile) turnstile.reset(document.getElementById('reviewTurnstileWidget'));
+      return;
+    }
+    showToast('ثبت نظر با خطا مواجه شد'); // honeypot: بدون افشای دلیل واقعی به بات‌ها
     return;
   }
   const { data, error } = await sbClient.rpc('submit_review', {
-    p_product_id: pid, p_phone: phone, p_name: name, p_rating: starVal, p_comment: comment
+    p_product_id: pid, p_phone: phone, p_name: name, p_rating: starVal, p_comment: comment,
+    p_via_fallback: spamCheck.viaFallback
   });
   if(error){ showToast('ثبت نظر با خطا مواجه شد'); return; }
-  if(data === 'limit_reached'){ showToast('شما امروز ۳ نظر ثبت کردید؛ فردا دوباره امتحان کنید'); return; }
+  if(data === 'limit_reached'){ showToast(spamCheck.viaFallback ? 'شما امروز ۱ نظر (حالت جایگزین امنیتی) ثبت کردید؛ فردا دوباره امتحان کنید' : 'شما امروز ۳ نظر ثبت کردید؛ فردا دوباره امتحان کنید'); return; }
   document.getElementById('revPhone').value='';
   document.getElementById('revName').value='';
   document.getElementById('revComment').value='';
@@ -1961,16 +2087,18 @@ async function submitOrder(){
 
   const shipping = shipEl.value;
 
-  const tsInput = document.querySelector('#checkoutTurnstileWidget input[name="cf-turnstile-response"]');
-  const tsToken = tsInput ? tsInput.value : '';
-  if(!tsToken){
-    showToast('لطفا تیک تایید امنیتی رو کامل کنید');
-    return;
-  }
-  const tsOk = await verifyTurnstile(tsToken);
-  if(!tsOk){
-    showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
-    if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
+  const spamCheck = await checkAntiSpam('checkoutTurnstileWidget', 'ordHoneypot');
+  if(!spamCheck.ok){
+    if(spamCheck.reason === 'no_token'){
+      showToast('لطفا تیک تایید امنیتی رو کامل کنید');
+      return;
+    }
+    if(spamCheck.reason === 'invalid_token'){
+      showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
+      if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
+      return;
+    }
+    showToast('ثبت سفارش با خطا مواجه شد، دوباره امتحان کنید'); // honeypot: بدون افشای دلیل واقعی به بات‌ها
     return;
   }
 
@@ -1987,7 +2115,8 @@ async function submitOrder(){
     p_name: name, p_phone: phone, p_address: address, p_shipping: shipping,
     p_items: items, p_subtotal: subtotal, p_payment_method: paymentMethod, p_payment_ref: paymentRef,
     p_province: province, p_city: city, p_postal_code: postalCode,
-    p_packaging_option: packagingOption, p_packaging_fee: packagingFee
+    p_packaging_option: packagingOption, p_packaging_fee: packagingFee,
+    p_via_fallback: spamCheck.viaFallback
   });
 
   btn.disabled = false;
@@ -2033,7 +2162,6 @@ async function submitOrder(){
 
 /* ============ ORDER TRACKING ============ */
 const STAGE_NAMES = ['در حال بسته‌بندی','تحویل داده‌شده به پست/باربری','در حال ارسال'];
-const PAY_LABELS = { cod:'پرداخت هنگام تحویل', card:'کارت به کارت', online:'پرداخت آنلاین' };
 const PAY_STATUS_LABELS = { paid_cod:'پرداخت هنگام تحویل', awaiting_confirmation:'در انتظار تایید واریز', confirmed:'پرداخت تایید شد' };
 const PACKAGING_LABELS = { prepaid:'پیش‌پرداخت بسته‌بندی/ارسال', postpay:'پس‌کرایه' };
 async function trackOrder(){
@@ -2312,6 +2440,7 @@ function filterAdminOrders(){
   box.innerHTML = list.map((o)=>`
     <div class="admin-order">
       <div class="row"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="order-check" value="${o.id}" ${selectedOrderIds.has(o.id)?'checked':''} onchange="toggleOrderSelect('${o.id}', this.checked)"><b>${escapeHtml(o.name)}</b></label><span class="status-badge">${STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)]}</span></div>
+      ${o.via_fallback ? `<div class="row" style="font-size:11.5px; color:var(--rust);"><span>⚠️ این سفارش بدون تایید امنیتی Turnstile ثبت شده (حالت جایگزین)</span></div>` : ''}
       <div class="row" style="font-size:12px; color:var(--ink-soft);"><span>🗓️ ${new Date(o.created_at).toLocaleDateString('fa-IR')}</span></div>
       <div class="row"><span>📞 ${escapeHtml(o.phone)}</span><span>🚚 ${escapeHtml(o.shipping)}</span></div>
       <div class="row"><span>📍 ${o.province?escapeHtml(o.province)+'، ':''}${o.city?escapeHtml(o.city)+' — ':''}${escapeHtml(o.address)}</span></div>
@@ -2689,8 +2818,13 @@ async function openProductForm(id, presetCat){
     document.getElementById('pfFeatures').value = '';
     document.getElementById('pfSaveBtn').removeAttribute('data-edit-id');
     pfExistingImages = [];
+    const saveBtn = document.getElementById('pfSaveBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'در حال آماده‌سازی کد...';
     sbClient.rpc('get_next_product_code').then(({data, error})=>{
       if(!error && data) document.getElementById('pfCode').value = data;
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'ذخیره';
     });
   }
   renderPfImagePreview();
@@ -2762,6 +2896,7 @@ async function renderAdminReviews(){
   box.innerHTML = visible.map(r=>`
     <div class="admin-order">
       <div class="row"><b>${escapeHtml(r.name)||'بدون نام'}</b><span class="status-badge">${r.status==='approved'?'تاییدشده':'در انتظار بررسی'}</span></div>
+      ${r.via_fallback ? `<div class="row" style="font-size:11.5px; color:var(--rust);"><span>⚠️ بدون تایید امنیتی Turnstile ثبت شده</span></div>` : ''}
       <div class="row"><span>📞 ${escapeHtml(r.phone)}</span><span>${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span></div>
       <textarea id="revEdit-${r.id}" style="width:100%; margin:8px 0; border:1px solid var(--line); border-radius:8px; padding:8px; font-family:inherit; font-size:13px;">${escapeHtml(r.comment)}</textarea>
       <div class="btns">
