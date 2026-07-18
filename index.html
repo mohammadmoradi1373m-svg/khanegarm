@@ -13,6 +13,8 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="enamad" content="18479006" />
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="alternate icon" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -577,7 +579,7 @@
     <div id="prodBrandChip"></div>
   </div>
   <div style="max-width:420px; margin:0 auto 22px;">
-    <input type="text" id="productSearch" placeholder="جست‌وجوی محصول..." oninput="productPage=1; renderProductList(currentProdCat, undefined, currentProdBrand)"
+    <input type="text" id="productSearch" placeholder="جست‌وجوی محصول..." oninput="debouncedProductSearch()"
       style="width:100%; border:1px solid var(--line); border-radius:100px; padding:12px 18px; font-family:inherit; font-size:14px; background:var(--card);">
   </div>
   <div class="filter-row" style="display:flex; gap:9px; justify-content:center; margin-bottom:32px; flex-wrap:wrap;" id="prodFilterRow"></div>
@@ -891,8 +893,8 @@
       <select id="pfCat" class="full" style="border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-family:inherit;"></select>
       <input type="text" id="pfTag" placeholder="برچسب (مثلا ماشین اصلاح)" class="full">
       <input type="text" id="pfBrand" placeholder="برند (مثلا فیلیپس، وگا، VGR)" class="full">
-      <input type="number" id="pfPrice" placeholder="قیمت (تومان)">
-      <input type="number" id="pfStock" placeholder="موجودی">
+      <input type="number" id="pfPrice" placeholder="قیمت (تومان)" min="0">
+      <input type="number" id="pfStock" placeholder="موجودی" min="0">
       <textarea id="pfDesc" placeholder="توضیحات" class="full"></textarea>
       <input type="text" id="pfCode" placeholder="در حال تولید خودکار..." class="full" disabled style="background:var(--bg-alt); color:var(--ink-soft);">
       <textarea id="pfFeatures" placeholder="ویژگی‌ها (هر خط یک ویژگی)" class="full"></textarea>
@@ -1146,6 +1148,7 @@ async function loadProductsFromDB(){
       views: row.views || 0,
       features: Array.isArray(row.features) ? row.features : []
     }));
+    pruneCartOfMissingProducts();
   }catch(e){
     console.error('loadProductsFromDB: exception', e);
     PRODUCTS = [];
@@ -1226,6 +1229,13 @@ const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
 function toFa(n){ return String(n).replace(/\d/g, d=>faDigits[d]); }
 function formatToman(n){ return toFa(n.toLocaleString('en-US')) + ' تومان'; }
 function findProduct(id){ return PRODUCTS.find(p=>p.id===id); }
+function pruneCartOfMissingProducts(){
+  // فقط وقتی لود محصولات موفق بوده صدا زده می‌شه (نه موقع خطای شبکه/فیلترینگ)،
+  // وگرنه یه قطعی موقت می‌تونست کل سبد خرید مشتری رو اشتباهی خالی کنه
+  const before = cart.length;
+  cart = cart.filter(item => !!findProduct(item.id));
+  if(cart.length !== before) saveJSON('kg_cart', cart);
+}
 function compressImage(file, maxDim, quality){
   maxDim = maxDim || 1280; quality = quality || 0.8;
   return new Promise((resolve)=>{
@@ -1713,6 +1723,14 @@ function goToProductPage(n){
   document.getElementById('fullProductGrid').scrollIntoView({behavior:'smooth', block:'start'});
 }
 let currentProdBrand = undefined;
+let productSearchDebounceTimer = null;
+function debouncedProductSearch(){
+  clearTimeout(productSearchDebounceTimer);
+  productSearchDebounceTimer = setTimeout(()=>{
+    productPage = 1;
+    renderProductList(currentProdCat, undefined, currentProdBrand);
+  }, 200);
+}
 function renderProductList(cat, presetQuery, brand){
   if(currentProdCat !== cat || currentProdBrand !== brand) productPage = 1;
   currentProdCat = cat;
@@ -2179,6 +2197,10 @@ async function trackOrder(){
 
   const { data: ordersData, error } = await sbClient.rpc('get_order_by_phone_code', { p_phone: phone, p_order_code: orderCode });
 
+  if(error && (error.message||'').includes('RATE_LIMITED')){
+    result.innerHTML = '<p style="text-align:center; color:var(--rust);">تعداد تلاش‌های شما برای پیگیری زیاد بوده؛ لطفا ۱ ساعت دیگه دوباره امتحان کنید.</p>';
+    return;
+  }
   if(error || !ordersData || ordersData.length === 0){
     result.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">سفارشی با این شماره تلفن و کد پیگیری پیدا نشد. لطفا دوباره چک کنید.</p>';
     return;
@@ -2795,7 +2817,7 @@ function removePfNewFile(i){ pfNewFiles.splice(i,1); renderPfImagePreview(); }
 async function openProductForm(id, presetCat){
   document.getElementById('pfImage').value = '';
   pfNewFiles = [];
-  document.getElementById('pfCat').innerHTML = CATEGORIES.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  document.getElementById('pfCat').innerHTML = CATEGORIES.map(c=>`<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`).join('');
   if(id){
     const p = adminProductsCache.find(x=>x.id===id);
     document.getElementById('productModalTitle').textContent = 'ویرایش محصول';
@@ -2850,6 +2872,7 @@ async function saveProduct(){
   const features = document.getElementById('pfFeatures').value.split('\n').map(s=>s.trim()).filter(Boolean);
 
   if(!name || isNaN(price) || isNaN(stock)){ showToast('لطفا نام، قیمت و موجودی رو درست وارد کنید'); return; }
+  if(price < 0 || stock < 0){ showToast('قیمت و موجودی نمی‌تونن منفی باشن'); return; }
 
   btn.disabled = true; btn.textContent = 'در حال ذخیره...';
 
