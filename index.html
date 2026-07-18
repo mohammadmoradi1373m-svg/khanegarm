@@ -1204,7 +1204,7 @@ function renderMenuCategories(){
         <a class="menu-item" onclick="navGo('/products?cat=${c.id}')">${escapeHtml(c.emoji)||'📦'} ${escapeHtml(c.name)}</a>
         ${hasBrands ? `<button type="button" class="menu-cat-caret" onclick="toggleBrandSub(this)">▾</button>` : ''}
       </div>
-      ${hasBrands ? `<div class="menu-sub-brand">${brands.map(b=>`<a class="menu-item" onclick="navGo('/products?cat=${c.id}&brand=${encodeURIComponent(b)}')">${escapeHtml(b)}</a>`).join('')}</div>` : ''}
+      ${hasBrands ? `<div class="menu-sub-brand">${brands.map(b=>`<a class="menu-item" data-cat="${escapeHtml(c.id)}" data-brand="${escapeHtml(b)}" onclick="navGoBrand(this)">${escapeHtml(b)}</a>`).join('')}</div>` : ''}
     </div>`;
   }).join('')
     + `<a class="menu-item" onclick="navGo('/products')">مشاهده همه محصولات</a>`;
@@ -1524,6 +1524,13 @@ function toggleMenu(){
 function navGo(hash){
   toggleMenu();
   go(hash);
+}
+function navGoBrand(el){
+  // مقادیر cat/brand رو از data-attribute می‌خونیم (نه تزریق مستقیم تو رشته‌ی onclick) تا از XSS جلوگیری بشه
+  const cat = el.getAttribute('data-cat');
+  const brand = el.getAttribute('data-brand');
+  toggleMenu();
+  go('/products?cat=' + encodeURIComponent(cat) + '&brand=' + encodeURIComponent(brand));
 }
 function toggleGroup(head){
   const sub = head.nextElementSibling;
@@ -2936,7 +2943,7 @@ async function renderAdminTodos(){
   box.innerHTML = data.map(t=>`
     <div class="admin-order" style="display:flex; align-items:center; gap:12px; padding:14px 16px;">
       <input type="checkbox" ${t.done?'checked':''} onchange="toggleTodoDone('${t.id}', this.checked)" style="width:20px; height:20px; flex-shrink:0;">
-      <span style="flex:1; ${t.done?'text-decoration:line-through; color:var(--ink-soft);':''}">${t.text}</span>
+      <span style="flex:1; ${t.done?'text-decoration:line-through; color:var(--ink-soft);':''}">${escapeHtml(t.text)}</span>
       <button onclick="deleteTodo('${t.id}')" style="color:var(--rust); background:none; border:none; cursor:pointer; font-size:16px;">🗑️</button>
     </div>
   `).join('');
