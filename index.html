@@ -1822,7 +1822,7 @@ document.getElementById('starPick').addEventListener('click', (e)=>{
 async function renderReviews(pid){
   const box = document.getElementById('reviewList');
   box.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">در حال بارگذاری نظرات...</p>';
-  const { data, error } = await sbClient.from('reviews').select('*').eq('product_id', pid).order('created_at', {ascending:false});
+  const { data, error } = await sbClient.rpc('get_product_reviews', { p_product_id: pid });
   if(error || !data || data.length === 0){
     box.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">هنوز نظری ثبت نشده. اولین نفر باشید!</p>';
     return;
@@ -1831,12 +1831,8 @@ async function renderReviews(pid){
     <div class="review-item">
       <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
       <p>${escapeHtml(r.comment)}</p>
-      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${escapeHtml(maskPhone(r.phone))}</div>
+      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${escapeHtml(r.phone_masked)}</div>
     </div>`).join('');
-}
-function maskPhone(phone){
-  if(!phone || phone.length < 4) return phone||'';
-  return phone.slice(0,4) + '***' + phone.slice(-2);
 }
 async function submitReview(){
   const {params} = parseHash();
@@ -1896,8 +1892,10 @@ async function submitGuide(){
   const title = document.getElementById('subTitle').value.trim();
   const body = document.getElementById('subBody').value.trim();
   if(!name || !phone || !title || !body){ showToast('لطفا همه فیلدها رو تکمیل کنید'); return; }
-  const { error } = await sbClient.from('guide_submissions').insert({name, phone, title, body});
+  if(!isValidPhone(phone)){ showToast('شماره تلفن معتبر نیست (باید ۱۱ رقم و با ۰۹ شروع بشه)'); return; }
+  const { data, error } = await sbClient.rpc('submit_guide_suggestion', { p_name: name, p_phone: phone, p_title: title, p_body: body });
   if(error){ showToast('ارسال با خطا مواجه شد'); return; }
+  if(data === 'limit_reached'){ showToast('شما امروز ۳ مطلب ارسال کردید؛ فردا دوباره امتحان کنید'); return; }
   document.getElementById('subName').value='';
   document.getElementById('subPhone').value='';
   document.getElementById('subTitle').value='';
