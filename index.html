@@ -1227,6 +1227,11 @@ let cart = loadJSON('kg_cart', []);
 
 const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
 function toFa(n){ return String(n).replace(/\d/g, d=>faDigits[d]); }
+function tehranDateStr(d){
+  // تاریخ رو همیشه بر اساس تایم‌زون تهران به فرمت YYYY-MM-DD برمی‌گردونه —
+  // مستقل از تایم‌زون دستگاه ادمین، تا با record_site_visit() سمت دیتابیس (که Asia/Tehran استفاده می‌کنه) هماهنگ بمونه
+  return (d || new Date()).toLocaleDateString('en-CA', {timeZone:'Asia/Tehran'});
+}
 function formatToman(n){ return toFa(n.toLocaleString('en-US')) + ' تومان'; }
 function findProduct(id){ return PRODUCTS.find(p=>p.id===id); }
 function pruneCartOfMissingProducts(){
@@ -1795,7 +1800,7 @@ function renderProductDetail(id){
       <div class="pd-qty">
         <button onclick="pdQty(-1)">−</button><span id="pdQtyVal">۱</span><button onclick="pdQty(1)">+</button>
       </div>
-      <button class="btn-primary" onclick="addToCart('${p.id}', pdQtyRaw)" style="width:100%;" ${p.stock<=0?'disabled':''}>افزودن به سبد خرید</button>
+      <button class="btn-primary" onclick="pdAddToCart()" style="width:100%;" ${p.stock<=0?'disabled':''}>افزودن به سبد خرید</button>
     </div>`;
   pdQtyRaw = 1;
   pdCurrentId = p.id;
@@ -1826,6 +1831,9 @@ function pdSwitchImage(i){
 }
 let pdQtyRaw = 1;
 let pdCurrentId = null;
+function pdAddToCart(){
+  addToCart(pdCurrentId, pdQtyRaw);
+}
 function pdQty(delta){
   const p = findProduct(pdCurrentId);
   const maxQty = (p && p.stock > 0) ? p.stock : 99;
@@ -2289,14 +2297,12 @@ async function renderDashboard(){
   const outStock = (products||[]).filter(p=>p.stock<=0).length;
   const newCustomersToday = (customers||[]).filter(c => new Date(c.created_at).toDateString() === todayStr).length;
 
-  const todayISO = new Date().toISOString().slice(0,10);
-  const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(sevenDaysAgo.getDate()-6);
+  const todayISO = tehranDateStr();
+  const sevenDaysAgoDate = new Date(); sevenDaysAgoDate.setDate(sevenDaysAgoDate.getDate()-6);
+  const sevenDaysAgoISO = tehranDateStr(sevenDaysAgoDate);
   const visitsToday = (visits||[]).find(v=>v.visit_date === todayISO)?.count || 0;
-  const visitsWeek = (visits||[]).filter(v=> new Date(v.visit_date) >= sevenDaysAgo).reduce((s,v)=>s+v.count,0);
-  const visitsMonth = (visits||[]).filter(v=>{
-    const d = new Date(v.visit_date);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  }).reduce((s,v)=>s+v.count,0);
+  const visitsWeek = (visits||[]).filter(v=> v.visit_date >= sevenDaysAgoISO && v.visit_date <= todayISO).reduce((s,v)=>s+v.count,0);
+  const visitsMonth = (visits||[]).filter(v=> v.visit_date.slice(0,7) === todayISO.slice(0,7)).reduce((s,v)=>s+v.count,0);
 
   const cards = [
     {label:'سفارش‌های امروز', val: toFa(ordersToday), color:'#C1442E'},
@@ -2752,7 +2758,7 @@ function openCategoryEdit(id){
   document.getElementById('ceName').value = c.name;
   document.getElementById('ceEmoji').value = c.emoji || '';
   document.getElementById('ceImage').value = '';
-  document.getElementById('ceCurrentImageBox').innerHTML = c.image_url ? `عکس فعلی: <img src="${c.image_url}" style="width:30px; height:30px; object-fit:cover; border-radius:6px; vertical-align:middle;">` : 'هنوز عکسی تنظیم نشده';
+  document.getElementById('ceCurrentImageBox').innerHTML = c.image_url ? `عکس فعلی: <img src="${escapeHtml(c.image_url)}" style="width:30px; height:30px; object-fit:cover; border-radius:6px; vertical-align:middle;">` : 'هنوز عکسی تنظیم نشده';
   document.getElementById('categoryEditModal').classList.add('open');
 }
 async function saveCategoryEdit(){
