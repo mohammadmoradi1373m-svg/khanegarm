@@ -1032,13 +1032,16 @@
     });
   }
   function finalizeTurnstileCheck(blocked){
-    if(window.turnstileResolved) return;
-    window.turnstileResolved = true;
-    window.turnstileBlocked = blocked;
+    // اگه بعد از تصمیم اولیه (لود موفق اسکریپت)، خودِ ویجت موقع اجرا خطا بده
+    // (مثلاً فیلترینگ شبکه‌ی سرورهای تایید کلادفلر، نه خودِ فایل اسکریپت)،
+    // بازم باید فال‌بک فعال بشه و ویجت خراب مخفی بشه — حتی اگه تصمیم اولیه قبلاً "بدون مشکل" ثبت شده باشه
     if(blocked){
-      console.warn('Turnstile fail-open: اسکریپت/ویجت کلادفلر لود نشد (احتمالاً فیلترینگ)، حالت جایگزین (honeypot) فعال شد');
+      window.turnstileBlocked = true;
       applyTurnstileFallbackUI();
     }
+    if(window.turnstileResolved) return;
+    window.turnstileResolved = true;
+    if(blocked) console.warn('Turnstile fail-open: اسکریپت/ویجت کلادفلر لود نشد (احتمالاً فیلترینگ)، حالت جایگزین (honeypot) فعال شد');
     _resolveTurnstileCheck(blocked);
   }
   function onTurnstileScriptLoad(){ finalizeTurnstileCheck(false); }
