@@ -193,7 +193,20 @@
   .star-pick span.on{color:var(--amber-deep);}
   .review-item{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:12px;}
   .review-item .stars{color:var(--amber-deep); font-size:14px; margin-bottom:6px;}
-  .review-item .rname{font-weight:700; font-size:13.5px; margin-top:8px; color:var(--ink-soft);}
+  .review-item .rname{font-weight:700; font-size:13.5px; margin-bottom:6px; color:var(--ink-soft);}
+
+  /* review summary (average + distribution, like Google Play) */
+  .review-summary{display:flex; gap:24px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:18px; flex-wrap:wrap;}
+  .avg-block{text-align:center; flex-shrink:0; min-width:80px;}
+  .avg-num{font-family:'Vazirmatn'; font-weight:800; font-size:34px; line-height:1;}
+  .avg-block .stars{justify-content:center; margin:6px 0 4px;}
+  .avg-count{font-size:12px; color:var(--ink-soft);}
+  .dist-block{flex:1; min-width:170px; display:flex; flex-direction:column; gap:6px;}
+  .dist-row{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-soft);}
+  .dist-star{width:26px; flex-shrink:0; text-align:center;}
+  .dist-bar{flex:1; height:7px; background:var(--bg-alt); border-radius:100px; overflow:hidden;}
+  .dist-fill{height:100%; background:var(--amber-deep); border-radius:100px;}
+  .dist-count{width:16px; text-align:left; flex-shrink:0;}
 
   /* guides */
   .guide-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
@@ -606,6 +619,7 @@
       </div>
       <button class="btn-primary full" style="grid-column:1/-1;" onclick="submitReview()">ثبت نظر</button>
     </div>
+    <div id="reviewSummary"></div>
     <div id="reviewList"></div>
   </div>
 </section>
@@ -1867,18 +1881,45 @@ document.getElementById('starPick').addEventListener('click', (e)=>{
 });
 async function renderReviews(pid){
   const box = document.getElementById('reviewList');
+  const summaryBox = document.getElementById('reviewSummary');
   box.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">در حال بارگذاری نظرات...</p>';
+  if(summaryBox) summaryBox.innerHTML = '';
   const { data, error } = await sbClient.rpc('get_product_reviews', { p_product_id: pid });
   if(error || !data || data.length === 0){
     box.innerHTML = '<p style="color:var(--ink-soft); font-size:14px;">هنوز نظری ثبت نشده. اولین نفر باشید!</p>';
     return;
   }
+  renderReviewSummary(data);
   box.innerHTML = data.map(r=>`
     <div class="review-item">
+      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${escapeHtml(r.phone_masked)}</div>
       <div class="stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
       <p>${escapeHtml(r.comment)}</p>
-      <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${escapeHtml(r.phone_masked)}</div>
     </div>`).join('');
+}
+function renderReviewSummary(data){
+  const box = document.getElementById('reviewSummary');
+  if(!box) return;
+  const count = data.length;
+  const avg = data.reduce((s,r)=>s+r.rating,0) / count;
+  const dist = [0,0,0,0,0]; // dist[0]=تعداد ۱ ستاره ... dist[4]=تعداد ۵ ستاره
+  data.forEach(r=>{ const idx = Math.min(Math.max(r.rating,1),5)-1; dist[idx]++; });
+  const maxCount = Math.max(...dist, 1);
+  const rows = [5,4,3,2,1].map(star=>{
+    const c = dist[star-1];
+    const pct = Math.round((c/maxCount)*100);
+    return `<div class="dist-row"><span class="dist-star">${toFa(star)}★</span><div class="dist-bar"><div class="dist-fill" style="width:${pct}%"></div></div><span class="dist-count">${toFa(c)}</span></div>`;
+  }).join('');
+  const roundedAvg = Math.round(avg);
+  box.innerHTML = `
+    <div class="review-summary">
+      <div class="avg-block">
+        <div class="avg-num">${toFa(avg.toFixed(1))}</div>
+        <div class="stars">${'★'.repeat(roundedAvg)}${'☆'.repeat(5-roundedAvg)}</div>
+        <div class="avg-count">${toFa(count)} نظر</div>
+      </div>
+      <div class="dist-block">${rows}</div>
+    </div>`;
 }
 async function submitReview(){
   const {params} = parseHash();
