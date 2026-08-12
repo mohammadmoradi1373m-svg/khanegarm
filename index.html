@@ -16,7 +16,25 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="alternate icon" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* فونت Vazirmatn به‌صورت self-host (کنار index.html آپلود بشه)، به‌جای گوگل‌فونتس — تیر/مرداد ۱۴۰۵ */
+  @font-face{
+    font-family:'Vazirmatn';
+    src:url('Vazirmatn-Bold.woff') format('woff');
+    font-weight:700; font-style:normal; font-display:swap;
+  }
+  @font-face{
+    font-family:'Vazirmatn';
+    src:url('Vazirmatn-ExtraBold.woff') format('woff');
+    font-weight:800; font-style:normal; font-display:swap;
+  }
+  @font-face{
+    font-family:'Vazirmatn';
+    src:url('Vazirmatn-Black.woff') format('woff');
+    font-weight:900; font-style:normal; font-display:swap;
+  }
+</style>
 <style>
   :root{
     --bg:#FFF7EC; --bg-alt:#FBEEDD; --card:#FFFDF9;
@@ -306,11 +324,14 @@
   .foot-bottom{display:flex; justify-content:space-between; color:var(--ink-soft); font-size:12px; border-top:1px solid var(--line); padding-top:16px; flex-wrap:wrap; gap:8px;}
 
   /* footer trust bar */
-  .trust-bar{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; padding:28px 0; border-bottom:1px solid var(--line); margin-bottom:26px;}
+  .trust-bar{display:grid; grid-template-columns:repeat(5,1fr); gap:16px; padding:28px 0; border-bottom:1px solid var(--line); margin-bottom:26px;}
   .trust-item{display:flex; align-items:center; gap:12px;}
   .trust-ic{width:46px; height:46px; border-radius:50%; background:var(--bg-alt); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;}
   .trust-item h5{font-size:13.5px; margin-bottom:2px; color:var(--ink);}
   .trust-item span{font-size:11.5px; color:var(--ink-soft);}
+  @media (max-width:1000px){
+    .trust-bar{grid-template-columns:1fr 1fr 1fr;}
+  }
   @media (max-width:860px){
     .trust-bar{grid-template-columns:1fr 1fr;}
   }
@@ -552,6 +573,7 @@
           <a onclick="go('/guides')" style="font-size:13.5px; font-weight:600; color:var(--ink-soft); text-decoration:underline; cursor:pointer; padding:10px 4px;">راهنمای خرید</a>
         </div>
         <div class="trust-row" id="whyUsRow">
+          <span><i class="dot"></i> ضمانت ۱۰۰٪ ارسال</span>
           <span><i class="dot"></i> پشتیبانی تلفنی</span>
           <span><i class="dot"></i> بازگشت با احترام در صورت مشکل</span>
           <span><i class="dot"></i> بسته‌بندی ثابت یا پس‌کرایه، به انتخاب شما</span>
@@ -563,7 +585,7 @@
     <div class="hero-quicklinks">
       <a class="ql-card" onclick="go('/guides')"><div class="ql-ic">📘</div><h4>راهنمای انتخاب</h4><p>کدوم محصول مناسب شماست</p></a>
       <a class="ql-card" onclick="go('/track')"><div class="ql-ic">📦</div><h4>پیگیری سفارش</h4><p>وضعیت سفارشتون رو ببینید</p></a>
-      <a class="ql-card" href="https://wa.me/989999439534" target="_blank" rel="noopener"><div class="ql-ic">💬</div><h4>مشاوره واتساپ</h4><p>سوال دارید؟ بپرسید</p></a>
+      <a class="ql-card" href="https://wa.me/989999439534" target="_blank" rel="noopener"><div class="ql-ic">💬</div><h4>مشاوره واتساپ</h4><p>پاسخ حداکثر تا ۲ ساعت</p></a>
       <a class="ql-card" onclick="go('/terms')"><div class="ql-ic">🔄</div><h4>بازگشت با احترام</h4><p>در صورت هر مشکلی</p></a>
     </div>
   </div>
@@ -738,7 +760,7 @@
   <div class="info-grid" style="max-width:640px; margin:0 auto;">
     <div class="info-card"><div class="ic">📞</div><h4>تلفن پشتیبانی</h4><p dir="ltr" style="text-align:right;">۰۹۹۹۹۴۳۹۵۳۴</p></div>
     <div class="info-card"><div class="ic">📍</div><h4>آدرس</h4><p>فارس، کازرون</p></div>
-    <div class="info-card"><div class="ic">💬</div><h4>چت آنلاین</h4><p>از دکمه‌ی گفتگو پایین صفحه استفاده کنید</p></div>
+    <div class="info-card"><div class="ic">💬</div><h4>چت آنلاین</h4><p>از دکمه‌ی گفتگو پایین صفحه استفاده کنید — پاسخگویی حداکثر تا ۲ ساعت</p></div>
   </div>
 </section>
 
@@ -750,6 +772,8 @@
   <div style="max-width:640px; margin:0 auto; color:var(--ink-soft); font-size:14.5px; line-height:2;">
     <h3 style="color:var(--ink); font-size:16px; margin-bottom:8px;">شرایط بازگشت کالا</h3>
     <p style="margin-bottom:20px;">در صورت بروز هرگونه مشکل، بسته با کمال احترام پس گرفته می‌شود. کافیه از طریق صفحه‌ی «تماس با ما» با پشتیبانی هماهنگ کنید.</p>
+    <h3 style="color:var(--ink); font-size:16px; margin-bottom:8px;">ضمانت ۱۰۰٪ ارسال</h3>
+    <p style="margin-bottom:20px;">خانه‌گرم مسئولیت کامل مرسوله رو تا لحظه‌ی تحویل به شما بر عهده می‌گیره. در صورت گم‌شدن یا آسیب‌دیدن بسته در مسیر ارسال (با هر روش پستی/باربری و هر یک از دو حالت بسته‌بندی)، مبلغ سفارش به‌طور کامل بازگردانده می‌شه یا کالا مجدداً و بدون هزینه‌ی اضافه ارسال می‌شه. کافیه از طریق واتساپ یا تماس با پشتیبانی موضوع رو اطلاع بدید.</p>
     <h3 style="color:var(--ink); font-size:16px; margin-bottom:8px;">هزینه و روش ارسال</h3>
     <p style="margin-bottom:20px;">هنگام تکمیل سفارش می‌تونید یکی از این دو روش رو برای هزینه‌ی بسته‌بندی و ارسال انتخاب کنید: پرداخت هزینه‌ی ثابت بسته‌بندی و ارسال به همراه مبلغ سفارش، یا پس‌کرایه (پرداخت هزینه‌ی واقعی ارسال توسط خودتان هنگام تحویل بسته به مأمور پست/باربری).</p>
     <h3 style="color:var(--ink); font-size:16px; margin-bottom:8px;">حریم خصوصی اطلاعات مشتری</h3>
@@ -1003,6 +1027,7 @@
 <footer>
   <div class="wrap">
     <div class="trust-bar">
+      <div class="trust-item"><div class="trust-ic">🛡️</div><div><h5>ضمانت ۱۰۰٪ ارسال</h5><span>جبران کامل در صورت گم‌شدن یا آسیب</span></div></div>
       <div class="trust-item"><div class="trust-ic">🚚</div><div><h5>ارسال به سراسر کشور</h5><span>بسته‌بندی ثابت یا پس‌کرایه</span></div></div>
       <div class="trust-item"><div class="trust-ic">✅</div><div><h5>کیفیت مطمئن</h5><span>محصولات بررسی و تاییدشده</span></div></div>
       <div class="trust-item"><div class="trust-ic">📞</div><div><h5>پشتیبانی واقعی</h5><span>پاسخگو تلفنی و واتساپ</span></div></div>
@@ -1106,6 +1131,8 @@ const PROVINCE_CITIES = {
 };
 
 const FAQS = [
+  {q:'اگه بسته گم بشه یا آسیب ببینه چی؟', a:'خانه‌گرم ضمانت ۱۰۰٪ ارسال داره؛ یعنی در صورت گم‌شدن یا آسیب‌دیدن مرسوله در مسیر، مبلغ سفارش رو کامل برمی‌گردونیم یا کالا رو دوباره و رایگان براتون ارسال می‌کنیم — با هر روش ارسال و هر حالت بسته‌بندی که انتخاب کرده باشید.'},
+  {q:'چقدر طول می‌کشه جواب بگیرم؟', a:'پیام‌های واتساپ و چت آنلاین حداکثر تا ۲ ساعت (در ساعات کاری) پاسخ داده می‌شن.'},
   {q:'هزینه ارسال چطور محاسبه می‌شه؟', a:'موقع تکمیل سفارش می‌تونید یکی از این دو حالت رو انتخاب کنید: پرداخت هزینه‌ی ثابت بسته‌بندی و ارسال (۳۰۰,۰۰۰ تومان) همراه با مبلغ سفارش، یا پس‌کرایه (پرداخت هزینه‌ی واقعی ارسال هنگام تحویل بسته به مأمور پست/باربری).'},
   {q:'چقدر طول می‌کشه سفارشم برسه؟', a:'بسته به روش ارسال انتخابی (پست، دکاپست، ماهکس، تیپاکس یا چاپار) معمولاً بین ۲ تا ۵ روز کاری طول می‌کشد.'},
   {q:'اگه از محصول راضی نبودم چیکار کنم؟', a:'در صورت بروز هرگونه مشکل، بسته با کمال احترام پس گرفته می‌شود. کافیه با شماره پشتیبانی تماس بگیرید.'},
