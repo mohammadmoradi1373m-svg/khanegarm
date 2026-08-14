@@ -1153,7 +1153,7 @@ const FAQS = [
 ];
 
 /* ============ SUPABASE ============ */
-const SUPABASE_URL = 'https://thovhvemaidbiekagome.supabase.co';
+const SUPABASE_URL = 'https://api.owli.ir';
 const SUPABASE_ANON_KEY = 'sb_publishable_bX7ApIxbBzjXkQNiLw2wDw_m0TzJ6Wb';
 const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1330,7 +1330,7 @@ function compressImage(file, maxDim, quality){
 async function verifyTurnstile(token){
   if(!token) return false;
   try{
-    const res = await fetch('https://thovhvemaidbiekagome.supabase.co/functions/v1/verify-turnstile', {
+    const res = await fetch('https://api.owli.ir/functions/v1/verify-turnstile', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({token})
