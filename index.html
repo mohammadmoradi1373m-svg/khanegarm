@@ -295,7 +295,7 @@
   .form-grid .full{grid-column:1/-1;}
   .ship-options{display:flex; flex-direction:column; gap:8px; grid-column:1/-1;}
   .ship-opt{display:flex; align-items:center; gap:10px; border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; cursor:pointer; font-size:14px;}
-  .field-error{border-color:var(--rust) !important; box-shadow:0 0 0 2px rgba(193,68,46,.16) !important;}
+  .field-error{border-color:var(--rust) !important; border-width:2px !important; background:rgba(193,68,46,.06) !important; box-shadow:0 0 0 3px rgba(193,68,46,.22) !important;}
   .ship-options.field-error{border:1.5px solid var(--rust); border-radius:12px; padding:8px; box-shadow:none !important;}
   .field-error-label{display:block; color:var(--rust); font-size:11.5px; font-weight:700; margin:-6px 0 4px;}
   .field-label{display:block; font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:4px;}
@@ -1944,10 +1944,9 @@ function renderReviewSummary(data){
   const avg = data.reduce((s,r)=>s+r.rating,0) / count;
   const dist = [0,0,0,0,0]; // dist[0]=تعداد ۱ ستاره ... dist[4]=تعداد ۵ ستاره
   data.forEach(r=>{ const idx = Math.min(Math.max(r.rating,1),5)-1; dist[idx]++; });
-  const maxCount = Math.max(...dist, 1);
   const rows = [5,4,3,2,1].map(star=>{
     const c = dist[star-1];
-    const pct = Math.round((c/maxCount)*100);
+    const pct = Math.round((c/count)*100);
     return `<div class="dist-row"><span class="dist-star">${toFa(star)}★</span><div class="dist-bar"><div class="dist-fill" style="width:${pct}%"></div></div><span class="dist-count">${toFa(c)}</span></div>`;
   }).join('');
   const roundedAvg = Math.round(avg);
@@ -2206,7 +2205,8 @@ async function submitOrder(){
       showToast('لطفا فیلدهای مشخص‌شده با رنگ قرمز رو تکمیل کنید');
     }
     firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
-    if(firstInvalid.focus) firstInvalid.focus();
+    // تاخیر عمدی: تا حاشیه‌ی قرمز قبل از باز شدن کیبورد (که ممکنه فیلد رو بپوشونه) یه لحظه دیده بشه
+    setTimeout(()=>{ if(firstInvalid.focus) firstInvalid.focus(); }, 450);
     return;
   }
 
@@ -3211,8 +3211,13 @@ function onProvinceInput(){
 }
 function selectProvince(p){
   document.getElementById('ordProvince').value = p;
-  document.getElementById('provinceDropdown').classList.remove('open');
-  onProvinceInput();
+  const dd = document.getElementById('provinceDropdown');
+  dd.classList.remove('open');
+  dd.innerHTML = '';
+  const cityInput = document.getElementById('ordCity');
+  cityInput.disabled = false;
+  cityInput.value = '';
+  cityInput.placeholder = 'شهر (تایپ کنید)';
 }
 function onCityInput(){
   const province = document.getElementById('ordProvince').value.trim();
