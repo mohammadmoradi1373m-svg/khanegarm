@@ -509,14 +509,15 @@
         <label class="ship-opt"><input type="radio" name="ship" value="پست"> پست</label>
         <label class="ship-opt"><input type="radio" name="ship" value="دکاپست"> دکاپست</label>
         <label class="ship-opt"><input type="radio" name="ship" value="ماهکس"> ماهکس</label>
-        <label class="ship-opt"><input type="radio" name="ship" value="تحویل حضوری"> تحویل حضوری (فارس، کازرون)</label>
         <label class="ship-opt"><input type="radio" name="ship" value="چاپار"> چاپار</label>
+        <label class="ship-opt"><input type="radio" name="ship" value="تحویل حضوری"> تحویل حضوری (فارس، کازرون)</label>
       </div>
-      <div class="full" style="font-size:13.5px; font-weight:700; margin-top:10px;">هزینه بسته‌بندی و ارسال <span class="req">*</span></div>
+      <div class="full" style="font-size:13.5px; font-weight:700; margin-top:10px;" id="packagingLabel">هزینه بسته‌بندی و ارسال <span class="req">*</span></div>
       <div class="ship-options" id="packagingOptions">
         <label class="ship-opt"><input type="radio" name="packaging" value="prepaid" onchange="onPackagingChange()"> پرداخت بسته‌بندی و ارسال (۳۰۰,۰۰۰ تومان) همراه سفارش</label>
         <label class="ship-opt"><input type="radio" name="packaging" value="postpay" onchange="onPackagingChange()"> پس‌کرایه (هزینه واقعی ارسال رو موقع تحویل بسته به مأمور پست/باربری می‌دید)</label>
       </div>
+      <div class="full" id="pickupNote" style="display:none; background:var(--bg-alt); border-radius:10px; padding:12px 14px; font-size:13px; color:var(--ink-soft);">📍 برای تحویل حضوری، هزینه‌ی بسته‌بندی و ارسال نداره — سفارش رو خودتون از فروشگاه (فارس، کازرون) تحویل می‌گیرید.</div>
       <div class="full" id="checkoutTotalsBox" style="display:none; font-size:13.5px; background:var(--bg-alt); border-radius:10px; padding:12px 14px; margin-top:6px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>جمع محصولات</span><span id="ctProductsVal"></span></div>
         <div style="display:flex; justify-content:space-between; margin-bottom:5px;" id="ctPackagingRow"><span>هزینه بسته‌بندی و ارسال</span><span id="ctPackagingVal"></span></div>
@@ -842,6 +843,15 @@
     </div>
 
     <div id="adminTab-dashboard">
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-size:13.5px; font-weight:700; margin-bottom:10px;">🖼️ عکس ثابت کنار هیرو (صفحه اصلی)</div>
+        <div id="heroImagePreviewBox" style="margin-bottom:10px;"></div>
+        <input type="file" id="heroImageInput" accept="image/*" class="full">
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button class="btn-primary" style="flex:1; padding:9px;" onclick="saveHeroImage()">ذخیره</button>
+          <button class="btn-ghost" style="padding:9px 16px; font-size:12.5px;" onclick="removeHeroImage()">حذف (برگشت به حالت پیش‌فرض)</button>
+        </div>
+      </div>
       <div id="adminDashboard" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;"></div>
     </div>
 
@@ -1680,13 +1690,21 @@ function renderHome(){
       <h3>${escapeHtml(c.name)}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
     </div>`).join('');
 
-  // hero art: dynamic from real product photos if available, otherwise fallback to emoji
+  // hero art: عکس ثابت که ادمین از پنل تنظیم می‌کنه (admin_meta.hero_image_url)؛ اگه تنظیم نشده بود، ایموجی fallback
+  renderHeroArt();
+}
+let HERO_IMAGE_URL = null;
+async function loadHeroImage(){
+  try{
+    const { data, error } = await sbClient.from('admin_meta').select('value').eq('key','hero_image_url').maybeSingle();
+    HERO_IMAGE_URL = (!error && data && data.value) ? data.value : null;
+  }catch(e){ HERO_IMAGE_URL = null; }
+}
+function renderHeroArt(){
   const heroArt = document.getElementById('heroArt');
-  const withPhotos = featured.filter(p=>p.img).slice(0,2);
-  if(withPhotos.length >= 1){
-    heroArt.innerHTML = `<div style="display:flex; width:100%; height:100%; gap:4px;">
-      ${withPhotos.map(p=>`<img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy" style="flex:1; height:100%; object-fit:cover;">`).join('')}
-    </div>`;
+  if(!heroArt) return;
+  if(HERO_IMAGE_URL){
+    heroArt.innerHTML = `<img src="${escapeHtml(HERO_IMAGE_URL)}" alt="خانه‌گرم" loading="lazy" style="width:100%; height:100%; object-fit:cover;">`;
   } else {
     heroArt.innerHTML = `<div class="emoji-stack"><span>✂️</span><span>💨</span></div>`;
   }
@@ -2102,8 +2120,29 @@ function bumpCartCount(){
 
 /* ============ CHECKOUT ============ */
 const PACKAGING_FEE = 300000;
+function isPickupShipping(){
+  const el = document.querySelector('input[name="ship"]:checked');
+  return el && el.value === 'تحویل حضوری';
+}
+function updatePackagingVisibility(){
+  const pickup = isPickupShipping();
+  document.getElementById('packagingLabel').style.display = pickup ? 'none' : 'block';
+  document.getElementById('packagingOptions').style.display = pickup ? 'none' : 'flex';
+  document.getElementById('pickupNote').style.display = pickup ? 'block' : 'none';
+  if(pickup){
+    // تحویل حضوری هزینه‌ی بسته‌بندی/ارسال نداره؛ انتخاب قبلی (اگه بود) پاک می‌شه
+    document.querySelectorAll('input[name="packaging"]').forEach(i=>i.checked=false);
+    document.querySelectorAll('#packagingOptions .ship-opt').forEach(o=>o.classList.remove('checked'));
+    document.getElementById('packagingOptions').classList.remove('field-error');
+  }
+  renderCheckoutTotals();
+}
 function computeCheckoutTotals(){
   const productsTotal = cart.reduce((s,i)=>{ const p=findProduct(i.id); return s + (p?p.price*i.qty:0); },0);
+  const pickup = isPickupShipping();
+  if(pickup){
+    return { productsTotal, packagingChoice:'pickup', packagingFee:0, grandTotal: productsTotal };
+  }
   const packagingEl = document.querySelector('input[name="packaging"]:checked');
   const packagingChoice = packagingEl ? packagingEl.value : null;
   const packagingFee = packagingChoice === 'prepaid' ? PACKAGING_FEE : 0;
@@ -2113,9 +2152,10 @@ function renderCheckoutTotals(){
   const t = computeCheckoutTotals();
   const box = document.getElementById('checkoutTotalsBox');
   document.getElementById('ctProductsVal').textContent = formatToman(t.productsTotal);
-  const packagingRow = document.getElementById('ctPackagingRow');
   if(t.packagingChoice === 'postpay'){
     document.getElementById('ctPackagingVal').textContent = 'پس‌کرایه (نزد مأمور پست)';
+  } else if(t.packagingChoice === 'pickup'){
+    document.getElementById('ctPackagingVal').textContent = 'تحویل حضوری (رایگان)';
   } else {
     document.getElementById('ctPackagingVal').textContent = t.packagingChoice === 'prepaid' ? formatToman(t.packagingFee) : '—';
   }
@@ -2132,13 +2172,14 @@ function openCheckout(){
   if(cart.length===0){ showToast('سبد خرید خالیه'); return; }
   closeCart();
   onPayMethodChange();
-  renderCheckoutTotals();
+  updatePackagingVisibility();
   document.getElementById('checkoutModal').classList.add('open');
 }
 function closeCheckout(){ document.getElementById('checkoutModal').classList.remove('open'); }
 document.getElementById('shipOptions').addEventListener('change', ()=>{
   document.querySelectorAll('#shipOptions .ship-opt').forEach(o=>o.classList.toggle('checked', o.querySelector('input').checked));
   document.getElementById('shipOptions').classList.remove('field-error');
+  updatePackagingVisibility();
 });
 document.getElementById('packagingOptions').addEventListener('change', ()=>{
   document.querySelectorAll('#packagingOptions .ship-opt').forEach(o=>o.classList.toggle('checked', o.querySelector('input').checked));
@@ -2187,7 +2228,8 @@ async function submitOrder(){
   flag(addressEl, !address || address.length < 15);
   flag(postalEl, !/^[0-9]{10}$/.test(postalCode));
   if(!shipEl){ shipBox.classList.add('field-error'); if(!firstInvalid) firstInvalid = shipBox; }
-  if(!packagingEl){ packagingBox.classList.add('field-error'); if(!firstInvalid) firstInvalid = packagingBox; }
+  const isPickup = shipEl && shipEl.value === 'تحویل حضوری';
+  if(!isPickup && !packagingEl){ packagingBox.classList.add('field-error'); if(!firstInvalid) firstInvalid = packagingBox; }
 
   const paymentMethod = payEl ? payEl.value : 'card';
   let paymentRef = null;
@@ -2229,7 +2271,7 @@ async function submitOrder(){
 
   const items = cart.map(i=>{ const p=findProduct(i.id); return {id:i.id, code:p?(p.code||p.id):i.id, name:p?p.name:i.id, qty:i.qty, price:p?p.price:0}; });
   const subtotal = items.reduce((s,i)=>s + i.price*i.qty, 0);
-  const packagingOption = packagingEl.value;
+  const packagingOption = isPickup ? 'postpay' : packagingEl.value;
   const packagingFee = packagingOption === 'prepaid' ? PACKAGING_FEE : 0;
 
   const btn = document.getElementById('submitOrderBtn');
@@ -2273,6 +2315,7 @@ async function submitOrder(){
   document.querySelectorAll('input[name="ship"]').forEach(i=>i.checked=false);
   document.querySelectorAll('input[name="packaging"]').forEach(i=>i.checked=false);
   document.querySelectorAll('#shipOptions .ship-opt, #packagingOptions .ship-opt').forEach(o=>o.classList.remove('checked'));
+  updatePackagingVisibility();
   document.getElementById('payRef').value='';
   document.querySelector('input[name="pay"][value="card"]').checked = true;
   document.getElementById('cardPayBox').style.display = 'block';
@@ -2372,6 +2415,7 @@ function switchAdminTab(tab){
 }
 
 async function renderDashboard(){
+  renderHeroImagePreview();
   const box = document.getElementById('adminDashboard');
   box.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
 
@@ -2821,6 +2865,48 @@ async function renderAdminCategories(){
     </div>
   `).join('');
 }
+
+/* ---- HERO IMAGE ADMIN ---- */
+function renderHeroImagePreview(){
+  const box = document.getElementById('heroImagePreviewBox');
+  if(!box) return;
+  box.innerHTML = HERO_IMAGE_URL
+    ? `<img src="${escapeHtml(HERO_IMAGE_URL)}" style="width:100%; max-width:220px; aspect-ratio:1/0.85; object-fit:cover; border-radius:12px; display:block;">`
+    : `<div style="font-size:12.5px; color:var(--ink-soft);">فعلاً عکسی تنظیم نشده؛ طرح ایموجی پیش‌فرض نمایش داده می‌شه.</div>`;
+}
+async function saveHeroImage(){
+  const fileInput = document.getElementById('heroImageInput');
+  if(!fileInput.files || !fileInput.files[0]){ showToast('لطفا یه عکس انتخاب کنید'); return; }
+  const file = await compressImage(fileInput.files[0]);
+  const path = `hero_${Date.now()}.jpg`;
+  let url;
+  try{
+    const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true}), 20000, 'UPLOAD_TIMEOUT');
+    if(upErr){ showToast('خطا در آپلود عکس'); return; }
+    const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path);
+    url = pub.publicUrl;
+  }catch(e){
+    showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
+    return;
+  }
+  const { error } = await sbClient.from('admin_meta').upsert({ key:'hero_image_url', value: url });
+  if(error){ showToast('خطا در ذخیره تنظیمات'); return; }
+  HERO_IMAGE_URL = url;
+  fileInput.value = '';
+  renderHeroImagePreview();
+  renderHeroArt();
+  showToast('عکس هیرو ذخیره شد ✅');
+}
+async function removeHeroImage(){
+  if(!HERO_IMAGE_URL){ showToast('عکسی تنظیم نشده که حذف بشه'); return; }
+  const { error } = await sbClient.from('admin_meta').delete().eq('key','hero_image_url');
+  if(error){ showToast('خطا در حذف'); return; }
+  HERO_IMAGE_URL = null;
+  renderHeroImagePreview();
+  renderHeroArt();
+  showToast('برگشت به طرح پیش‌فرض ✅');
+}
+
 async function addCategory(){
   const name = document.getElementById('cfName').value.trim();
   const emoji = document.getElementById('cfEmoji').value.trim() || '📦';
@@ -3247,6 +3333,7 @@ function isValidPhone(phone){
 /* ============ INIT ============ */
 loadProductsFromDB().then(renderMenuCategories);
 loadCategoriesFromDB();
+loadHeroImage().then(()=>{ if(!location.hash || location.hash === '#/') renderHeroArt(); });
 sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{});
 if(!location.hash) location.hash = '#/';
 render();
