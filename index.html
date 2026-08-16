@@ -2456,10 +2456,13 @@ async function renderDashboard(){
   const outOfStockItems = (products||[]).filter(p=>p.stock<=0);
   let alertHtml = '';
   if(lowStockItems.length > 0 || outOfStockItems.length > 0){
+    const alertCount = lowStockItems.length + outOfStockItems.length;
     alertHtml = `<div class="card" style="grid-column:1/-1; border-right:4px solid var(--rust); margin-bottom:6px;">
-      <div style="font-size:13px; font-weight:700; color:var(--rust); margin-bottom:8px;">⚠️ نیاز به توجه فوری</div>
-      ${lowStockItems.map(p=>`<div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px dashed var(--line);"><span>${escapeHtml(p.name)}</span><b style="color:var(--rust);">فقط ${toFa(p.stock)} عدد</b></div>`).join('')}
-      ${outOfStockItems.map(p=>`<div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px dashed var(--line);"><span>${escapeHtml(p.name)}</span><b style="color:var(--ink-soft);">ناموجود</b></div>`).join('')}
+      <div style="font-size:13px; font-weight:700; color:var(--rust); margin-bottom:8px;">⚠️ نیاز به توجه فوری (${toFa(alertCount)} محصول)</div>
+      <div style="max-height:220px; overflow-y:auto;">
+        ${lowStockItems.map(p=>`<div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px dashed var(--line);"><span>${escapeHtml(p.name)}</span><b style="color:var(--rust);">فقط ${toFa(p.stock)} عدد</b></div>`).join('')}
+        ${outOfStockItems.map(p=>`<div style="display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px dashed var(--line);"><span>${escapeHtml(p.name)}</span><b style="color:var(--ink-soft);">ناموجود</b></div>`).join('')}
+      </div>
     </div>`;
   }
   box.innerHTML = alertHtml + cards.map(c=>`
@@ -2495,9 +2498,12 @@ function downloadFullBackup(){
 }
 
 function exportOrdersCSV(){
-  if(adminOrdersCache.length === 0){ showToast('سفارشی برای خروجی گرفتن نیست'); return; }
+  // از لیست فیلترشده (بازه‌ی تاریخ/وضعیت/جست‌وجوی فعال روی صفحه) خروجی می‌گیره، نه از کل سفارش‌ها —
+  // تا خروجی اکسل دقیقاً همون چیزی باشه که روی صفحه دیده می‌شه
+  const list = adminFilteredOrdersCache;
+  if(!list || list.length === 0){ showToast('سفارشی با فیلتر فعلی برای خروجی گرفتن نیست'); return; }
   const header = ['کد سفارش','نام','تلفن','آدرس','کد پستی','روش ارسال','بسته‌بندی/ارسال','هزینه بسته‌بندی','وضعیت','پرداخت','کد رهگیری','جمع محصولات','جمع نهایی','اقلام','تاریخ'];
-  const rows = adminOrdersCache.map(o=>[
+  const rows = list.map(o=>[
     o.order_code, o.name, o.phone, o.address, o.postal_code||'', o.shipping, PACKAGING_LABELS[o.packaging_option]||o.packaging_option||'', o.packaging_fee||0, STAGE_NAMES[Math.min(o.status, STAGE_NAMES.length-1)],
     PAY_STATUS_LABELS[o.payment_status]||o.payment_status, o.tracking_code||'', o.subtotal, (o.subtotal||0)+(o.packaging_fee||0),
     o.items.map(i=>`${i.name} x${i.qty}`).join(' | '), new Date(o.created_at).toLocaleDateString('fa-IR')
@@ -2728,11 +2734,13 @@ async function saveOrderEdit(){
   await renderAdmin();
 }
 function printPackagingList(){
-  if(!adminFilteredOrdersCache || adminFilteredOrdersCache.length === 0){
-    showToast('سفارشی با فیلتر فعلی برای چاپ نیست');
+  // همیشه فقط سفارش‌های «در حال بسته‌بندی» (status===0) چاپ می‌شه، مستقل از فیلتر دستی وضعیت روی صفحه —
+  // چون این لیست قراره دست بسته‌بند باشه، نه سفارش‌های تحویل‌داده‌شده یا در حال ارسال
+  const list = adminOrdersCache.filter(o=>o.status===0).sort((a,b)=> new Date(a.created_at) - new Date(b.created_at));
+  if(list.length === 0){
+    showToast('سفارشی در وضعیت «در حال بسته‌بندی» نیست');
     return;
   }
-  const list = [...adminFilteredOrdersCache].sort((a,b)=> new Date(a.created_at) - new Date(b.created_at));
   const rows = list.map((o,i)=>`
     <tr>
       <td style="text-align:center;">${i+1}</td>
@@ -2740,6 +2748,7 @@ function printPackagingList(){
       <td dir="ltr" style="text-align:right;">${escapeHtml(o.phone)}</td>
       <td>${o.items.map(it=>escapeHtml(it.name)+' × '+it.qty).join('<br>')}</td>
       <td>${PACKAGING_LABELS[o.packaging_option]||'—'}</td>
+      <td>${new Date(o.created_at).toLocaleDateString('fa-IR')}</td>
     </tr>`).join('');
   const w = window.open('', '_blank');
   w.document.write(`
@@ -2755,10 +2764,10 @@ function printPackagingList(){
       td:first-child, th:first-child{width:26px;}
     </style>
     </head><body>
-    <h3>لیست بسته‌بندی — خانه‌گرم</h3>
+    <h3>لیست بسته‌بندی — خانه‌گرم (فقط در حال بسته‌بندی)</h3>
     <p class="meta">تعداد سفارش: ${list.length} — تاریخ چاپ: ${new Date().toLocaleDateString('fa-IR')}</p>
     <table>
-      <tr><th>#</th><th>نام مشتری</th><th>شماره تلفن</th><th>اقلام سفارش</th><th>بسته‌بندی/ارسال</th></tr>
+      <tr><th>#</th><th>نام مشتری</th><th>شماره تلفن</th><th>اقلام سفارش</th><th>بسته‌بندی/ارسال</th><th>تاریخ سفارش</th></tr>
       ${rows}
     </table>
     </body></html>`);
@@ -2871,7 +2880,7 @@ function renderHeroImagePreview(){
   const box = document.getElementById('heroImagePreviewBox');
   if(!box) return;
   box.innerHTML = HERO_IMAGE_URL
-    ? `<img src="${escapeHtml(HERO_IMAGE_URL)}" style="width:100%; max-width:220px; aspect-ratio:1/0.85; object-fit:cover; border-radius:12px; display:block;">`
+    ? `<img src="${escapeHtml(HERO_IMAGE_URL)}" style="width:100%; max-width:150px; aspect-ratio:1/0.85; object-fit:cover; border-radius:12px; display:block;">`
     : `<div style="font-size:12.5px; color:var(--ink-soft);">فعلاً عکسی تنظیم نشده؛ طرح ایموجی پیش‌فرض نمایش داده می‌شه.</div>`;
 }
 async function saveHeroImage(){
