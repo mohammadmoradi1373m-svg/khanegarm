@@ -491,10 +491,9 @@
         <input type="text" id="ordProvince" placeholder="تایپ کنید" class="full" autocomplete="off" oninput="onProvinceInput()" onfocus="onProvinceInput()">
         <div class="autocomplete-list" id="provinceDropdown"></div>
       </div>
-      <div class="full" style="position:relative;">
+      <div class="full">
         <span class="field-label">شهر <span class="req">*</span></span>
-        <input type="text" id="ordCity" placeholder="اول استان رو انتخاب کنید" class="full" autocomplete="off" disabled oninput="onCityInput()" onfocus="onCityInput()">
-        <div class="autocomplete-list" id="cityDropdown"></div>
+        <input type="text" id="ordCity" placeholder="اول استان رو انتخاب کنید" class="full" autocomplete="off" disabled>
       </div>
       <div class="full">
         <span class="field-label">آدرس دقیق <span class="req">*</span></span>
@@ -2224,7 +2223,7 @@ async function submitOrder(){
   flag(nameEl, !name);
   flag(phoneEl, !phone || !isValidPhone(phone));
   flag(provinceEl, !province || !PROVINCE_CITIES[province]);
-  flag(cityEl, !city || !(PROVINCE_CITIES[province] && PROVINCE_CITIES[province].includes(city)));
+  flag(cityEl, !city || city.length < 2);
   flag(addressEl, !address || address.length < 15);
   flag(postalEl, !/^[0-9]{10}$/.test(postalCode));
   if(!shipEl){ shipBox.classList.add('field-error'); if(!firstInvalid) firstInvalid = shipBox; }
@@ -3313,20 +3312,6 @@ function selectProvince(p){
   cityInput.disabled = false;
   cityInput.value = '';
   cityInput.placeholder = 'شهر (تایپ کنید)';
-}
-function onCityInput(){
-  const province = document.getElementById('ordProvince').value.trim();
-  const val = document.getElementById('ordCity').value.trim();
-  const dd = document.getElementById('cityDropdown');
-  const cities = PROVINCE_CITIES[province] || [];
-  const matches = cities.filter(c=>c.includes(val));
-  if(matches.length === 0){ dd.classList.remove('open'); dd.innerHTML=''; return; }
-  dd.innerHTML = matches.map(c=>`<div class="autocomplete-item" onmousedown="selectCity('${c}')">${c}</div>`).join('');
-  dd.classList.add('open');
-}
-function selectCity(c){
-  document.getElementById('ordCity').value = c;
-  document.getElementById('cityDropdown').classList.remove('open');
 }
 document.addEventListener('click', (e)=>{
   document.querySelectorAll('.autocomplete-list.open').forEach(dd=>{
