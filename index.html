@@ -419,7 +419,7 @@
   <div class="nav wrap">
     <div class="nav-left">
       <button class="burger" onclick="toggleMenu()" aria-label="باز کردن منو"><span></span></button>
-      <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C1442E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>خانه<span>گرم</span></div>
+      <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C1442E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="11" height="15" rx="2" transform="rotate(15 13.5 9.5)"></rect><rect x="5" y="6" width="11" height="15" rx="2"></rect><path d="M10.5 12.5c-.8-1-.5-2.3.5-2.3.6 0 1 .4 1 1 0-.6.4-1 1-1 1 0 1.3 1.3.5 2.3l-1.5 1.7z"></path></svg>خانه<span>گرم</span></div>
     </div>
     <div class="nav-right">
       <button class="cart-btn" onclick="openCart()" aria-label="سبد خرید">🛍️ سبد خرید<span class="cart-count" id="cartCount" style="display:none;">۰</span></button>
@@ -1056,7 +1056,7 @@
       <div class="trust-item"><div class="trust-ic">🔄</div><div><h5>بازگشت با احترام</h5><span>در صورت بروز هرگونه مشکل</span></div></div>
     </div>
     <div class="foot-grid">
-      <div><div class="logo" style="margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C1442E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>خانه<span>گرم</span></div><p style="color:var(--ink-soft); font-size:13px;">پاسور و کارت‌های بازی، با راهنمای خرید و نگهداری.</p></div>
+      <div><div class="logo" style="margin-bottom:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C1442E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="11" height="15" rx="2" transform="rotate(15 13.5 9.5)"></rect><rect x="5" y="6" width="11" height="15" rx="2"></rect><path d="M10.5 12.5c-.8-1-.5-2.3.5-2.3.6 0 1 .4 1 1 0-.6.4-1 1-1 1 0 1.3 1.3.5 2.3l-1.5 1.7z"></path></svg>خانه<span>گرم</span></div><p style="color:var(--ink-soft); font-size:13px;">پاسور و کارت‌های بازی، با راهنمای خرید و نگهداری.</p></div>
       <div><h5>دسترسی سریع</h5><ul>
         <li><a onclick="go('/products')" style="cursor:pointer;">فروشگاه</a></li>
         <li><a onclick="go('/guides')" style="cursor:pointer;">یادداشت‌ها</a></li>
@@ -1194,6 +1194,21 @@ async function retryDataLoad(){
   }
 }
 let lastDataErrorDetail = '';
+/* کش محصولات/دسته‌بندی‌ها — قبلاً هر بار route عوض می‌شد (خونه/لیست/جزئیات محصول)، دوباره کامل از سرور می‌اومدن،
+   حتی اگه چند ثانیه پیش لود شده بودن. این باعث کندی محسوس می‌شد چون همه‌چی از پراکسی PHP (api.owli.ir) رد می‌شه.
+   الان فقط اگه کش خالی، خطادار، یا از CATALOG_CACHE_TTL قدیمی‌تر باشه، دوباره از سرور می‌گیریم.
+   عملیات ادمین (ذخیره/حذف محصول یا دسته) بعد از هر تغییر مستقیماً loadProductsFromDB/loadCategoriesFromDB
+   رو صدا می‌زنن (نه از طریق این تابع)، پس همیشه fresh می‌مونن و منتظر TTL نمی‌شن. */
+let productsLoadedAt = 0;
+let categoriesLoadedAt = 0;
+const CATALOG_CACHE_TTL = 120000; // ۲ دقیقه
+async function ensureCatalogLoaded(){
+  const now = Date.now();
+  const tasks = [];
+  if(productsLoadError || now - productsLoadedAt > CATALOG_CACHE_TTL) tasks.push(loadProductsFromDB());
+  if(categoriesLoadError || now - categoriesLoadedAt > CATALOG_CACHE_TTL) tasks.push(loadCategoriesFromDB());
+  if(tasks.length) await Promise.all(tasks);
+}
 async function loadProductsFromDB(){
   try{
     const { data, error } = await sbClient.from('products').select('*');
@@ -1207,6 +1222,7 @@ async function loadProductsFromDB(){
       return;
     }
     productsLoadError = false;
+    productsLoadedAt = Date.now();
     PRODUCTS = data.map(row => ({
       id: row.id, cat: row.cat, tag: row.tag, code: row.code, name: row.name, price: row.price,
       stock: row.stock, img: row.img_url, images: Array.isArray(row.images) ? row.images : [],
@@ -1248,6 +1264,7 @@ async function loadCategoriesFromDB(){
       return;
     }
     categoriesLoadError = false;
+    categoriesLoadedAt = Date.now();
     CATEGORIES = data;
   }catch(e){
     console.error('loadCategoriesFromDB: exception', e);
@@ -1591,7 +1608,7 @@ async function render(){
     sec.hidden = sec.dataset.route !== path;
   });
   if(path === '/' || path === '/products' || path === '/product'){
-    await Promise.all([loadProductsFromDB(), loadCategoriesFromDB()]);
+    await ensureCatalogLoaded();
   }
   if(path === '/'){ renderHome(); renderDeliveredCount(); } else { stopHomeCarousels(); }
   if(path === '/products'){ renderProductList(params.cat, params.q, params.brand); }
