@@ -1186,7 +1186,10 @@ async function ensureCatalogLoaded(){
   if(categoriesLoadError || now - categoriesLoadedAt > CATALOG_CACHE_TTL) tasks.push(loadCategoriesFromDB());
   if(tasks.length) await Promise.all(tasks);
 }
+let productsLoadPromise = null;
 async function loadProductsFromDB(){
+  if(productsLoadPromise) return productsLoadPromise;
+  productsLoadPromise = (async()=>{
   try{
     let result = await withTimeout(sbClient.from('products').select('id,cat,tag,name,price,stock,description,features,img_url,code,brand,views,images'), 12000, 'CATALOG_TIMEOUT');
     let { data, error } = result;
@@ -1214,14 +1217,20 @@ async function loadProductsFromDB(){
       features: Array.isArray(row.features) ? row.features : []
     }));
     pruneCartOfMissingProducts();
+    updateNewestIds();
+    updateDataErrorBanner();
   }catch(e){
     console.error('loadProductsFromDB: exception', e);
     PRODUCTS = [];
     productsLoadError = true;
     lastDataErrorDetail = describeLoadError(e);
+    updateNewestIds();
+    updateDataErrorBanner();
+  } finally {
+    productsLoadPromise = null;
   }
-  updateNewestIds();
-  updateDataErrorBanner();
+  })();
+  return productsLoadPromise;
 }
 function productSortCode(p){
   const c = parseInt(p.code, 10);
@@ -1234,7 +1243,10 @@ function updateNewestIds(){
   NEWEST_PRODUCT_IDS = new Set([...PRODUCTS].sort((a,b)=>productSortCode(b)-productSortCode(a)).slice(0,3).map(p=>p.id));
 }
 
+let categoriesLoadPromise = null;
 async function loadCategoriesFromDB(){
+  if(categoriesLoadPromise) return categoriesLoadPromise;
+  categoriesLoadPromise = (async()=>{
   try{
     let result = await withTimeout(sbClient.from('categories').select('id,name,emoji,sort_order,image_url').order('sort_order'), 12000, 'CATEGORIES_TIMEOUT');
     let { data, error } = result;
@@ -1255,14 +1267,20 @@ async function loadCategoriesFromDB(){
     categoriesLoadError = false;
     categoriesLoadedAt = Date.now();
     CATEGORIES = data;
+    updateDataErrorBanner();
+    renderMenuCategories();
   }catch(e){
     console.error('loadCategoriesFromDB: exception', e);
     CATEGORIES = [];
     categoriesLoadError = true;
     lastDataErrorDetail = lastDataErrorDetail || describeLoadError(e);
+    updateDataErrorBanner();
+    renderMenuCategories();
+  } finally {
+    categoriesLoadPromise = null;
   }
-  updateDataErrorBanner();
-  renderMenuCategories();
+  })();
+  return categoriesLoadPromise;
 }
 function catName(id){
   const c = CATEGORIES.find(c=>c.id===id);
@@ -1918,6 +1936,18 @@ function renderProductList(cat, presetQuery, brand){
 }
 
 /* ============ RENDER: PRODUCT DETAIL ============ */
+function trackProductView(productId){
+  if(!productId) return;
+  const key = 'kg_viewed_' + String(productId);
+  const now = Date.now();
+  try{
+    const last = Number(sessionStorage.getItem(key) || 0);
+    if(last && now - last < 30 * 60 * 1000) return;
+  }catch(e){}
+  sbClient.rpc('increment_product_view', { p_id: productId }).then(()=>{
+    try{ sessionStorage.setItem(key, String(Date.now())); }catch(e){}
+  }).catch(()=>{});
+}
 function renderProductDetail(id){
   const p = findProduct(id);
   const root = document.getElementById('productDetailRoot');
@@ -1947,7 +1977,7 @@ function renderProductDetail(id){
   document.getElementById('pdQtyVal').textContent = '۱';
   renderReviews(p.id);
   renderRelatedProducts(p);
-  sbClient.rpc('increment_product_view', { p_id: p.id }).then(()=>{});
+  trackProductView(p.id);
 }
 function renderRelatedProducts(p){
   const box = document.getElementById('relatedProductsBox');
