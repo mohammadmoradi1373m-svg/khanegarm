@@ -556,7 +556,7 @@
         <input type="text" id="payRef" placeholder="۴ رقم آخر کارت یا کد پیگیری تراکنش" style="width:100%; border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-family:inherit; font-size:14px;">
       </div>
     </div>
-    <input type="text" id="ordHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <input type="text" id="ordHoneypot" name="website" class="hp-field" tabindex="-1" autocomplete="new-password" autocapitalize="off" spellcheck="false" aria-hidden="true" inputmode="none">
     <div class="full" id="checkoutTurnstileWrap" style="display:flex; justify-content:center; margin-top:14px;">
       <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf" data-error-callback="onTurnstileScriptError"></div>
     </div>
@@ -1188,11 +1188,11 @@ async function ensureCatalogLoaded(){
 }
 async function loadProductsFromDB(){
   try{
-    let result = await withTimeout(sbClient.from('products').select('*'), 12000, 'CATALOG_TIMEOUT');
+    let result = await withTimeout(sbClient.from('products').select('id,cat,tag,name,price,stock,description,features,img_url,code,brand,views,images'), 12000, 'CATALOG_TIMEOUT');
     let { data, error } = result;
     if(error || !data){
       await new Promise(r=>setTimeout(r, 700));
-      result = await withTimeout(sbClient.from('products').select('*'), 12000, 'CATALOG_RETRY_TIMEOUT');
+      result = await withTimeout(sbClient.from('products').select('id,cat,tag,name,price,stock,description,features,img_url,code,brand,views,images'), 12000, 'CATALOG_RETRY_TIMEOUT');
       data = result.data; error = result.error;
     }
     if(error || !data){
@@ -1236,11 +1236,11 @@ function updateNewestIds(){
 
 async function loadCategoriesFromDB(){
   try{
-    let result = await withTimeout(sbClient.from('categories').select('*').order('sort_order'), 12000, 'CATEGORIES_TIMEOUT');
+    let result = await withTimeout(sbClient.from('categories').select('id,name,emoji,sort_order,image_url').order('sort_order'), 12000, 'CATEGORIES_TIMEOUT');
     let { data, error } = result;
     if(error || !data){
       await new Promise(r=>setTimeout(r, 700));
-      result = await withTimeout(sbClient.from('categories').select('*').order('sort_order'), 12000, 'CATEGORIES_RETRY_TIMEOUT');
+      result = await withTimeout(sbClient.from('categories').select('id,name,emoji,sort_order,image_url').order('sort_order'), 12000, 'CATEGORIES_RETRY_TIMEOUT');
       data = result.data; error = result.error;
     }
     if(error || !data){
@@ -2225,6 +2225,8 @@ function onPackagingChange(){
 }
 function openCheckout(){
   if(cart.length===0){ showToast('سبد خرید خالیه'); return; }
+  const hp = document.getElementById('ordHoneypot');
+  if(hp) hp.value = '';
   closeCart();
   onPayMethodChange();
   updatePackagingVisibility();
@@ -2309,6 +2311,10 @@ async function submitOrder(){
 
   const shipping = shipEl.value;
 
+  const honeypotEl = document.getElementById('ordHoneypot');
+  if(honeypotEl && honeypotEl.value.trim()){
+    console.warn('[anti-spam] order honeypot was filled; order blocked');
+  }
   const spamCheck = await checkAntiSpam('checkoutTurnstileWidget', 'ordHoneypot');
   if(!spamCheck.ok){
     if(spamCheck.reason === 'no_token'){
@@ -2345,12 +2351,20 @@ async function submitOrder(){
   btn.textContent = 'ثبت نهایی سفارش';
 
   if(error){
-    if((error.message||'').includes('OUT_OF_STOCK')){
+    const errMsg = String(error.message || error.details || error.hint || '');
+    console.error('[create_order] failed:', error);
+    if(errMsg.includes('OUT_OF_STOCK')){
       showToast('متاسفانه موجودی یکی از محصولات سبدتون تموم شده، لطفاً سبد رو به‌روزرسانی کنید');
       await loadProductsFromDB();
       renderCart();
+    } else if(errMsg.includes('INVALID_')){
+      showToast('اطلاعات سفارش معتبر نیست؛ لطفاً فیلدهای فرم را دوباره بررسی کنید');
+    } else if(/permission denied|not authorized|NOT_AUTHORIZED/i.test(errMsg)){
+      showToast('دسترسی ثبت سفارش از سمت سرور رد شد؛ لطفاً صفحه را تازه‌سازی و دوباره امتحان کنید');
+    } else if(/function .*create_order.* does not exist/i.test(errMsg)){
+      showToast('نسخه فرم سفارش با سرور هماهنگ نیست؛ لطفاً صفحه را تازه‌سازی کنید');
     } else {
-      showToast('ثبت سفارش با خطا مواجه شد، دوباره امتحان کنید');
+      showToast('ثبت سفارش با خطا مواجه شد؛ لطفاً دوباره امتحان کنید');
     }
     return;
   }
