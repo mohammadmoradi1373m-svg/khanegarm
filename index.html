@@ -1158,7 +1158,12 @@ function updateDataErrorBanner(){
   if(!banner) return;
   const hasError = productsLoadError || categoriesLoadError;
   banner.style.display = hasError ? 'flex' : 'none';
-  if(hasError && detail) detail.textContent = 'اتصال موقتاً برقرار نشد؛ دوباره تلاش کنید.';
+  if(hasError && detail){
+    const parts = [];
+    if(productsLoadError) parts.push('محصولات: ' + (lastDataErrorDetail || 'خطای نامشخص'));
+    if(categoriesLoadError) parts.push('دسته‌بندی: ' + (lastDataErrorDetail || 'خطای نامشخص'));
+    detail.textContent = parts.join(' | ');
+  }
 }
 async function retryDataLoad(){
   const btn = document.getElementById('dataErrorRetryBtn');
@@ -2369,16 +2374,12 @@ async function submitOrder(){
   btn.disabled = true;
   btn.textContent = 'در حال ثبت...';
 
-  const idempotencyKey = (window.crypto && typeof window.crypto.randomUUID === 'function')
-    ? window.crypto.randomUUID()
-    : ('kg-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
-  const { data, error } = await sbClient.rpc('create_order_idempotent', {
+  const { data, error } = await sbClient.rpc('create_order', {
     p_name: name, p_phone: phone, p_address: address, p_shipping: shipping,
     p_items: items, p_subtotal: subtotal, p_payment_method: paymentMethod, p_payment_ref: paymentRef,
     p_province: province, p_city: city, p_postal_code: postalCode,
     p_packaging_option: packagingOption, p_packaging_fee: packagingFee,
-    p_via_fallback: spamCheck.viaFallback,
-    p_idempotency_key: idempotencyKey
+    p_via_fallback: spamCheck.viaFallback
   });
 
   btn.disabled = false;
@@ -2395,15 +2396,7 @@ async function submitOrder(){
       showToast('اطلاعات سفارش معتبر نیست؛ لطفاً فیلدهای فرم را دوباره بررسی کنید');
     } else if(/permission denied|not authorized|NOT_AUTHORIZED/i.test(errMsg)){
       showToast('دسترسی ثبت سفارش از سمت سرور رد شد؛ لطفاً صفحه را تازه‌سازی و دوباره امتحان کنید');
-    } else if(errMsg.includes('IDEMPOTENCY_KEY_REUSED')){
-      showToast('این درخواست سفارش قبلاً ثبت شده؛ لطفاً نتیجه سفارش را بررسی کنید');
-    } else if(errMsg.includes('INVALID_IDEMPOTENCY_KEY')){
-      showToast('خطای امنیتی موقت در ثبت سفارش؛ لطفاً دوباره امتحان کنید');
-    } else if(errMsg.includes('FALLBACK_ORDER_RATE_LIMITED')){
-      showToast('به‌دلیل فعال بودن حالت جایگزین امنیتی، فعلاً امکان ثبت سفارش دیگری وجود ندارد؛ لطفاً یک ساعت بعد دوباره امتحان کنید');
-    } else if(errMsg.includes('ORDER_RATE_LIMITED') || errMsg.includes('ORDER_IP_RATE_LIMITED')){
-      showToast('تعداد تلاش‌های ثبت سفارش بیش از حد مجاز شده؛ لطفاً کمی بعد دوباره امتحان کنید');
-    } else if(/function .*create_order(?:_idempotent)? .* does not exist/i.test(errMsg)){
+    } else if(/function .*create_order.* does not exist/i.test(errMsg)){
       showToast('نسخه فرم سفارش با سرور هماهنگ نیست؛ لطفاً صفحه را تازه‌سازی کنید');
     } else {
       showToast('ثبت سفارش با خطا مواجه شد؛ لطفاً دوباره امتحان کنید');
