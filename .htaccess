@@ -1,0 +1,14 @@
+Options -Indexes
+
+# Keep PHP request parsing disabled because the proxy reads php://input directly.
+php_value enable_post_data_reading 0
+
+# Do not serve common sensitive/config/log files through the web server.
+<FilesMatch "(^\.|\.user\.ini$|php\.ini$|debug\.log$|.*\.log$)">
+    Require all denied
+</FilesMatch>
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]
