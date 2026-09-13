@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>خانه‌گرم | فروشگاه پاسور و کارت بازی</title>
 <meta name="description" id="metaDescTag" content="فروشگاه پاسور و کارت بازی خانه‌گرم — کیفیت مطمئن، همراهی واقعی.">
+<meta property="og:site_name" content="خانه‌گرم">
+<meta property="og:locale" content="fa_IR">
 <meta property="og:title" content="خانه‌گرم | فروشگاه پاسور و کارت بازی">
 <meta property="og:description" content="فروشگاه پاسور و کارت بازی خانه‌گرم — کیفیت مطمئن، همراهی واقعی، ارسال به سراسر کشور.">
 <meta property="og:image" content="https://owli.ir/og-image.jpg">
@@ -32,9 +34,16 @@
 </script>
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="خانه‌گرم | فروشگاه پاسور و کارت بازی">
+<meta name="twitter:description" content="فروشگاه پاسور و کارت بازی خانه‌گرم — کیفیت مطمئن، همراهی واقعی، ارسال به سراسر کشور.">
+<meta name="twitter:image" content="https://owli.ir/og-image.jpg">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 <meta name="theme-color" content="#FFF7EC">
 <meta name="enamad" content="18479006" />
+<link rel="preconnect" href="https://api.owli.ir" crossorigin>
+<link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+<link rel="dns-prefetch" href="//api.owli.ir">
+<link rel="dns-prefetch" href="//challenges.cloudflare.com">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="alternate icon" href="favicon.svg">
 <style>
@@ -88,6 +97,10 @@
   .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
   section.page{padding:56px 0;}
   [hidden]{display:none !important;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *, *::before, *::after{scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important;}
+  }
 
   /* header + hamburger menu */
   header{position:sticky; top:0; z-index:60; background:rgba(255,247,236,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
@@ -558,7 +571,7 @@
     </div>
     <input type="text" id="ordHoneypot" name="website" class="hp-field" tabindex="-1" autocomplete="new-password" autocapitalize="off" spellcheck="false" aria-hidden="true" inputmode="none">
     <div class="full" id="checkoutTurnstileWrap" style="display:flex; justify-content:center; margin-top:14px;">
-      <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf" data-error-callback="onTurnstileScriptError"></div>
+      <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAEyiz3cF7LsLUew0" data-error-callback="onTurnstileScriptError"></div>
     </div>
     <div style="display:flex; gap:10px; margin-top:18px;">
       <button class="btn-primary" id="submitOrderBtn" style="flex:1;" onclick="submitOrder()">ثبت نهایی سفارش</button>
@@ -679,7 +692,7 @@
       <textarea id="revComment" placeholder="نظرتون رو بنویسید..."></textarea>
       <input type="text" id="revHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="full" id="reviewTurnstileWrap" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
-        <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf" data-error-callback="onTurnstileScriptError"></div>
+        <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAEyiz3cF7LsLUew0" data-error-callback="onTurnstileScriptError"></div>
       </div>
       <button class="btn-primary full" style="grid-column:1/-1;" onclick="submitReview()">ثبت نظر</button>
     </div>
@@ -1046,7 +1059,7 @@
       </ul></div>
     </div>
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
-      <a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK' alt='نماد اعتماد الکترونیکی' style='cursor:pointer' code='WjmLO94Leg1r6jcKtAov4ZTxyxywxroK'></a>
+      <a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK'><img loading='lazy' decoding='async' referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK' alt='نماد اعتماد الکترونیکی' style='cursor:pointer' code='WjmLO94Leg1r6jcKtAov4ZTxyxywxroK'></a>
     </div>
     <div class="foot-bottom"><span>© ۱۴۰۴ خانه‌گرم</span><span>ساخته‌شده با ❤️</span></div>
   </div>
@@ -1567,8 +1580,19 @@ function setPageMeta(title, description){
   if(tag) tag.setAttribute('content', description);
   const ogTitle = document.querySelector('meta[property="og:title"]');
   const ogDesc = document.querySelector('meta[property="og:description"]');
+  const twTitle = document.querySelector('meta[name="twitter:title"]');
+  const twDesc = document.querySelector('meta[name="twitter:description"]');
   if(ogTitle) ogTitle.setAttribute('content', title);
   if(ogDesc) ogDesc.setAttribute('content', description);
+  if(twTitle) twTitle.setAttribute('content', title);
+  if(twDesc) twDesc.setAttribute('content', description);
+}
+function runWhenIdle(fn, timeout){
+  if('requestIdleCallback' in window){
+    window.requestIdleCallback(fn, {timeout: timeout || 1500});
+  }else{
+    setTimeout(fn, 1);
+  }
 }
 function truncateDesc(text, max){
   max = max || 155;
@@ -1665,7 +1689,7 @@ async function render(){
   if(path === '/' || path === '/products' || path === '/product'){
     await ensureCatalogLoaded();
   }
-  if(path === '/'){ renderHome(); renderDeliveredCount(); } else { stopHomeCarousels(); }
+  if(path === '/'){ renderHome(); runWhenIdle(()=>renderDeliveredCount(), 1800); } else { stopHomeCarousels(); }
   if(path === '/products'){ renderProductList(params.cat, params.q, params.brand); }
   if(path === '/product'){ renderProductDetail(params.id); }
   if(path === '/track'){ /* results render on demand */ }
@@ -1722,7 +1746,7 @@ function productCardHTML(p){
   const isNew = NEWEST_PRODUCT_IDS.has(p.id);
   return `<div class="p-card" style="${out?'opacity:.5;':''}" onclick="go('/product?id=${p.id}')">
     ${isNew ? `<span class="new-badge">جدید</span>` : ''}
-    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
+    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
     <span class="p-tag">${escapeHtml(p.tag)}</span>
     <h3>${escapeHtml(p.name)}</h3>
     <p class="desc">${escapeHtml(p.desc)}</p>
@@ -1758,7 +1782,7 @@ function renderHome(){
 
   document.getElementById('homeCatGrid').innerHTML = CATEGORIES.map(c=>`
     <div class="cat-card" onclick="go('/products?cat=${c.id}')">
-      <div class="cat-ic-wrap">${c.image_url ? `<img src="${escapeHtml(c.image_url)}" loading="lazy" alt="${escapeHtml(c.name)}">` : `<span>${escapeHtml(c.emoji)||'📦'}</span>`}</div>
+      <div class="cat-ic-wrap">${c.image_url ? `<img src="${escapeHtml(c.image_url)}" loading="lazy" decoding="async" alt="${escapeHtml(c.name)}">` : `<span>${escapeHtml(c.emoji)||'📦'}</span>`}</div>
       <h3>${escapeHtml(c.name)}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
     </div>`).join('');
 
@@ -1958,7 +1982,7 @@ function renderProductDetail(id){
   root.innerHTML = `
     <div>
       <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${escapeHtml(images[0]||'')}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
-      ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${escapeHtml(img)}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
+      ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${escapeHtml(img)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
     </div>
     <div>
       <span class="pd-tag">${escapeHtml(p.tag)}${p.views>20 ? ` · 👁️ ${toFa(p.views)} بازدید` : ''}</span>
@@ -1977,7 +2001,7 @@ function renderProductDetail(id){
   document.getElementById('pdQtyVal').textContent = '۱';
   renderReviews(p.id);
   renderRelatedProducts(p);
-  trackProductView(p.id);
+  runWhenIdle(()=>trackProductView(p.id), 1800);
 }
 function renderRelatedProducts(p){
   const box = document.getElementById('relatedProductsBox');
@@ -2185,7 +2209,7 @@ function renderCart(){
     const p = findProduct(item.id);
     if(!p) return '';
     return `<div class="cart-item">
-      <div class="ci-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(p.img)}" alt="" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></div>
+      <div class="ci-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(p.img)}" alt="" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></div>
       <div class="ci-info"><h4>${escapeHtml(p.name)}</h4><div class="ci-price">${formatToman(p.price)}</div></div>
       <div class="ci-controls">
         <button class="qty-btn" onclick="changeCartQty('${p.id}',-1)">−</button>
@@ -3447,7 +3471,7 @@ function isValidPhone(phone){
 loadProductsFromDB().then(renderMenuCategories);
 loadCategoriesFromDB();
 loadHeroImage().then(()=>{ if(!location.hash || location.hash === '#/') renderHeroArt(); });
-sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{});
+runWhenIdle(()=>sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{}), 2000);
 if(!location.hash){ location.hash = '#/'; } else { render(); }
 </script>
 </body>
