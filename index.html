@@ -1716,7 +1716,11 @@ function cleanUrlFor(path, params){
     ? '/product/' + encodeURIComponent(params.id)
     : path;
   const query = new URLSearchParams();
-  if(params){ Object.entries(params).forEach(([k,v])=>{ if(v !== null && v !== undefined && v !== '') query.set(k,v); }); }
+  if(params){ Object.entries(params).forEach(([k,v])=>{
+    // The product id is already encoded into /product/:id; don't duplicate it as ?id=.
+    if(path === '/product' && k === 'id') return;
+    if(v !== null && v !== undefined && v !== '') query.set(k,v);
+  }); }
   const qs = query.toString();
   return cleanPath + (qs ? '?' + qs : '');
 }
@@ -1726,6 +1730,10 @@ function parseLegacyHash(hash){
   const params = {};
   new URLSearchParams(rest.join('?')).forEach((v,k)=>{ params[k]=v; });
   return {path:path || '/', params};
+}
+function runHomeSearch(){
+  const q = document.getElementById('homeSearch').value.trim();
+  go('/products?q=' + encodeURIComponent(q));
 }
 function go(hash){
   const parsed = parseLegacyHash(hash);
@@ -2153,7 +2161,7 @@ function renderReviewSummary(data){
     </div>`;
 }
 async function submitReview(){
-  const {params} = parseHash();
+  const {params} = parseLocation();
   const pid = params.id;
   const phone = toEnDigits(document.getElementById('revPhone').value.trim());
   const name = document.getElementById('revName').value.trim();

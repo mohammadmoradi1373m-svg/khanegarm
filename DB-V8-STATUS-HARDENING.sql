@@ -66,19 +66,17 @@ security definer
 set search_path = 'public', 'private', 'pg_temp'
 as $$
 declare
-  v_id uuid;
-  v_count integer := 0;
+  v_count integer;
+  v_invalid_count integer;
 begin
-  if (select auth.jwt() ->> 'email') <> 'mohammadmoradi.1373m@gmail.com' then
-    raise exception 'NOT_AUTHORIZED';
-  end if;
-  if p_status not between 0 and 3 then
-    raise exception 'INVALID_STATUS';
-  end if;
-  foreach v_id in array p_order_ids loop
-    perform public.admin_set_order_status(v_id, p_status);
-    v_count := v_count + 1;
-  end loop;
+  if (select auth.jwt() ->> 'email') <> 'mohammadmoradi.1373m@gmail.com' then raise exception 'NOT_AUTHORIZED'; end if;
+  if p_status not between 0 and 3 then raise exception 'INVALID_STATUS'; end if;
+  if p_order_ids is null or cardinality(p_order_ids) < 1 or cardinality(p_order_ids) > 100 then raise exception 'INVALID_ORDER_COUNT'; end if;
+  select count(*) into v_invalid_count from public.orders o where o.id = any(p_order_ids) and not private.is_valid_order_status_transition(o.status, p_status);
+  if v_invalid_count > 0 then raise exception 'INVALID_STATUS_TRANSITION'; end if;
+  update public.orders set status = p_status where id = any(p_order_ids);
+  get diagnostics v_count = row_count;
+  if v_count <> cardinality(p_order_ids) then raise exception 'ORDER_NOT_FOUND'; end if;
   return v_count;
 end;
 $$;
@@ -96,8 +94,8 @@ $$;
 revoke execute on function private.is_valid_order_status_transition(integer, integer) from public, anon, authenticated;
 revoke execute on function public.admin_set_order_status(uuid, integer) from public, anon;
 revoke execute on function public.admin_bulk_set_order_status(uuid[], integer) from public, anon;
-revoke execute on function public.get_delivered_orders_count() from public, anon;
+revoke execute on function public.get_delivered_orders_count() from public;
 
 grant execute on function public.admin_set_order_status(uuid, integer) to authenticated;
 grant execute on function public.admin_bulk_set_order_status(uuid[], integer) to authenticated;
-grant execute on function public.get_delivered_orders_count() to authenticated;
+grant execute on function public.get_delivered_orders_count() to anon, authenticated;
