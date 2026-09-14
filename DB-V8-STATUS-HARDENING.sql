@@ -1,5 +1,8 @@
--- خانه‌گرم: final order-status semantics hardening
+-- خانه‌گرم: V8 final order-status semantics hardening
 -- Statuses: -1 cancelled, 0 packing, 1 handed to carrier, 2 in transit, 3 delivered.
+--
+-- This migration intentionally does NOT contain the performance indexes.
+-- Those are maintained separately in DB-PERFORMANCE-INDEXES.sql.
 
 alter table public.orders
   drop constraint if exists orders_status_valid;
@@ -89,6 +92,12 @@ as $$
   select count(*)::integer from public.orders where status = 3;
 $$;
 
-revoke execute on function public.admin_set_order_status(uuid, integer) from anon;
-revoke execute on function public.admin_bulk_set_order_status(uuid[], integer) from anon;
-revoke execute on function public.get_delivered_orders_count() from anon;
+-- SECURITY DEFINER functions must not retain the default PUBLIC execute grant.
+revoke execute on function private.is_valid_order_status_transition(integer, integer) from public, anon, authenticated;
+revoke execute on function public.admin_set_order_status(uuid, integer) from public, anon;
+revoke execute on function public.admin_bulk_set_order_status(uuid[], integer) from public, anon;
+revoke execute on function public.get_delivered_orders_count() from public, anon;
+
+grant execute on function public.admin_set_order_status(uuid, integer) to authenticated;
+grant execute on function public.admin_bulk_set_order_status(uuid[], integer) to authenticated;
+grant execute on function public.get_delivered_orders_count() to authenticated;
