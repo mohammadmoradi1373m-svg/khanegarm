@@ -446,6 +446,74 @@
     .cat-grid{grid-template-columns:1fr;}
     .cart-drawer{width:100vw;}
   }
+
+  /* product detail premium UI — lightweight CSS only, no extra assets */
+  .pd-shell{display:flex; flex-direction:column; gap:18px;}
+  .pd-gallery-card{background:var(--card); border:1px solid var(--line); border-radius:24px; padding:12px; box-shadow:0 14px 34px -28px rgba(59,42,30,.35);}
+  .pd-gallery-main{position:relative; aspect-ratio:1/0.86; border-radius:18px; margin-bottom:10px; background:linear-gradient(145deg,#FFF9F0,#F8EAD6);}
+  .pd-gallery-main::after{content:"برای بزرگ‌نمایی لمس کنید"; position:absolute; left:12px; bottom:12px; background:rgba(59,42,30,.72); color:#fff; border-radius:999px; padding:5px 10px; font-size:10.5px; pointer-events:none; opacity:.88;}
+  .pd-gallery-main img{display:block;}
+  .pd-thumbs{display:flex; gap:8px; overflow-x:auto; padding:2px 2px 3px; scrollbar-width:none;}
+  .pd-thumbs::-webkit-scrollbar{display:none;}
+  .pd-thumbs .th{width:58px; height:58px; border-radius:12px; background:var(--bg-alt); flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(228,207,176,.5); transition:border-color .18s ease, transform .18s ease;}
+  .pd-thumbs .th.active{border-color:var(--rust); box-shadow:0 0 0 2px rgba(193,68,46,.10);}
+  .pd-thumbs .th:hover{transform:translateY(-1px);}
+  .pd-info-card{background:var(--card); border:1px solid var(--line); border-radius:24px; padding:26px; box-shadow:0 14px 34px -30px rgba(59,42,30,.3);}
+  .pd-headline{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:10px;}
+  .pd-tag{margin-bottom:0; padding:5px 10px; border-radius:999px; background:var(--bg-alt); width:max-content; max-width:100%;}
+  .pd-title{font-size:clamp(24px,3vw,31px); line-height:1.45; margin:0;}
+  .pd-price-row{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; padding:16px 0; margin:8px 0 2px; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
+  .pd-price{font-size:25px; margin:0; color:var(--ink);}
+  .pd-price small{font-family:inherit; font-size:12px; color:var(--ink-soft); font-weight:500;}
+  .pd-stock-pill{font-size:11.5px; font-weight:700; color:var(--teal); background:#EDF7F3; border:1px solid #CFE6DD; border-radius:999px; padding:6px 10px; white-space:nowrap;}
+  .pd-stock-pill.low{color:var(--rust); background:#FFF1EC; border-color:#F0D0C5;}
+  .pd-desc{font-size:14.5px; line-height:2; margin:16px 0 14px;}
+  .pd-feature-box{background:var(--bg-alt); border-radius:16px; padding:14px 16px; margin:14px 0 18px;}
+  .pd-feature-title{font-size:12px; font-weight:800; color:var(--ink-soft); margin-bottom:8px;}
+  .pd-features{display:grid; grid-template-columns:1fr 1fr; gap:7px 16px; margin:0;}
+  .pd-features li{font-size:13px; line-height:1.7;}
+  .pd-buy-row{display:flex; gap:10px; align-items:center;}
+  .pd-qty{margin:0; flex:0 0 auto; background:var(--bg-alt); border:1px solid var(--line); border-radius:999px; padding:3px; gap:5px;}
+  .pd-qty button{width:36px; height:36px; border:0; background:var(--card); box-shadow:0 2px 8px -5px rgba(59,42,30,.35);}
+  .pd-qty span{min-width:30px;}
+  .pd-buy-btn{flex:1; min-height:44px; box-shadow:0 10px 22px -14px rgba(193,68,46,.8);}
+  .pd-mini-trust{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px;}
+  .pd-mini-trust div{background:var(--bg); border:1px solid var(--line); border-radius:13px; padding:9px 7px; text-align:center; font-size:10.5px; color:var(--ink-soft); line-height:1.6;}
+  .pd-mini-trust strong{display:block; color:var(--ink); font-size:11px; margin-bottom:1px;}
+  .reviews-box{margin-top:50px; border-top:0; padding-top:0; background:transparent;}
+  .reviews-header{display:flex; align-items:end; justify-content:space-between; gap:14px; margin-bottom:16px;}
+  .reviews-title{font-size:21px; margin:0 0 3px;}
+  .reviews-subtitle{font-size:12.5px; color:var(--ink-soft);}
+  .review-form-card{background:var(--card); border:1px solid var(--line); border-radius:20px; padding:18px; margin-bottom:18px;}
+  .review-form-card .review-form{margin-bottom:0;}
+  .review-form-card .review-form input,.review-form-card .review-form textarea{background:var(--bg);}
+  .review-summary{box-shadow:0 10px 28px -26px rgba(59,42,30,.35);}
+  .review-list-title{font-size:15px; font-weight:800; margin:20px 0 12px;}
+  @media (max-width:860px){
+    .pd-info-card{padding:21px;}
+    .pd-feature-box{padding:13px;}
+  }
+  @media (max-width:520px){
+    .pd-gallery-card{padding:8px; border-radius:20px;}
+    .pd-gallery-main{border-radius:15px; aspect-ratio:1/0.9;}
+    .pd-gallery-main::after{font-size:9.5px; bottom:9px; left:9px;}
+    .pd-info-card{padding:18px 15px; border-radius:20px;}
+    .pd-headline{display:block;}
+    .pd-tag{margin-bottom:9px;}
+    .pd-title{font-size:22px;}
+    .pd-price-row{align-items:center;}
+    .pd-price{font-size:22px;}
+    .pd-features{grid-template-columns:1fr;}
+    .pd-buy-row{align-items:stretch;}
+    .pd-qty{padding:2px;}
+    .pd-qty button{width:34px; height:38px;}
+    .pd-buy-btn{padding:11px 14px;}
+    .pd-mini-trust{grid-template-columns:1fr 1fr 1fr;}
+    .pd-mini-trust div{padding:8px 4px; font-size:9.5px;}
+    .reviews-header{align-items:flex-start; flex-direction:column; gap:3px;}
+    .review-form-card{padding:14px; border-radius:17px;}
+  }
+
 </style>
 </head>
 <body>
@@ -682,7 +750,10 @@
   <div class="pd-grid" id="productDetailRoot"></div>
   <div id="relatedProductsBox" style="margin-top:44px;"></div>
   <div class="reviews-box">
-    <h3 style="margin-bottom:16px;">نظرات مشتری‌ها</h3>
+    <div class="reviews-header">
+      <div><h3 class="reviews-title">نظرات مشتری‌ها</h3><div class="reviews-subtitle">تجربه خریدارها به انتخاب بهتر شما کمک می‌کنه.</div></div>
+    </div>
+    <div class="review-form-card">
     <div class="review-form">
       <input type="tel" id="revPhone" placeholder="شماره تلفن (۰۹xxxxxxxxx)" maxlength="11">
       <input type="text" id="revName" placeholder="نام و نام خانوادگی">
@@ -696,7 +767,9 @@
       </div>
       <button class="btn-primary full" style="grid-column:1/-1;" onclick="submitReview()">ثبت نظر</button>
     </div>
+    </div>
     <div id="reviewSummary"></div>
+    <div class="review-list-title">آخرین نظرها</div>
     <div id="reviewList"></div>
   </div>
 </section>
@@ -2053,21 +2126,37 @@ function renderProductDetail(id){
   pdCurrentImages = images;
   updateProductStructuredData(p);
   root.innerHTML = `
-    <div>
-      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${escapeHtml(images[0]||'')}" data-fullsrc="${escapeHtml(images[0]||'')}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
-      ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(img)}';" data-fullsrc="${escapeHtml(img)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
-    </div>
-    <div>
-      <span class="pd-tag">${escapeHtml(p.tag)}${p.views>20 ? ` · 👁️ ${toFa(p.views)} بازدید` : ''}</span>
-      <h1 class="pd-title">${escapeHtml(p.name)}</h1>
-      <div class="pd-price">${toFa(p.price.toLocaleString('en-US'))} تومان</div>
-      <p class="pd-desc">${escapeHtml(p.desc)}</p>
-      <ul class="pd-features">${p.features.map(f=>`<li>${escapeHtml(f)}</li>`).join('')}</ul>
-      <div class="stock-note ${p.stock<=5?'low':''}" style="margin-bottom:14px;">${p.stock>0 ? (p.stock<=5?'تنها '+toFa(p.stock)+' عدد باقی مانده':'موجود در انبار') : 'ناموجود'}</div>
-      <div class="pd-qty">
-        <button onclick="pdQty(-1)">−</button><span id="pdQtyVal">۱</span><button onclick="pdQty(1)">+</button>
+    <div class="pd-shell">
+      <div class="pd-gallery-card">
+        <div class="pd-gallery-main"><img id="pdMainImg" src="${escapeHtml(images[0]||'')}" data-fullsrc="${escapeHtml(images[0]||'')}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:contain; border-radius:18px;"></div>
+        ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(img)}';" data-fullsrc="${escapeHtml(img)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></div>`).join('')}</div>` : ''}
       </div>
-      <button class="btn-primary" onclick="pdAddToCart()" style="width:100%;" ${p.stock<=0?'disabled':''}>افزودن به سبد خرید</button>
+    </div>
+    <div class="pd-info-card">
+      <div class="pd-headline">
+        <span class="pd-tag">${escapeHtml(p.tag)}${p.views>20 ? ` · 👁️ ${toFa(p.views)} بازدید` : ''}</span>
+      </div>
+      <h1 class="pd-title">${escapeHtml(p.name)}</h1>
+      <div class="pd-price-row">
+        <div class="pd-price">${toFa(p.price.toLocaleString('en-US'))} <small>تومان</small></div>
+        <div class="pd-stock-pill ${p.stock<=5?'low':''}">${p.stock>0 ? (p.stock<=5?'تنها '+toFa(p.stock)+' عدد باقی مانده':'✓ موجود در انبار') : 'ناموجود'}</div>
+      </div>
+      <p class="pd-desc">${escapeHtml(p.desc)}</p>
+      <div class="pd-feature-box">
+        <div class="pd-feature-title">ویژگی‌های محصول</div>
+        <ul class="pd-features">${p.features.map(f=>`<li>${escapeHtml(f)}</li>`).join('')}</ul>
+      </div>
+      <div class="pd-buy-row">
+        <div class="pd-qty" aria-label="تعداد محصول">
+          <button onclick="pdQty(-1)" aria-label="کاهش تعداد">−</button><span id="pdQtyVal">۱</span><button onclick="pdQty(1)" aria-label="افزایش تعداد">+</button>
+        </div>
+        <button class="btn-primary pd-buy-btn" onclick="pdAddToCart()" ${p.stock<=0?'disabled':''}>افزودن به سبد خرید</button>
+      </div>
+      <div class="pd-mini-trust">
+        <div><strong>🛡️ خرید مطمئن</strong>پرداخت امن</div>
+        <div><strong>📦 ارسال</strong>بسته‌بندی مناسب</div>
+        <div><strong>💬 پشتیبانی</strong>همراه شما</div>
+      </div>
     </div>`;
   pdQtyRaw = 1;
   pdCurrentId = p.id;
