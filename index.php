@@ -10,6 +10,7 @@ declare(strict_types=1);
  * - Request-header allowlist
  * - No Authorization/API-key/body/response logging
  * - Bounded request/connection timeouts
+ * - Request-body cap remains effective without Content-Length
  * - Safe response-header allowlist
  * - Public Storage assets may be browser-cached
  * - API responses are not cached
@@ -21,6 +22,24 @@ define('SUPABASE_BASE', 'https://' . SUPABASE_HOST);
 // against hosting layers that drop custom request headers such as `apikey`.
 define('SUPABASE_ANON_KEY', 'sb_publishable_bX7ApIxbBzjXkQNiLw2wDw_m0TzJ6Wb');
 define('MAX_REQUEST_BODY_BYTES', 8 * 1024 * 1024); // 8 MiB; product images are limited to 5 MiB.
+
+// Apache rewrites clean SPA routes (for example /product/ABC) to this file.
+// On the public site host, serve the SPA entry instead of proxying that page to Supabase.
+$host = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
+$host = preg_replace('/:\d+$/', '', $host);
+if (in_array($host, ['owli.ir', 'www.owli.ir'], true)) {
+    $indexFile = __DIR__ . '/index.html';
+    if (is_file($indexFile)) {
+        header('Content-Type: text/html; charset=utf-8');
+        header('Cache-Control: no-cache');
+        readfile($indexFile);
+        exit;
+    }
+    http_response_code(500);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo 'SITE_ENTRY_UNAVAILABLE';
+    exit;
+}
 
 $allowedOrigins = [
     'https://owli.ir',
@@ -85,6 +104,11 @@ if ($requestUri === '' || $requestUri[0] !== '/') {
 }
 $targetUrl = SUPABASE_BASE . $requestUri;
 
+// Only public Storage object requests are eligible for browser caching.
+// Keep the decision tied to the fixed upstream path; never trust a client header.
+$targetPath = (string)(parse_url($targetUrl, PHP_URL_PATH) ?? '');
+$isStorageAsset = strpos($targetPath, '/storage/v1/object/public/') === 0;
+
 /*
  * Limit request bodies before reading php://input where Content-Length is known.
  * 8 MiB is above the site's current 5 MiB product-image limit.
@@ -101,7 +125,13 @@ if ($contentLength !== '' && ctype_digit($contentLength)) {
 
 $body = '';
 if (in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
-    $body = file_get_contents('php://input');
+    // Read at most MAX_REQUEST_BODY_BYTES + 1 bytes. This keeps the limit effective
+    // even when a client uses chunked transfer and does not provide Content-Length.
+    $input = fopen('php://input', 'rb');
+    if ($input !== false) {
+        $body = stream_get_contents($input, MAX_REQUEST_BODY_BYTES + 1);
+        fclose($input);
+    }
     if ($body === false) {
         $body = '';
     }
@@ -148,9 +178,91 @@ $forwardHeaders[] = 'Expect:';
 
 $ch = curl_init($targetUrl);
 
+$bytesSent = 0;
+$upstreamHeadersStarted = false;
+$upstreamStatus = 0;
+
+/*
+ * Stream upstream responses directly to the browser.
+ * This is especially important for Storage images: the old proxy buffered the
+ * entire object in PHP memory before sending it, adding memory pressure and
+ * delaying first-byte delivery. Streaming keeps the proxy as a thin transport.
+ */
+$writeBody = static function ($curl, string $chunk) use (&$bytesSent): int {
+    $len = strlen($chunk);
+    if ($len > 0) {
+        echo $chunk;
+        $bytesSent += $len;
+        if (function_exists('flush')) {
+            @flush();
+        }
+    }
+    return $len;
+};
+
+$forwardUpstreamHeaders = static function ($curl, string $headerLine) use (&$upstreamHeadersStarted, &$upstreamStatus, $isStorageAsset, $origin): int {
+    static $headerRules;
+    if ($headerRules === null) {
+        $headerRules = [
+            'content-type'        => true,
+            'content-length'      => true,
+            'cache-control'       => true,
+            'etag'                => true,
+            'last-modified'       => true,
+            'accept-ranges'       => true,
+            'content-range'       => true,
+            'content-encoding'    => true,
+            'content-disposition' => true,
+            'vary'                => true,
+            'preference-applied'  => true,
+        ];
+    }
+
+    $trimmed = trim($headerLine);
+    if ($trimmed === '') {
+        return strlen($headerLine);
+    }
+
+    if (preg_match('#^HTTP/\S+\s+(\d{3})#i', $trimmed, $m)) {
+        $upstreamStatus = (int)$m[1];
+        http_response_code($upstreamStatus);
+        $upstreamHeadersStarted = true;
+        return strlen($headerLine);
+    }
+
+    if (strpos($headerLine, ':') === false) {
+        return strlen($headerLine);
+    }
+
+    [$name, $value] = explode(':', $headerLine, 2);
+    $lname = strtolower(trim($name));
+    if (!isset($headerRules[$lname])) {
+        return strlen($headerLine);
+    }
+
+    if ($lname === 'cache-control') {
+        return strlen($headerLine);
+    }
+
+    header(trim($name) . ': ' . ltrim($value), false);
+    return strlen($headerLine);
+};
+
+/* Apply the proxy-controlled headers before body streaming begins. */
+if ($origin !== '') {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+}
+if ($isStorageAsset) {
+    header('Cache-Control: public, max-age=604800, immutable');
+} else {
+    header('Cache-Control: no-store');
+}
+header('X-Content-Type-Options: nosniff');
+
 curl_setopt_array($ch, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_HEADER => true,
+    CURLOPT_RETURNTRANSFER => false,
+    CURLOPT_HEADER => false,
     CURLOPT_CUSTOMREQUEST => $method,
     CURLOPT_HTTPHEADER => $forwardHeaders,
     CURLOPT_SSL_VERIFYPEER => true,
@@ -160,95 +272,33 @@ curl_setopt_array($ch, [
     CURLOPT_CONNECTTIMEOUT => 8,
     CURLOPT_TIMEOUT => 30,
     CURLOPT_FOLLOWLOCATION => false,
+    CURLOPT_WRITEFUNCTION => $writeBody,
+    CURLOPT_HEADERFUNCTION => $forwardUpstreamHeaders,
+    CURLOPT_BUFFERSIZE => 32768,
 ]);
 
 if (in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
 }
 
-$response = curl_exec($ch);
-
-if ($response === false) {
-    /*
-     * Do NOT expose curl_error() to the client.
-     * Detailed transport errors belong in server-side monitoring only.
-     */
-    curl_close($ch);
-
-    http_response_code(502);
-    header('Content-Type: application/json; charset=utf-8');
-    header('Cache-Control: no-store');
-    echo json_encode(['error' => 'UPSTREAM_UNAVAILABLE'], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+$responseOk = curl_exec($ch);
+$curlErrNo = curl_errno($ch);
 $statusCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
-$responseHeaders = substr($response, 0, $headerSize);
-$responseBody = substr($response, $headerSize);
-
-/*
- * Public product/category assets are immutable in this project.
- * Keep this cache rule only for successful public Storage object GETs.
- */
-$isStorageAsset =
-    $method === 'GET' &&
-    strpos($requestUri, '/storage/v1/object/public/') === 0;
-
-$safeResponseHeaders = [
-    'content-type'        => true,
-    'content-length'      => true,
-    'cache-control'       => true,
-    'etag'                => true,
-    'last-modified'       => true,
-    'accept-ranges'       => true,
-    'content-range'       => true,
-    'content-encoding'    => true,
-    'content-disposition' => true,
-    'vary'                => true,
-    'preference-applied'  => true,
-];
-
-$lines = preg_split("/\r\n|\n|\r/", $responseHeaders);
-foreach ($lines as $line) {
-    if ($line === '' || strpos($line, ':') === false) {
-        continue;
+if ($responseOk === false || $curlErrNo !== 0) {
+    /* If no body has started, we can still return a clean JSON error. */
+    if ($bytesSent === 0) {
+        http_response_code(502);
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+        echo json_encode(['error' => 'UPSTREAM_UNAVAILABLE'], JSON_UNESCAPED_UNICODE);
     }
-
-    [$name, $value] = explode(':', $line, 2);
-    $lname = strtolower(trim($name));
-
-    if (!isset($safeResponseHeaders[$lname])) {
-        continue;
-    }
-
-    /*
-     * We control cache policy for public Storage assets.
-     * Do not pass through Supabase's shorter cache value in that case.
-     */
-    if ($isStorageAsset && $lname === 'cache-control') {
-        continue;
-    }
-
-    header(trim($name) . ': ' . ltrim($value), false);
+    exit;
 }
 
-if ($origin !== '') {
-    // Re-assert CORS on the final response after proxying upstream headers.
-    header('Access-Control-Allow-Origin: ' . $origin);
-    header('Vary: Origin', false);
+if ($upstreamStatus === 0) {
+    http_response_code($statusCode > 0 ? $statusCode : 502);
 }
 
-if ($isStorageAsset && $statusCode >= 200 && $statusCode < 300) {
-    header('Cache-Control: public, max-age=604800, immutable');
-} elseif (!$isStorageAsset) {
-    header('Cache-Control: no-store');
-}
-
-header('X-Content-Type-Options: nosniff');
-
-http_response_code($statusCode);
-echo $responseBody;
 ?>

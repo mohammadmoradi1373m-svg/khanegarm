@@ -860,6 +860,7 @@
           <option value="0">در حال بسته‌بندی</option>
           <option value="1">تحویل داده‌شده به پست/باربری</option>
           <option value="2">در حال ارسال</option>
+          <option value="3">تحویل داده‌شده</option>
         </select>
         <div class="jalali-picker-wrap">
           <input type="text" id="filterDateFrom" placeholder="از تاریخ" readonly onclick="toggleJalaliPicker('filterDateFrom')" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:108px; cursor:pointer; background:var(--card);">
@@ -885,6 +886,7 @@
           <option value="0">در حال بسته‌بندی</option>
           <option value="1">تحویل داده‌شده به پست/باربری</option>
           <option value="2">در حال ارسال</option>
+          <option value="3">تحویل داده‌شده</option>
         </select>
         <button class="btn-primary" style="padding:7px 14px; font-size:12.5px;" onclick="applyBulkStatus()">اعمال روی انتخاب‌شده‌ها</button>
         <button class="btn-ghost" style="padding:7px 14px; font-size:12.5px;" onclick="clearBulkSelection()">لغو انتخاب</button>
@@ -1344,35 +1346,57 @@ function pruneCartOfMissingProducts(){
   cart = cart.filter(item => !!findProduct(item.id));
   if(cart.length !== before) saveJSON('kg_cart', cart);
 }
-function compressImage(file, maxDim, quality){
-  maxDim = maxDim || 1280; quality = quality || 0.8;
-  return new Promise((resolve)=>{
-    if(!file.type.startsWith('image/')){ resolve(file); return; }
-    const img = new Image();
-    const reader = new FileReader();
-    reader.onload = (e)=>{
-      img.onload = ()=>{
-        let w = img.width, h = img.height;
-        if(w > maxDim || h > maxDim){
-          if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
-          else { w = Math.round(w * maxDim / h); h = maxDim; }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = w; canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        canvas.toBlob((blob)=>{
-          if(!blob){ resolve(file); return; }
-          resolve(new File([blob], file.name.replace(/\.[^.]+$/,'') + '.jpg', {type:'image/jpeg'}));
-        }, 'image/jpeg', quality);
-      };
-      img.onerror = ()=> resolve(file);
-      img.src = e.target.result;
+function compressImage(file,maxDim,quality){
+  maxDim=maxDim||2500; quality=quality||0.86;
+  const TARGET_BYTES=4.7*1024*1024;
+  return new Promise(resolve=>{
+    if(!file||!file.type||!file.type.startsWith('image/')){resolve(null);return;}
+    const finish=(blob)=>{if(blob&&blob.size<=4.9*1024*1024)resolve(new File([blob],(file.name||'image').replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp',lastModified:Date.now()}));else resolve(null)};
+    const draw=(img,revoke)=>{
+      try{
+        let w=img.width||img.naturalWidth,h=img.height||img.naturalHeight;
+        if(!w||!h){if(revoke)URL.revokeObjectURL(revoke);resolve(null);return;}
+        if(Math.max(w,h)>maxDim){if(w>=h){h=Math.round(h*maxDim/w);w=maxDim}else{w=Math.round(w*maxDim/h);h=maxDim}}
+        const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:true});
+        if(!ctx){if(revoke)URL.revokeObjectURL(revoke);resolve(null);return;}
+        const tryEncode=q=>{canvas.width=w;canvas.height=h;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,w,h);canvas.toBlob(blob=>{
+          if(blob&&blob.size<=TARGET_BYTES){if(revoke)URL.revokeObjectURL(revoke);finish(blob);return;}
+          if(q>0.70){tryEncode(Math.max(0.70,+(q-0.06).toFixed(2)));return;}
+          if(w>1200||h>1200){w=Math.max(1,Math.round(w*.85));h=Math.max(1,Math.round(h*.85));tryEncode(.78);return;}
+          if(revoke)URL.revokeObjectURL(revoke);resolve(null);
+        },'image/webp',q)};
+        tryEncode(quality);
+      }catch(e){if(revoke)URL.revokeObjectURL(revoke);resolve(null)}
     };
-    reader.onerror = ()=> resolve(file);
-    reader.readAsDataURL(file);
+    const fallback=()=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>draw(img,url);img.onerror=()=>{URL.revokeObjectURL(url);resolve(null)};img.src=url};
+    if('createImageBitmap' in window){createImageBitmap(file,{imageOrientation:'from-image'}).then(bitmap=>{draw(bitmap,null);setTimeout(()=>{try{bitmap.close()}catch(e){}},0)}).catch(fallback)}else fallback();
   });
 }
+function compressImageVariants(file){
+  return new Promise(resolve=>{
+    if(!file||!file.type||!file.type.startsWith('image/')){resolve([null,null]);return;}
+    const finish=(mainBlob,thumbBlob)=>{if(!mainBlob||mainBlob.size>4.9*1024*1024||!thumbBlob){resolve([null,null]);return;}const base=(file.name||'product-image').replace(/\.[^.]+$/,'');resolve([new File([mainBlob],base+'.webp',{type:'image/webp',lastModified:Date.now()}),new File([thumbBlob],base+'_thumb.webp',{type:'image/webp',lastModified:Date.now()})])};
+    const draw=(img,revoke)=>{
+      try{
+        const ow=img.width||img.naturalWidth,oh=img.height||img.naturalHeight;if(!ow||!oh){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
+        let mw=ow,mh=oh;const scale=Math.min(1,2500/Math.max(mw,mh));mw=Math.max(1,Math.round(mw*scale));mh=Math.max(1,Math.round(mh*scale));
+        const tw=Math.max(1,Math.round(ow*Math.min(1,480/Math.max(ow,oh)))),th=Math.max(1,Math.round(oh*Math.min(1,480/Math.max(ow,oh))));
+        const mc=document.createElement('canvas'),tc=document.createElement('canvas'),mx=mc.getContext('2d',{alpha:true}),tx=tc.getContext('2d',{alpha:true});if(!mx||!tx){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
+        const makeMain=q=>new Promise(r=>{mc.width=mw;mc.height=mh;mx.imageSmoothingEnabled=true;mx.imageSmoothingQuality='high';mx.drawImage(img,0,0,mw,mh);mc.toBlob(r,'image/webp',q)});
+        const makeThumb=()=>new Promise(r=>{tc.width=tw;tc.height=th;tx.imageSmoothingEnabled=true;tx.imageSmoothingQuality='high';tx.drawImage(img,0,0,tw,th);tc.toBlob(r,'image/webp',.78)});
+        (async()=>{let q=.86,blob=null;while(q>=.70){blob=await makeMain(q);if(blob&&blob.size<=4.7*1024*1024)break;q=+(q-.06).toFixed(2)}while((!blob||blob.size>4.7*1024*1024)&&Math.max(mw,mh)>1200){mw=Math.max(1,Math.round(mw*.85));mh=Math.max(1,Math.round(mh*.85));blob=await makeMain(.78)}const thumb=await makeThumb();if(revoke)URL.revokeObjectURL(revoke);finish(blob,thumb)})().catch(()=>{if(revoke)URL.revokeObjectURL(revoke);resolve([null,null])});
+      }catch(e){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null])}
+    };
+    const fallback=()=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>draw(img,url);img.onerror=()=>{URL.revokeObjectURL(url);resolve([null,null])};img.src=url};
+    if('createImageBitmap' in window){createImageBitmap(file,{imageOrientation:'from-image'}).then(bitmap=>{draw(bitmap,null);setTimeout(()=>{try{bitmap.close()}catch(e){}},0)}).catch(fallback)}else fallback();
+  });
+}
+function getStorageSiblingUrl(url,suffix){
+  if(!url||!/^https?:\/\//i.test(url))return url;
+  try{const u=new URL(url),m=u.pathname.match(/^(.*\/)([^/]+)$/);if(!m)return url;const name=m[2],dot=name.lastIndexOf('.'),base=dot>0?name.slice(0,dot):name;u.pathname=m[1]+base+suffix+'.webp';u.search='';return u.toString()}catch(e){return url}
+}
+function productImageUrl(url,variant){if(!url)return '';if(variant==='thumb'&&/\.webp(?:$|[?#])/i.test(url))return getStorageSiblingUrl(url,'_thumb');return url}
+function imageUploadVariants(file){return compressImageVariants(file)}
 async function verifyTurnstile(token){
   if(!token) return false;
   try{
@@ -1586,6 +1610,15 @@ function setPageMeta(title, description){
   if(ogDesc) ogDesc.setAttribute('content', description);
   if(twTitle) twTitle.setAttribute('content', title);
   if(twDesc) twDesc.setAttribute('content', description);
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if(canonical) canonical.setAttribute('href', getCanonicalUrl());
+  const ogUrl = document.querySelector('meta[property="og:url"]');
+  if(ogUrl) ogUrl.setAttribute('content', getCanonicalUrl());
+}
+function getCanonicalUrl(){
+  const url = new URL(location.href);
+  url.hash = '';
+  return url.origin + (url.pathname || '/');
 }
 function runWhenIdle(fn, timeout){
   if('requestIdleCallback' in window){
@@ -1656,33 +1689,56 @@ function updatePageMeta(path, params){
 }
 
 /* ============ ROUTER ============ */
-function parseHash(){
-  let h = location.hash.replace(/^#/,'') || '/';
-  let [path, query] = h.split('?');
-  let params = {};
-  if(query){
-    query.split('&').forEach(kv=>{
-      const eq = kv.indexOf('=');
-      const rawKey = eq >= 0 ? kv.slice(0, eq) : kv;
-      const rawVal = eq >= 0 ? kv.slice(eq + 1) : '';
-      try{
-        const k = decodeURIComponent(rawKey);
-        const v = decodeURIComponent(rawVal);
-        if(k) params[k] = v;
-      }catch(e){
-        console.warn('Invalid hash query parameter ignored');
-      }
-    });
+function parseLocation(){
+  // Clean URLs are canonical. Hash URLs remain supported for backwards compatibility.
+  let path = location.pathname || '/';
+  let search = location.search || '';
+  if(location.hash){
+    const h = location.hash.replace(/^#/,'') || '/';
+    const parts = h.split('?');
+    path = parts[0] || '/';
+    search = parts[1] ? '?' + parts.slice(1).join('?') : '';
   }
+  const params = {};
+  const query = new URLSearchParams(search.replace(/^\?/,''));
+  query.forEach((v,k)=>{ params[k]=v; });
+  // /product/:id is the indexable product URL; internally it maps to the existing /product route.
+  const productMatch = path.match(/^\/product\/([^/]+)\/?$/);
+  if(productMatch){
+    try { params.id = decodeURIComponent(productMatch[1]); } catch(e) { params.id = ''; }
+    path = '/product';
+  }
+  if(path !== '/' && path.endsWith('/')) path = path.slice(0,-1);
   return {path: path || '/', params};
 }
-function runHomeSearch(){
-  const q = document.getElementById('homeSearch').value.trim();
-  go('/products?q=' + encodeURIComponent(q));
+function cleanUrlFor(path, params){
+  const cleanPath = path === '/product' && params && params.id
+    ? '/product/' + encodeURIComponent(params.id)
+    : path;
+  const query = new URLSearchParams();
+  if(params){ Object.entries(params).forEach(([k,v])=>{ if(v !== null && v !== undefined && v !== '') query.set(k,v); }); }
+  const qs = query.toString();
+  return cleanPath + (qs ? '?' + qs : '');
 }
-function go(hash){ location.hash = hash; }
+function parseLegacyHash(hash){
+  const h = String(hash || '').replace(/^#/,'') || '/';
+  const [path, ...rest] = h.split('?');
+  const params = {};
+  new URLSearchParams(rest.join('?')).forEach((v,k)=>{ params[k]=v; });
+  return {path:path || '/', params};
+}
+function go(hash){
+  const parsed = parseLegacyHash(hash);
+  const target = cleanUrlFor(parsed.path, parsed.params);
+  if(target === location.pathname + location.search){
+    render();
+  }else{
+    history.pushState({}, '', target);
+    render();
+  }
+}
 async function render(){
-  const {path, params} = parseHash();
+  const {path, params} = parseLocation();
   document.querySelectorAll('.page').forEach(sec=>{
     sec.hidden = sec.dataset.route !== path;
   });
@@ -1702,7 +1758,16 @@ async function render(){
   renderCart();
   renderMenuCategories();
 }
-window.addEventListener('hashchange', render);
+window.addEventListener('popstate', render);
+window.addEventListener('hashchange', ()=>{
+  // One-time migration of legacy #/ URLs to clean canonical paths.
+  if(location.hash){
+    const parsed = parseLegacyHash(location.hash);
+    history.replaceState({}, '', cleanUrlFor(parsed.path, parsed.params));
+    render();
+  }
+});
+
 
 /* ============ MENU / CART TOGGLES ============ */
 function toggleMenu(){
@@ -1746,7 +1811,7 @@ function productCardHTML(p){
   const isNew = NEWEST_PRODUCT_IDS.has(p.id);
   return `<div class="p-card" style="${out?'opacity:.5;':''}" onclick="go('/product?id=${p.id}')">
     ${isNew ? `<span class="new-badge">جدید</span>` : ''}
-    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
+    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(p.img)}';" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
     <span class="p-tag">${escapeHtml(p.tag)}</span>
     <h3>${escapeHtml(p.name)}</h3>
     <p class="desc">${escapeHtml(p.desc)}</p>
@@ -1981,8 +2046,8 @@ function renderProductDetail(id){
   updateProductStructuredData(p);
   root.innerHTML = `
     <div>
-      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${escapeHtml(images[0]||'')}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
-      ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${escapeHtml(img)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
+      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${escapeHtml(images[0]||'')}" data-fullsrc="${escapeHtml(images[0]||'')}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
+      ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(img)}';" data-fullsrc="${escapeHtml(img)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
     </div>
     <div>
       <span class="pd-tag">${escapeHtml(p.tag)}${p.views>20 ? ` · 👁️ ${toFa(p.views)} بازدید` : ''}</span>
@@ -2124,7 +2189,7 @@ async function submitReview(){
 /* ============ FAQ ============ */
 async function renderCommunityGuides(){
   const box = document.getElementById('communityGuides');
-  const { data, error } = await sbClient.from('guides').select('*').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('guides').select('id,title,body,teaser,tag,created_at').order('created_at', {ascending:false});
   if(error || !data || data.length === 0){ box.innerHTML=''; return; }
   box.innerHTML = data.map(g=>`
     <article class="guide-card">
@@ -2209,7 +2274,7 @@ function renderCart(){
     const p = findProduct(item.id);
     if(!p) return '';
     return `<div class="cart-item">
-      <div class="ci-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(p.img)}" alt="" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></div>
+      <div class="ci-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(p.img)}';" alt="" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></div>
       <div class="ci-info"><h4>${escapeHtml(p.name)}</h4><div class="ci-price">${formatToman(p.price)}</div></div>
       <div class="ci-controls">
         <button class="qty-btn" onclick="changeCartQty('${p.id}',-1)">−</button>
@@ -2466,8 +2531,8 @@ async function submitOrder(){
 }
 
 /* ============ ORDER TRACKING ============ */
-const STAGE_NAMES = ['در حال بسته‌بندی','تحویل داده‌شده به پست/باربری','در حال ارسال'];
-const ORDER_STATUS_LABELS = { '-1':'لغو شده', '0':'در حال بسته‌بندی', '1':'تحویل داده‌شده به پست/باربری', '2':'در حال ارسال' };
+const STAGE_NAMES = ['در حال بسته‌بندی','تحویل داده‌شده به پست/باربری','در حال ارسال','تحویل داده‌شده'];
+const ORDER_STATUS_LABELS = { '-1':'لغو شده', '0':'در حال بسته‌بندی', '1':'تحویل داده‌شده به پست/باربری', '2':'در حال ارسال', '3':'تحویل داده‌شده' };
 const PAY_STATUS_LABELS = { paid_cod:'پرداخت هنگام تحویل', awaiting_confirmation:'در انتظار تایید واریز', confirmed:'پرداخت تایید شد' };
 const PACKAGING_LABELS = { prepaid:'پیش‌پرداخت بسته‌بندی/ارسال', postpay:'پس‌کرایه' };
 async function trackOrder(){
@@ -2522,7 +2587,7 @@ async function renderAdminRoute(){
   const loggedIn = !!(sessionData && sessionData.session);
   document.getElementById('adminLoginBox').hidden = loggedIn;
   document.getElementById('adminPanelBox').hidden = !loggedIn;
-  if(loggedIn){ await loadCategoriesFromDB(); switchAdminTab(adminCurrentTab); }
+  if(loggedIn){ if(['products','categories'].includes(adminCurrentTab)) await loadCategoriesFromDB(); switchAdminTab(adminCurrentTab); }
 }
 async function adminLogin(){
   const email = document.getElementById('adminEmail').value.trim();
@@ -2558,10 +2623,16 @@ async function renderDashboard(){
   const box = document.getElementById('adminDashboard');
   box.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
 
-  const { data: orders } = await sbClient.from('orders').select('*');
-  const { data: products } = await sbClient.from('products').select('*');
-  const { data: customers } = await sbClient.from('customers').select('*');
-  const { data: visits } = await sbClient.from('site_visits').select('*');
+  const [ordersRes, productsRes, customersRes, visitsRes] = await Promise.all([
+    sbClient.from('orders').select('created_at,status,subtotal'),
+    sbClient.from('products').select('stock'),
+    sbClient.from('customers').select('created_at'),
+    sbClient.from('site_visits').select('visit_date,count')
+  ]);
+  const orders = ordersRes.data || [];
+  const products = productsRes.data || [];
+  const customers = customersRes.data || [];
+  const visits = visitsRes.data || [];
 
   const todayISO = tehranDateStr();
   const currentMonthPrefix = todayISO.slice(0,7);
@@ -2658,7 +2729,7 @@ async function openSalesReportModal(){
   document.getElementById('srDateTo').value=''; delete document.getElementById('srDateTo').dataset.iso;
   document.getElementById('srConfirmedOnly').checked = false;
   document.getElementById('salesReportModal').classList.add('open');
-  const { data, error } = await sbClient.from('products').select('*').order('name');
+  const { data, error } = await sbClient.from('products').select('id,cat,tag,brand,code,name,price,stock,description,features,img_url,images,views').order('name');
   if(error || !data){ document.getElementById('srProductList').innerHTML = '<p style="text-align:center; color:var(--rust); font-size:13px;">خطا در دریافت محصولات</p>'; return; }
   adminProductsCache = data;
   srSelectedProducts = new Set(data.map(p=>p.id));
@@ -2687,7 +2758,7 @@ async function downloadSalesReport(){
   const confirmedOnly = document.getElementById('srConfirmedOnly').checked;
 
   showToast('در حال آماده‌سازی گزارش...');
-  const { data: orders, error } = await sbClient.from('orders').select('*');
+  const { data: orders, error } = await sbClient.from('orders').select('created_at,payment_status,subtotal,items');
   if(error || !orders){ showToast('خطا در دریافت سفارش‌ها'); return; }
 
   let filtered = orders;
@@ -2722,7 +2793,7 @@ async function downloadSalesReport(){
 async function renderAdmin(){
   const box = document.getElementById('adminOrders');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('orders').select('*').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('orders').select('id,order_code,name,phone,address,province,city,postal_code,shipping,packaging_option,packaging_fee,status,payment_status,payment_ref,tracking_code,subtotal,items,created_at,via_fallback').order('created_at', {ascending:false});
   if(error){ box.innerHTML = '<p style="text-align:center; color:var(--rust);">خطا در دریافت سفارش‌ها.</p>'; return; }
   adminOrdersCache = data || [];
   filterAdminOrders();
@@ -2952,7 +3023,7 @@ function productAdminCardHTML(p){
 async function renderAdminProducts(){
   const box = document.getElementById('adminProducts');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('products').select('*').order('name');
+  const { data, error } = await sbClient.from('products').select('id,cat,tag,brand,code,name,price,stock,description,features,img_url,images,views').order('name');
   if(error || !data){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز محصولی ثبت نشده. از دکمه‌ی «+ افزودن محصول جدید» بالا استفاده کنید.</p>'; return; }
   adminProductsCache = data;
 
@@ -2992,9 +3063,13 @@ async function renderAdminProducts(){
 async function renderAdminCategories(){
   const box = document.getElementById('adminCategories');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('categories').select('*').order('sort_order');
+  const [catRes, productRes] = await Promise.all([
+    sbClient.from('categories').select('id,name,emoji,sort_order,image_url').order('sort_order'),
+    sbClient.from('products').select('cat')
+  ]);
+  const data = catRes.data, error = catRes.error;
   if(error){ box.innerHTML = '<p style="text-align:center; color:var(--rust);">خطا در دریافت دسته‌بندی‌ها.</p>'; return; }
-  const { data: products } = await sbClient.from('products').select('cat');
+  const products = productRes.data || [];
   const counts = {};
   (products||[]).forEach(p=>{ counts[p.cat] = (counts[p.cat]||0)+1; });
   if(!data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز دسته‌بندی‌ای ثبت نشده.</p>'; return; }
@@ -3022,10 +3097,11 @@ async function saveHeroImage(){
   const fileInput = document.getElementById('heroImageInput');
   if(!fileInput.files || !fileInput.files[0]){ showToast('لطفا یه عکس انتخاب کنید'); return; }
   const file = await compressImage(fileInput.files[0]);
-  const path = `hero_${Date.now()}.jpg`;
+  if(!file){ showToast('این تصویر در مرورگر قابل تبدیل نیست یا حجم نهایی آن بیش از حد مجاز است'); return; }
+  const path = `hero_${Date.now()}.webp`;
   let url;
   try{
-    const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true}), 20000, 'UPLOAD_TIMEOUT');
+    const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}), 20000, 'UPLOAD_TIMEOUT');
     if(upErr){ showToast('خطا در آپلود عکس'); return; }
     const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path);
     url = pub.publicUrl;
@@ -3061,9 +3137,10 @@ async function addCategory(){
   let image_url = null;
   if(fileInput.files && fileInput.files[0]){
     const file = await compressImage(fileInput.files[0]);
-    const path = `cat_${id}_${Date.now()}.jpg`;
+    if(!file){ showToast('این تصویر در مرورگر قابل تبدیل نیست یا حجم نهایی آن بیش از حد مجاز است'); return; }
+    const path = `cat_${id}_${Date.now()}.webp`;
     try{
-      const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true}), 20000, 'UPLOAD_TIMEOUT');
+      const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}), 20000, 'UPLOAD_TIMEOUT');
       if(!upErr){ const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); image_url = pub.publicUrl; }
     }catch(e){
       showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
@@ -3105,9 +3182,10 @@ async function saveCategoryEdit(){
   const updates = {name, emoji};
   if(fileInput.files && fileInput.files[0]){
     const file = await compressImage(fileInput.files[0]);
-    const path = `cat_${categoryEditId}_${Date.now()}.jpg`;
+    if(!file){ showToast('این تصویر در مرورگر قابل تبدیل نیست یا حجم نهایی آن بیش از حد مجاز است'); return; }
+    const path = `cat_${categoryEditId}_${Date.now()}.webp`;
     try{
-      const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true}), 20000, 'UPLOAD_TIMEOUT');
+      const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}), 20000, 'UPLOAD_TIMEOUT');
       if(!upErr){ const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); updates.image_url = pub.publicUrl; }
     }catch(e){
       showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
@@ -3142,8 +3220,11 @@ async function deleteCategory(id, productCount){
 }
 let pfExistingImages = [];
 let pfNewFiles = [];
+let pfPreviewObjectUrls = [];
+function revokePfPreviewUrls(){ pfPreviewObjectUrls.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}}); pfPreviewObjectUrls=[]; }
 function renderPfImagePreview(){
   const box = document.getElementById('pfImagePreview');
+  revokePfPreviewUrls();
   let html = '';
   pfExistingImages.forEach((url, i)=>{
     html += `<div style="position:relative; width:64px; height:64px;">
@@ -3152,7 +3233,7 @@ function renderPfImagePreview(){
     </div>`;
   });
   pfNewFiles.forEach((file, i)=>{
-    const url = URL.createObjectURL(file);
+    const url = URL.createObjectURL(file); pfPreviewObjectUrls.push(url);
     html += `<div style="position:relative; width:64px; height:64px;">
       <img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; border:2px dashed var(--teal);">
       <button type="button" onclick="removePfNewFile(${i})" style="position:absolute; top:-6px; left:-6px; width:20px; height:20px; border-radius:50%; background:var(--rust); color:#fff; border:none; font-size:12px; cursor:pointer; line-height:1;">×</button>
@@ -3219,7 +3300,7 @@ async function openProductForm(id, presetCat){
   renderPfImagePreview();
   document.getElementById('productModal').classList.add('open');
 }
-function closeProductForm(){ document.getElementById('productModal').classList.remove('open'); }
+function closeProductForm(){ document.getElementById('productModal').classList.remove('open'); revokePfPreviewUrls(); }
 async function saveProduct(){
   const btn = document.getElementById('pfSaveBtn');
   const editId = btn.getAttribute('data-edit-id');
@@ -3244,15 +3325,20 @@ async function saveProduct(){
   // upload any newly-added files, keep whatever existing images weren't removed
   const uploadedUrls = [];
   for(const rawFile of pfNewFiles){
-    const file = await compressImage(rawFile);
-    const path = `${id}_${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`;
+    const [file, thumbFile] = await imageUploadVariants(rawFile);
+    if(!file || !thumbFile){ showToast('این تصویر در مرورگر قابل تبدیل نیست یا حجم نهایی آن بیش از حد مجاز است'); btn.disabled=false; btn.textContent='ذخیره'; return; }
+    const basePath = `${id}_${Date.now()}_${Math.floor(Math.random()*10000)}`;
+    const path = `${basePath}.${file.type==='image/webp'?'webp':'jpg'}`;
+    const thumbPath = `${basePath}_thumb.${thumbFile.type==='image/webp'?'webp':'jpg'}`;
     let upErr;
     try{
-      const res = await withTimeout(
-        sbClient.storage.from('product-images').upload(path, file, {upsert:true}),
-        20000, 'UPLOAD_TIMEOUT'
-      );
-      upErr = res.error;
+      const bucket = sbClient.storage.from('product-images');
+      const mainRes = await withTimeout(bucket.upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}),20000,'UPLOAD_TIMEOUT');
+      upErr = mainRes.error;
+      if(!upErr){
+        const thumbRes = await withTimeout(bucket.upload(thumbPath, thumbFile, {upsert:true, cacheControl:'31536000', contentType:thumbFile.type}),20000,'UPLOAD_TIMEOUT');
+        upErr = thumbRes.error;
+      }
     }catch(e){
       showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
       btn.disabled=false; btn.textContent='ذخیره'; return;
@@ -3299,7 +3385,7 @@ let adminReviewsShown = 10;
 async function renderAdminReviews(){
   const box = document.getElementById('adminReviews');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('reviews').select('*').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('reviews').select('id,name,phone,rating,comment,status,via_fallback,created_at,product_id').order('created_at', {ascending:false});
   if(error || !data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">نظری ثبت نشده.</p>'; return; }
   const visible = data.slice(0, adminReviewsShown);
   box.innerHTML = visible.map(r=>`
@@ -3341,7 +3427,7 @@ async function deleteReview(id){
 async function renderAdminTodos(){
   const box = document.getElementById('adminTodos');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('admin_todos').select('*').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('admin_todos').select('id,text,done,created_at').order('created_at', {ascending:false});
   if(error){ box.innerHTML = '<p style="text-align:center; color:var(--rust);">خطا در دریافت وظایف.</p>'; return; }
   if(!data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز وظیفه‌ای ثبت نشده.</p>'; return; }
   box.innerHTML = data.map(t=>`
@@ -3374,7 +3460,7 @@ async function deleteTodo(id){
 async function renderAdminGuideSubmissions(){
   const box = document.getElementById('adminGuideSubmissions');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('guide_submissions').select('*').eq('status','pending').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('guide_submissions').select('id,name,phone,title,body,status,created_at').eq('status','pending').order('created_at', {ascending:false});
   if(error || !data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">مطلب در انتظار بررسی نیست.</p>'; return; }
   box.innerHTML = data.map(s=>`
     <div class="admin-order">
@@ -3470,9 +3556,31 @@ function isValidPhone(phone){
 /* ============ INIT ============ */
 loadProductsFromDB().then(renderMenuCategories);
 loadCategoriesFromDB();
-loadHeroImage().then(()=>{ if(!location.hash || location.hash === '#/') renderHeroArt(); });
+loadHeroImage().then(()=>{ if(location.pathname === '/' && !location.hash) renderHeroArt(); });
 runWhenIdle(()=>sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{}), 2000);
-if(!location.hash){ location.hash = '#/'; } else { render(); }
+if(location.hash){
+  const parsed = parseLegacyHash(location.hash);
+  history.replaceState({}, '', cleanUrlFor(parsed.path, parsed.params));
+}
+render();
 </script>
+<style>
+.pd-gallery-main{cursor:zoom-in;position:relative;background:var(--card)}
+.pd-gallery-main::after{content:'🔍 بزرگ‌نمایی';position:absolute;left:12px;bottom:12px;padding:5px 9px;border-radius:999px;background:rgba(59,42,30,.78);color:#fff;font-size:11px;pointer-events:none;opacity:.9}
+.image-zoom-modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(25,18,13,.92)}
+.image-zoom-modal.open{display:flex}.image-zoom-close{position:absolute;top:14px;right:14px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:26px;cursor:pointer;z-index:2}
+.image-zoom-stage{width:min(96vw,1200px);height:min(90vh,900px);display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}.image-zoom-stage img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;user-select:none;-webkit-user-drag:none;transform-origin:center center;will-change:transform;transition:transform .16s ease}.image-zoom-stage.zoomed img{cursor:grab}.image-zoom-stage.zoomed img:active{cursor:grabbing}.image-zoom-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.45);padding:6px 12px;border-radius:999px;font-size:12px;pointer-events:none}@media (prefers-reduced-motion:reduce){.image-zoom-stage img{transition:none}}
+</style>
+<div id="imageZoomModal" class="image-zoom-modal" role="dialog" aria-modal="true" aria-label="نمایش بزرگ تصویر محصول"><button class="image-zoom-close" type="button" onclick="closeImageZoom()" aria-label="بستن">×</button><div id="imageZoomStage" class="image-zoom-stage"><img id="imageZoomImg" src="" alt=""></div><div class="image-zoom-hint">کلیک/لمس برای زوم · دو انگشت در موبایل · کشیدن برای جابه‌جایی</div></div>
+<script>
+let imageZoomScale=1,imageZoomX=0,imageZoomY=0,imageZoomDrag=null,imageZoomPinch=null;
+function applyImageZoom(){const img=document.getElementById('imageZoomImg'),stage=document.getElementById('imageZoomStage');if(!img||!stage)return;img.style.transform=`translate(${imageZoomX}px,${imageZoomY}px) scale(${imageZoomScale})`;stage.classList.toggle('zoomed',imageZoomScale>1)}
+function openImageZoom(src,alt){const modal=document.getElementById('imageZoomModal'),img=document.getElementById('imageZoomImg');if(!modal||!img||!src)return;img.src=src;img.alt=alt||'';imageZoomScale=1;imageZoomX=0;imageZoomY=0;applyImageZoom();modal.classList.add('open');document.body.style.overflow='hidden'}
+function closeImageZoom(){const modal=document.getElementById('imageZoomModal');if(modal)modal.classList.remove('open');document.body.style.overflow='';imageZoomDrag=null;imageZoomPinch=null}
+function zoomBy(factor){imageZoomScale=Math.max(1,Math.min(4,imageZoomScale*factor));if(imageZoomScale===1){imageZoomX=0;imageZoomY=0}applyImageZoom()}
+(()=>{const stage=document.getElementById('imageZoomStage'),modal=document.getElementById('imageZoomModal');if(!stage||!modal)return;stage.addEventListener('click',e=>{if(e.target===stage||e.target.id==='imageZoomImg')zoomBy(imageZoomScale>1?.5:2)});stage.addEventListener('wheel',e=>{e.preventDefault();zoomBy(e.deltaY<0?1.2:.83)},{passive:false});stage.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&imageZoomScale<=1)return;stage.setPointerCapture(e.pointerId);imageZoomDrag={id:e.pointerId,x:e.clientX,y:e.clientY,ox:imageZoomX,oy:imageZoomY}});stage.addEventListener('pointermove',e=>{if(!imageZoomDrag||imageZoomDrag.id!==e.pointerId||imageZoomScale<=1)return;imageZoomX=imageZoomDrag.ox+(e.clientX-imageZoomDrag.x);imageZoomY=imageZoomDrag.oy+(e.clientY-imageZoomDrag.y);applyImageZoom()});['pointerup','pointercancel'].forEach(t=>stage.addEventListener(t,()=>{imageZoomDrag=null}));modal.addEventListener('click',e=>{if(e.target===modal)closeImageZoom()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeImageZoom()});stage.addEventListener('touchstart',e=>{if(e.touches.length===2){const a=e.touches[0],b=e.touches[1];imageZoomPinch=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}},{passive:true});stage.addEventListener('touchmove',e=>{if(e.touches.length===2&&imageZoomPinch){e.preventDefault();const a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);imageZoomScale=Math.max(1,Math.min(4,imageZoomScale*(d/imageZoomPinch)));imageZoomPinch=d;if(imageZoomScale===1){imageZoomX=0;imageZoomY=0}applyImageZoom()}},{passive:false});stage.addEventListener('touchend',()=>{imageZoomPinch=null},{passive:true})})();
+</script>
+<script>document.addEventListener('click',e=>{const main=e.target.closest('.pd-gallery-main');if(!main)return;const img=main.querySelector('#pdMainImg');if(img)openImageZoom(img.dataset.fullsrc||img.currentSrc||img.src,img.alt)});</script>
+
 </body>
 </html>
