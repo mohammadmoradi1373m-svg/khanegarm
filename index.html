@@ -179,7 +179,7 @@
   .hero-slide p{font-size:clamp(13px,1.5vw,16px); line-height:2; color:rgba(255,255,255,.82); max-width:590px; margin-bottom:22px;}
   .hero-slide .hero-ctas{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:0;}
   .hero-slide .btn-primary{background:#F0BD4F; color:#173E35; box-shadow:0 12px 28px rgba(0,0,0,.18);}
-  .hero-nav{position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; padding:0 14px; pointer-events:none; z-index:4;}
+  .hero-nav{direction:ltr;position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; padding:0 14px; pointer-events:none; z-index:4;}
   .hero-arrow{pointer-events:auto; width:42px; height:42px; border:0; border-radius:50%; background:rgba(255,255,255,.93); color:#16473D; font-size:22px; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,.16); display:flex; align-items:center; justify-content:center;}
   .hero-dots{position:absolute; left:50%; bottom:16px; transform:translateX(-50%); display:flex; gap:7px; z-index:5; direction:ltr;}
   .hero-dot{width:7px; height:7px; border:0; border-radius:50%; background:rgba(255,255,255,.48); padding:0; cursor:pointer; transition:width .2s ease,background .2s ease;}
@@ -2005,7 +2005,7 @@ function renderHeroSlider(){
       <div class="hero-trust"><span><i class="dot"></i> ارسال به سراسر کشور</span><span><i class="dot"></i> پشتیبانی واقعی</span><span><i class="dot"></i> پرداخت امن</span></div>
     </div>
   </div>
-  ${slides.length>1?`<div class="hero-nav"><button class="hero-arrow" type="button" onclick="heroPrev()" aria-label="اسلاید قبلی">›</button><button class="hero-arrow" type="button" onclick="heroNext()" aria-label="اسلاید بعدی">‹</button></div><div class="hero-dots">${slides.map((_,i)=>`<button class="hero-dot ${i===HERO_INDEX?'active':''}" type="button" onclick="heroGo(${i})" aria-label="اسلاید ${toFa(i+1)}"></button>`).join('')}</div>`:''}`;
+  ${slides.length>1?`<div class="hero-nav"><button class="hero-arrow" type="button" onclick="heroPrev()" aria-label="اسلاید قبلی">←</button><button class="hero-arrow" type="button" onclick="heroNext()" aria-label="اسلاید بعدی">→</button></div><div class="hero-dots">${slides.map((_,i)=>`<button class="hero-dot ${i===HERO_INDEX?'active':''}" type="button" onclick="heroGo(${i})" aria-label="اسلاید ${toFa(i+1)}"></button>`).join('')}</div>`:''}`;
   startHeroTimer(slides.length);
 }
 function heroCta(path){ if(!path)return; if(/^https?:\/\//i.test(path)){window.open(path,'_blank','noopener');return;} go(path); }
