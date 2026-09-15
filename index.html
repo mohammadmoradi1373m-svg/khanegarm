@@ -887,7 +887,7 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
   <div class="section-head">
     <div class="eyebrow">حساب کاربری خانه‌گرم</div>
     <h2 id="accountPageTitle">ورود به حساب</h2>
-    <p id="accountPageSubtitle">با شماره موبایل و رمز عبور وارد حساب شخصی خودت شو.</p>
+    <p id="accountPageSubtitle">با نام کاربری و رمز عبور وارد حساب شخصی خودت شو.</p>
   </div>
 
   <div id="accountAuthBox" class="account-auth card">
@@ -898,7 +898,7 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
     </div>
 
     <form id="accountLoginForm" class="account-form" onsubmit="event.preventDefault(); accountLogin();">
-      <label>شماره موبایل<input id="accountLoginPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="11" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required></label>
+      <label>نام کاربری<input id="accountLoginUsername" type="text" autocomplete="username" maxlength="32" placeholder="مثلاً ali1373" required></label>
       <label>رمز عبور<input id="accountLoginPassword" type="password" autocomplete="current-password" minlength="8" placeholder="رمز عبور" required></label>
       <button class="btn-primary" type="submit">ورود به حساب</button>
       <p id="accountLoginError" class="account-error" hidden></p>
@@ -908,12 +908,13 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
     <form id="accountRegisterForm" class="account-form" hidden onsubmit="event.preventDefault(); accountRegister();">
       <div class="account-form-grid">
         <label>نام و نام خانوادگی<input id="accountRegName" type="text" autocomplete="name" maxlength="120" placeholder="مثلاً علی محمدی" required></label>
+        <label>نام کاربری<input id="accountRegUsername" type="text" autocomplete="username" maxlength="32" placeholder="مثلاً ali1373" required></label>
         <label>شماره موبایل<input id="accountRegPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="11" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required></label>
-        <label class="full">ایمیل بازیابی<input id="accountRegEmail" type="email" autocomplete="email" maxlength="254" placeholder="example@email.com" required></label>
+        <label>ایمیل بازیابی<input id="accountRegEmail" type="email" autocomplete="email" maxlength="254" placeholder="example@email.com" required></label>
         <label>رمز عبور<input id="accountRegPassword" type="password" autocomplete="new-password" minlength="8" placeholder="حداقل ۸ کاراکتر" required></label>
         <label>تکرار رمز عبور<input id="accountRegPassword2" type="password" autocomplete="new-password" minlength="8" placeholder="تکرار رمز عبور" required></label>
       </div>
-      <p class="account-note">ایمیل فقط برای بازیابی رمز عبور و ارتباطات حساب استفاده می‌شود. ورود اصلی شما با شماره موبایل و رمز عبور است.</p>
+      <p class="account-note">ایمیل فقط برای بازیابی رمز عبور است. ورود شما با نام کاربری و رمز عبور انجام می‌شود.</p>
       <button class="btn-primary" type="submit">ساخت حساب</button>
       <p id="accountRegisterError" class="account-error" hidden></p>
     </form>
@@ -1083,8 +1084,8 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 
     <div id="adminTab-customers" hidden>
       <div class="card" style="margin-bottom:14px;">
-        <div class="hero-admin-title"><div><strong>👥 مدیریت مشتریان و حساب کاربران</strong><span>اطلاعات واردشده مشتری را اصلاح کن؛ تغییر ایمیل، شماره و رمز عبور حساب از مسیر امن سروری انجام می‌شود.</span></div></div>
-        <input type="search" id="adminCustomerSearch" placeholder="جست‌وجو با نام، شماره یا ایمیل..." oninput="filterAdminCustomers()" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:inherit;background:var(--card);">
+        <div class="hero-admin-title"><div><strong>👥 مدیریت مشتریان و حساب کاربران</strong><span>اطلاعات مشتری را اصلاح کن؛ ایمیل و رمز عبور حساب از مسیر امن سروری مدیریت می‌شود و شماره موبایل فعلاً ثابت است.</span></div></div>
+        <input type="search" id="adminCustomerSearch" placeholder="جست‌وجو با نام کاربری، نام، شماره یا ایمیل..." oninput="filterAdminCustomers()" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:inherit;background:var(--card);">
       </div>
       <div id="adminCustomers"></div>
     </div>
@@ -2841,7 +2842,7 @@ function switchAccountAuthTab(tab){
   accountAuthTab=tab;
   ['login','register','recovery'].forEach(t=>{ const btn=document.getElementById('accountTab'+t[0].toUpperCase()+t.slice(1)); const form=document.getElementById('account'+t[0].toUpperCase()+t.slice(1)+'Form'); if(btn)btn.classList.toggle('active',t===tab); if(form)form.hidden=t!==tab; });
   const title=document.getElementById('accountPageTitle'), sub=document.getElementById('accountPageSubtitle');
-  if(title&&sub){ const m={login:['ورود به حساب','با شماره موبایل و رمز عبور وارد حساب شخصی خودت شو.'],register:['ساخت حساب','حساب شخصی خودت را بساز تا سفارش‌ها و اطلاعاتت همیشه همراهت باشد.'],recovery:['بازیابی رمز عبور','لینک بازیابی را به ایمیل ثبت‌شده حساب می‌فرستیم.']}; title.textContent=m[tab][0]; sub.textContent=m[tab][1]; }
+  if(title&&sub){ const m={login:['ورود به حساب','با نام کاربری و رمز عبور وارد حساب شخصی خودت شو.'],register:['ساخت حساب','حساب شخصی خودت را بساز تا سفارش‌ها و اطلاعاتت همیشه همراهت باشد.'],recovery:['بازیابی رمز عبور','لینک بازیابی را به ایمیل ثبت‌شده حساب می‌فرستیم.']}; title.textContent=m[tab][0]; sub.textContent=m[tab][1]; }
 }
 async function renderAccountRoute(){
   const {data:{session}}=await sbClient.auth.getSession();
@@ -2859,30 +2860,37 @@ function updateAccountHeader(session){
   btn.classList.toggle('signed',!!session);
   btn.innerHTML=`<span class="account-icon">${session?'●':'♙'}</span><span class="account-label">${session?'حساب من':'ورود / حساب من'}</span>`;
 }
+function validUsername(v){ return /^[a-zA-Z0-9_]{3,32}$/.test(String(v||'').trim()); }
 async function accountRegister(){
-  const name=document.getElementById('accountRegName').value.trim(), phone=normalizePhone(document.getElementById('accountRegPhone').value), email=document.getElementById('accountRegEmail').value.trim().toLowerCase(), pw=document.getElementById('accountRegPassword').value, pw2=document.getElementById('accountRegPassword2').value, err=document.getElementById('accountRegisterError');
+  const name=document.getElementById('accountRegName').value.trim(), username=document.getElementById('accountRegUsername').value.trim().toLowerCase(), phone=normalizePhone(document.getElementById('accountRegPhone').value), email=document.getElementById('accountRegEmail').value.trim().toLowerCase(), pw=document.getElementById('accountRegPassword').value, pw2=document.getElementById('accountRegPassword2').value, err=document.getElementById('accountRegisterError');
   err.hidden=true;
   if(name.length<2||name.length>120){accountMessage(err,'نام و نام خانوادگی را درست وارد کن.');return;}
+  if(!validUsername(username)){accountMessage(err,'نام کاربری باید ۳ تا ۳۲ کاراکتر و فقط شامل حروف انگلیسی، عدد یا _ باشد.');return;}
   if(!validIranPhone(phone)){accountMessage(err,'شماره موبایل معتبر نیست.');return;}
   if(!validEmail(email)){accountMessage(err,'ایمیل بازیابی معتبر نیست.');return;}
   if(pw.length<8){accountMessage(err,'رمز عبور باید حداقل ۸ کاراکتر باشد.');return;}
   if(pw!==pw2){accountMessage(err,'تکرار رمز عبور با رمز اصلی یکسان نیست.');return;}
-  const {data,error}=await sbClient.auth.signUp({phone:toAuthPhone(phone),password:pw,options:{data:{name}}});
-  if(error){accountMessage(err, friendlyAuthError(error));return;}
-  if(!data.user){accountMessage(err,'ساخت حساب انجام نشد؛ لطفاً دوباره امتحان کن.');return;}
-  if(!data.session){accountMessage(err,'حساب ساخته شد اما این پروژه برای شماره موبایل تأیید پیامکی می‌خواهد. برای این نسخه باید تأیید شماره موبایل خاموش باشد.');return;}
-  const emailRes=await sbClient.auth.updateUser({email});
-  if(emailRes.error){accountMessage(err,'حساب ساخته شد، اما ثبت ایمیل بازیابی کامل نشد: '+friendlyAuthError(emailRes.error));return;}
-  await syncMyCustomerProfile(name,email,'','');
+  const {data,error}=await sbClient.auth.signUp({email,password:pw,options:{data:{name,username}}});
+  if(error){accountMessage(err,friendlyAuthError(error));return;}
+  if(!data.user||!data.session){accountMessage(err,'ساخت حساب انجام نشد. تنظیم «تأیید ایمیل» باید در Supabase خاموش باشد.');return;}
+  const sync=await syncMyCustomerProfile(name,email,'','',username,phone);
+  if(sync.error){
+    await sbClient.auth.signOut();
+    accountMessage(err, friendlyProfileError(sync.error));
+    return;
+  }
   accountAuthTab='login';
-  showToast('حساب شما ساخته شد. لینک تأیید ایمیل بازیابی را بررسی کن.');
+  showToast('حساب شما با موفقیت ساخته شد 👌');
   await renderAccountRoute();
 }
 async function accountLogin(){
-  const phone=normalizePhone(document.getElementById('accountLoginPhone').value), password=document.getElementById('accountLoginPassword').value, err=document.getElementById('accountLoginError'); err.hidden=true;
-  if(!validIranPhone(phone)){accountMessage(err,'شماره موبایل معتبر نیست.');return;}
+  const username=document.getElementById('accountLoginUsername').value.trim().toLowerCase(), password=document.getElementById('accountLoginPassword').value, err=document.getElementById('accountLoginError'); err.hidden=true;
+  if(!validUsername(username)){accountMessage(err,'نام کاربری معتبر نیست.');return;}
   if(!password){accountMessage(err,'رمز عبور را وارد کن.');return;}
-  const {data,error}=await sbClient.auth.signInWithPassword({phone:toAuthPhone(phone),password});
+  const {data:loginEmail,error:resolveError}=await sbClient.rpc('resolve_username_login_email',{p_username:username});
+  if(resolveError){accountMessage(err,'ورود انجام نشد؛ لطفاً دوباره امتحان کن.');return;}
+  if(!loginEmail){accountMessage(err,'نام کاربری یا رمز عبور اشتباه است.');return;}
+  const {error}=await sbClient.auth.signInWithPassword({email:loginEmail,password});
   if(error){accountMessage(err,friendlyAuthError(error));return;}
   await syncMyCustomerProfile();
   showToast('خوش آمدی 👋');
@@ -2904,18 +2912,26 @@ async function accountCompleteRecovery(){
   if(error){accountMessage(err,'تغییر رمز عبور انجام نشد؛ دوباره از لینک بازیابی وارد شو.');return;}
   history.replaceState({},'', '/account'); showToast('رمز عبور با موفقیت تغییر کرد ✅'); await renderAccountRoute();
 }
-async function syncMyCustomerProfile(name,email,address,postal){
-  const {data,error}=await sbClient.rpc('sync_my_customer_profile',{p_name:name||null,p_email:email||null,p_address:address||null,p_postal_code:postal||null});
-  if(error) console.warn('sync_my_customer_profile failed',error); return {data,error};
+async function syncMyCustomerProfile(name,email,address,postal,username,phone){
+  if(!username||!phone){
+    const {data:userRes}=await sbClient.auth.getUser();
+    const uid=userRes?.user?.id;
+    if(uid){
+      const {data:profile}=await sbClient.from('customers').select('username,phone,name,email,address,postal_code').eq('user_id',uid).maybeSingle();
+      if(profile){ username=username||profile.username; phone=phone||profile.phone; name=name||profile.name; email=email||profile.email; address=address||profile.address; postal=postal||profile.postal_code; }
+    }
+  }
+  const {data,error}=await sbClient.rpc('sync_my_customer_profile_v2',{p_username:username||null,p_phone:phone||null,p_name:name||null,p_email:email||null,p_address:address||null,p_postal_code:postal||null});
+  if(error) console.warn('sync_my_customer_profile_v2 failed',error); return {data,error};
 }
 async function loadAccountProfileAndOrders(){
   const {data:{user}}=await sbClient.auth.getUser(); if(!user)return;
   const phone=normalizePhone(user.phone||'');
-  const {data:profile}=await sbClient.from('customers').select('phone,name,address,postal_code,email').eq('user_id',user.id).maybeSingle();
+  const {data:profile}=await sbClient.from('customers').select('phone,username,name,address,postal_code,email').eq('user_id',user.id).maybeSingle();
   const p=profile||{phone,name:user.user_metadata?.name||'',address:'',postal_code:'',email:user.email||''};
   document.getElementById('accountWelcome').textContent='سلام '+(p.name||'دوست خانه‌گرم')+' 👋';
-  document.getElementById('accountIdentity').textContent=(p.email||user.email||'ایمیل ثبت نشده')+' · '+(p.phone||phone);
-  document.getElementById('accountProfileName').value=p.name||''; document.getElementById('accountProfilePhone').value=p.phone||phone; document.getElementById('accountProfileEmail').value=p.email||user.email||''; document.getElementById('accountProfileAddress').value=p.address||''; document.getElementById('accountProfilePostal').value=p.postal_code||'';
+  document.getElementById('accountIdentity').textContent=(p.username?'@'+p.username+' · ':'')+(p.phone||'')+' · '+(p.email||user.email||'ایمیل ثبت نشده');
+  document.getElementById('accountProfileName').value=p.name||''; document.getElementById('accountProfilePhone').value=p.phone||''; document.getElementById('accountProfileEmail').value=p.email||user.email||''; document.getElementById('accountProfileAddress').value=p.address||''; document.getElementById('accountProfilePostal').value=p.postal_code||'';
   const {data:orders,error}=await sbClient.from('orders').select('id,order_code,name,phone,address,shipping,items,subtotal,status,created_at,tracking_code,payment_status,province,city,postal_code,packaging_option,packaging_fee').eq('user_id',user.id).order('created_at',{ascending:false});
   if(error){accountOrdersCache=[];document.getElementById('accountOrdersList').innerHTML='<p class="account-note">فعلاً امکان دریافت سفارش‌ها وجود ندارد. لطفاً صفحه را تازه کن.</p>';return;}
   accountOrdersCache=orders||[]; renderAccountOrders();
@@ -2937,6 +2953,14 @@ async function accountSaveProfile(){
   accountMessage(msg,'اطلاعات با موفقیت ذخیره شد.',true); await loadAccountProfileAndOrders();
 }
 async function accountLogout(){await sbClient.auth.signOut(); accountAuthTab='login'; showToast('از حساب خارج شدی'); await renderAccountRoute();}
+function friendlyProfileError(error){
+  const msg=String(error?.message||error?.details||error?.hint||'').toLowerCase();
+  if(msg.includes('username_taken')||msg.includes('duplicate key')&&msg.includes('username')) return 'این نام کاربری قبلاً انتخاب شده است.';
+  if(msg.includes('phone_already_linked')) return 'این شماره موبایل قبلاً به یک حساب متصل شده است.';
+  if(msg.includes('invalid_username')) return 'نام کاربری معتبر نیست.';
+  if(msg.includes('invalid_phone')) return 'شماره موبایل معتبر نیست.';
+  return 'ذخیره اطلاعات حساب انجام نشد؛ لطفاً دوباره امتحان کن.';
+}
 function friendlyAuthError(error){
   const m=String(error?.message||'');
   if(/invalid login credentials/i.test(m)) return 'شماره موبایل یا رمز عبور اشتباه است.';
@@ -2963,15 +2987,15 @@ let adminCustomersCache=[];
 let adminFilteredCustomersCache=[];
 async function renderAdminCustomers(){
   const box=document.getElementById('adminCustomers'); if(!box)return; box.innerHTML='<p style="text-align:center;color:var(--ink-soft);">در حال بارگذاری مشتریان...</p>';
-  const {data,error}=await sbClient.from('customers').select('phone,name,address,created_at,postal_code,email,user_id').order('created_at',{ascending:false});
+  const {data,error}=await sbClient.from('customers').select('phone,username,name,address,created_at,postal_code,email,user_id').order('created_at',{ascending:false});
   if(error){box.innerHTML='<p style="color:var(--rust);">دریافت مشتریان ناموفق بود.</p>';return;}
   adminCustomersCache=data||[]; filterAdminCustomers();
 }
 function filterAdminCustomers(){
   const q=(document.getElementById('adminCustomerSearch')?.value||'').trim().toLowerCase();
-  adminFilteredCustomersCache=!q?adminCustomersCache:adminCustomersCache.filter(c=>[c.name,c.phone,c.email,c.address].some(v=>String(v||'').toLowerCase().includes(q)));
+  adminFilteredCustomersCache=!q?adminCustomersCache:adminCustomersCache.filter(c=>[c.username,c.name,c.phone,c.email,c.address].some(v=>String(v||'').toLowerCase().includes(q)));
   const box=document.getElementById('adminCustomers'); if(!box)return;
-  box.innerHTML=adminFilteredCustomersCache.length?adminFilteredCustomersCache.map(c=>`<div class="card admin-customer-card"><div class="admin-customer-head"><div><strong>${escapeHtml(c.name||'بدون نام')}</strong><span>${escapeHtml(c.phone)} ${c.email?`· ${escapeHtml(c.email)}`:'· ایمیل ثبت نشده'}</span></div><span class="customer-account-badge">${c.user_id?'حساب فعال':'بدون حساب'}</span></div><div class="admin-customer-grid"><label>نام<input id="ac_name_${escapeHtml(c.phone)}" value="${escapeHtml(c.name||'')}" maxlength="120"></label><label>شماره ورود<input id="ac_phone_${escapeHtml(c.phone)}" value="${escapeHtml(c.phone||'')}" maxlength="11" inputmode="tel" readonly title="شماره ورود در این نسخه از پنل قابل تغییر نیست؛ چون شناسه احراز هویت است."></label><label>ایمیل بازیابی<input id="ac_email_${escapeHtml(c.phone)}" value="${escapeHtml(c.email||'')}" maxlength="254" type="email"></label><label>کد پستی<input id="ac_postal_${escapeHtml(c.phone)}" value="${escapeHtml(c.postal_code||'')}" maxlength="10"></label><label class="full">آدرس<input id="ac_address_${escapeHtml(c.phone)}" value="${escapeHtml(c.address||'')}" maxlength="1000"></label></div><div class="admin-customer-actions"><button class="btn-primary" style="padding:9px 15px;font-size:12px;" onclick="saveAdminCustomer('${escapeHtml(c.phone)}')">ذخیره اطلاعات</button>${c.user_id?`<button class="btn-ghost" style="padding:9px 15px;font-size:12px;" onclick="resetAdminCustomerPassword('${escapeHtml(c.user_id)}')">تعیین رمز جدید</button>`:''}</div></div>`).join(''):'<div class="card"><p style="text-align:center;color:var(--ink-soft);">مشتری‌ای پیدا نشد.</p></div>';
+  box.innerHTML=adminFilteredCustomersCache.length?adminFilteredCustomersCache.map(c=>`<div class="card admin-customer-card"><div class="admin-customer-head"><div><strong>${escapeHtml(c.name||'بدون نام')}</strong><span>${escapeHtml(c.phone)} ${c.email?`· ${escapeHtml(c.email)}`:'· ایمیل ثبت نشده'}</span></div><span class="customer-account-badge">${c.user_id?'حساب فعال':'بدون حساب'}</span></div><div class="admin-customer-grid"><label>نام<input id="ac_name_${escapeHtml(c.phone)}" value="${escapeHtml(c.name||'')}" maxlength="120"></label><label>نام کاربری<input id="ac_username_${escapeHtml(c.phone)}" value="${escapeHtml(c.username||'')}" maxlength="32" pattern="[A-Za-z0-9_]{3,32}"></label><label>شماره موبایل<input id="ac_phone_${escapeHtml(c.phone)}" value="${escapeHtml(c.phone||'')}" maxlength="11" inputmode="tel" readonly title="شماره موبایل فعلاً قابل تغییر نیست."></label><label>ایمیل بازیابی<input id="ac_email_${escapeHtml(c.phone)}" value="${escapeHtml(c.email||'')}" maxlength="254" type="email"></label><label>کد پستی<input id="ac_postal_${escapeHtml(c.phone)}" value="${escapeHtml(c.postal_code||'')}" maxlength="10"></label><label class="full">آدرس<input id="ac_address_${escapeHtml(c.phone)}" value="${escapeHtml(c.address||'')}" maxlength="1000"></label></div><div class="admin-customer-actions"><button class="btn-primary" style="padding:9px 15px;font-size:12px;" onclick="saveAdminCustomer('${escapeHtml(c.phone)}')">ذخیره اطلاعات</button>${c.user_id?`<button class="btn-ghost" style="padding:9px 15px;font-size:12px;" onclick="resetAdminCustomerPassword('${escapeHtml(c.user_id)}')">تعیین رمز جدید</button>`:''}</div></div>`).join(''):'<div class="card"><p style="text-align:center;color:var(--ink-soft);">مشتری‌ای پیدا نشد.</p></div>';
 }
 async function adminCustomerAuthAction(payload){
   const {data:{session}}=await sbClient.auth.getSession(); if(!session)return {error:{message:'NO_SESSION'}};
@@ -2980,13 +3004,13 @@ async function adminCustomerAuthAction(payload){
 }
 async function saveAdminCustomer(oldPhone){
   const row=adminCustomersCache.find(c=>c.phone===oldPhone)||{};
-  const name=document.getElementById('ac_name_'+CSS.escape(oldPhone))?.value.trim()||'', email=document.getElementById('ac_email_'+CSS.escape(oldPhone))?.value.trim().toLowerCase()||'', postal=document.getElementById('ac_postal_'+CSS.escape(oldPhone))?.value.trim()||'', address=document.getElementById('ac_address_'+CSS.escape(oldPhone))?.value.trim()||'';
-  if(name.length<2||!validEmail(email)|| (postal && !/^\d{10}$/.test(postal))){showToast('اطلاعات مشتری را درست وارد کن');return;}
+  const name=document.getElementById('ac_name_'+CSS.escape(oldPhone))?.value.trim()||'', username=document.getElementById('ac_username_'+CSS.escape(oldPhone))?.value.trim().toLowerCase()||'', email=document.getElementById('ac_email_'+CSS.escape(oldPhone))?.value.trim().toLowerCase()||'', postal=document.getElementById('ac_postal_'+CSS.escape(oldPhone))?.value.trim()||'', address=document.getElementById('ac_address_'+CSS.escape(oldPhone))?.value.trim()||'';
+  if(name.length<2||!validUsername(username)||!validEmail(email)|| (postal && !/^\d{10}$/.test(postal))){showToast('اطلاعات مشتری را درست وارد کن');return;}
   if(row.user_id && email!==String(row.email||'').toLowerCase()){
     const authRes=await adminCustomerAuthAction({user_id:row.user_id,email});
     if(authRes.error){showToast('تغییر ایمیل حساب انجام نشد');console.error(authRes.error);return;}
   }
-  const {error}=await sbClient.from('customers').update({name,email,address:address||null,postal_code:postal||null}).eq('phone',oldPhone);
+  const {error}=await sbClient.from('customers').update({name,username,email,address:address||null,postal_code:postal||null}).eq('phone',oldPhone);
   if(error){showToast('ذخیره اطلاعات مشتری انجام نشد');console.error(error);return;}
   showToast('اطلاعات مشتری ذخیره شد ✅'); await renderAdminCustomers();
 }
