@@ -102,25 +102,32 @@
     *, *::before, *::after{scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important;}
   }
 
-  /* header + hamburger menu */
-  header{position:sticky; top:0; z-index:60; background:rgba(255,247,236,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  /* header: premium dark-green desktop navigation */
+  header{position:sticky; top:0; z-index:60; background:rgba(7,65,55,.97); color:#fff; border-bottom:1px solid rgba(232,162,61,.28); box-shadow:0 8px 24px -20px rgba(0,0,0,.55);}
   #dataErrorBanner{display:none; align-items:center; justify-content:center; gap:10px; background:var(--rust); color:#fff; padding:8px 16px; font-size:12.5px; font-weight:600; flex-wrap:wrap; text-align:center;}
   #dataErrorBanner button{background:#fff; color:var(--rust); border:none; padding:6px 14px; border-radius:100px; font-weight:700; font-size:12px; cursor:pointer; flex-shrink:0;}
   #dataErrorBanner button:disabled{opacity:.6; cursor:default;}
   .hp-field{position:absolute; left:-9999px; top:-9999px; width:0; height:0; overflow:hidden; opacity:0;}
-  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 24px; gap:12px;}
-  .nav-left{display:flex; align-items:center; gap:10px;}
-  .burger{
-    width:42px; height:42px; border-radius:12px; border:1px solid var(--line); background:var(--card);
-    display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
-  }
+  .nav{display:grid; grid-template-columns:auto minmax(280px,1fr) auto; align-items:center; padding:12px 24px 9px; gap:24px; direction:rtl;}
+  .nav-left{display:flex; align-items:center; gap:10px; min-width:0; order:1;}
+  .nav-center{display:flex; flex-direction:column; align-items:center; gap:8px; min-width:0; order:2;}
+  .nav-links{display:flex; align-items:center; justify-content:center; gap:22px; width:100%; white-space:nowrap; overflow-x:auto; scrollbar-width:none;}
+  .nav-links::-webkit-scrollbar{display:none;}
+  .nav-link{font-size:12.5px; color:rgba(255,255,255,.9); cursor:pointer; padding:3px 0; border-bottom:2px solid transparent; transition:.18s ease;}
+  .nav-link:hover,.nav-link.active{color:#FFD66B; border-bottom-color:#D99A2B;}
+  .nav-search{width:min(470px,100%); display:flex; align-items:center; background:#fff; border-radius:999px; padding:4px 6px 4px 8px; box-shadow:0 6px 18px -14px rgba(0,0,0,.5);}
+  .nav-search input{flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--ink); font-family:inherit; font-size:12.5px; padding:8px 10px;}
+  .nav-search button{width:34px; height:34px; border:0; border-radius:50%; background:var(--amber); color:var(--ink); cursor:pointer;}
+  .nav-brand{display:flex; align-items:center; gap:8px; order:3;}
+  .nav-brand .logo{color:#fff; font-size:21px;}
+  .burger{display:none;}
   .burger span, .burger::before, .burger::after{content:""; display:block; width:18px; height:2px; background:var(--ink); border-radius:2px; position:relative;}
   .burger{flex-direction:column; gap:4px;}
   .logo{font-family:'Vazirmatn'; font-weight:900; font-size:20px; display:inline-flex; align-items:center; gap:6px;}
   .logo svg{flex-shrink:0;}
-  .logo span{color:var(--rust);}
-  .nav-right{display:flex; align-items:center; gap:9px;}
-  .cart-btn{position:relative; display:flex; align-items:center; gap:7px; background:var(--bg-alt); border:1px solid var(--line); padding:9px 15px; border-radius:100px; font-weight:600; font-size:13.5px; cursor:pointer;}
+  .logo span{color:#E8A23D;}
+  .nav-right{display:flex; align-items:center; gap:9px; order:3;}
+  .cart-btn{position:relative; display:flex; align-items:center; gap:7px; background:var(--amber); color:var(--ink); border:1px solid rgba(255,255,255,.2); padding:9px 15px; border-radius:100px; font-weight:700; font-size:13px; cursor:pointer;}
   .cart-count{position:absolute; top:-6px; left:-6px; background:var(--rust); color:#fff; font-size:11px; font-weight:700; width:19px; height:19px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Vazirmatn';}
 
   /* dropdown menu panel (top-left) */
@@ -165,30 +172,83 @@
   .chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
   .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px;}
 
-  /* hero */
-  .hero{padding:48px 0 40px;}
-  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:40px; align-items:center;}
-  .hero h1{font-size:clamp(28px,4vw,42px); line-height:1.32; margin-bottom:16px;}
-  .hero h1 em{font-style:normal; color:var(--rust);}
-  .hero p.lead{font-size:16px; color:var(--ink-soft); max-width:440px; margin-bottom:24px;}
-  .hero-ctas{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px;}
-  .trust-row{display:flex; gap:18px; flex-wrap:wrap; color:var(--ink-soft); font-size:13.5px; font-weight:600; margin-top:4px;}
-  .trust-row span{display:flex; align-items:center; gap:7px;}
-  .dot{width:6px; height:6px; border-radius:50%; background:var(--teal); flex-shrink:0;}
-  .hero-art{position:relative; aspect-ratio:1/0.85; border-radius:24px; background:linear-gradient(160deg,var(--amber),var(--rust)); display:flex; align-items:center; justify-content:center; overflow:hidden;}
-  .hero-art .emoji-stack{font-size:76px; display:flex; gap:14px; filter:drop-shadow(0 14px 20px rgba(0,0,0,.18));}
-
-  /* hero quicklinks */
-  .hero-quicklinks{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:28px;}
-  .ql-card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px 14px; text-align:center; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease; text-decoration:none; color:inherit;}
+  /* hero: full-width premium banner inspired by the approved reference */
+  .hero{padding:18px 0 26px;}
+  .hero-banner{position:relative; min-height:350px; border-radius:24px; overflow:hidden; background:#083f35; box-shadow:0 22px 50px -30px rgba(23,54,45,.7); isolation:isolate;}
+  .hero-slide{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .45s ease;}
+  .hero-slide.active{opacity:1; pointer-events:auto;}
+  .hero-slide::before{content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(4,37,31,.1) 0%,rgba(4,37,31,.18) 35%,rgba(4,37,31,.86) 78%,rgba(4,37,31,.96) 100%); z-index:1;}
+  .hero-slide img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; z-index:0;}
+  .hero-copy{position:absolute; z-index:2; right:7%; top:50%; transform:translateY(-50%); width:min(520px,45%); color:#fff; text-align:right;}
+  .hero-kicker{display:inline-flex; align-items:center; gap:6px; background:rgba(232,162,61,.16); border:1px solid rgba(232,162,61,.42); color:#FFD66B; padding:6px 14px; border-radius:999px; font-size:12px; margin-bottom:14px;}
+  .hero-copy h1{font-size:clamp(27px,4vw,46px); line-height:1.28; margin-bottom:12px; color:#fff;}
+  .hero-copy h1 em{font-style:normal; color:#F0B743;}
+  .hero-copy p{font-size:14px; color:rgba(255,255,255,.86); max-width:500px; margin-bottom:20px;}
+  .hero-copy .hero-btn{display:inline-flex; align-items:center; gap:8px; background:#F0B743; color:#17382F; padding:12px 23px; border-radius:999px; font-weight:800; font-size:13px; border:0; cursor:pointer; box-shadow:0 10px 22px -14px rgba(0,0,0,.65);}
+  .hero-trust{display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:16px; color:rgba(255,255,255,.82); font-size:11.5px;}
+  .hero-trust span{display:flex; align-items:center; gap:6px;}
+  .hero-trust i{width:5px; height:5px; border-radius:50%; background:#E8A23D;}
+  .hero-controls{position:absolute; z-index:4; inset-inline:18px; top:50%; display:flex; justify-content:space-between; transform:translateY(-50%); pointer-events:none;}
+  .hero-arrow{pointer-events:auto; width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.55); background:rgba(255,255,255,.92); color:#174B40; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .hero-dots{position:absolute; z-index:4; bottom:13px; left:50%; transform:translateX(-50%); display:flex; gap:6px;}
+  .hero-dot{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.55); border:0; padding:0; cursor:pointer;}
+  .hero-dot.active{width:20px; border-radius:99px; background:#F0B743;}
+  .hero-fallback{position:absolute; inset:0; background:radial-gradient(circle at 18% 24%,rgba(232,162,61,.36),transparent 26%),linear-gradient(135deg,#063D33,#0A5B4C 52%,#06362F);}
+  .hero-fallback::after{content:"♠  ♥  ♦  ♣"; position:absolute; left:7%; bottom:12%; font-size:clamp(44px,8vw,100px); letter-spacing:12px; color:rgba(255,255,255,.14); transform:rotate(-7deg);}
+  .hero-quicklinks{display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-top:14px;}
+  .ql-card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:15px 10px; text-align:center; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease; text-decoration:none; color:inherit; min-height:92px;}
   .ql-card:hover{transform:translateY(-3px); box-shadow:0 14px 26px -16px rgba(59,42,30,.28);}
-  .ql-ic{width:44px; height:44px; border-radius:50%; background:var(--bg-alt); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:20px;}
-  .ql-card h4{font-size:13.5px; margin-bottom:3px;}
-  .ql-card p{font-size:11.5px; color:var(--ink-soft); line-height:1.5;}
+  .ql-ic{width:42px; height:42px; border-radius:50%; background:#F2F4ED; display:flex; align-items:center; justify-content:center; margin:0 auto 7px; font-size:19px;}
+  .ql-card h4{font-size:13px; margin-bottom:2px;}
+  .ql-card p{font-size:10.5px; color:var(--ink-soft); line-height:1.45;}
   @media (max-width:860px){
-    .hero-quicklinks{grid-template-columns:1fr 1fr;}
+    .hero-banner{min-height:320px; border-radius:20px;}
+    .hero-copy{right:6%; width:57%;}
+    .hero-copy h1{font-size:clamp(24px,5vw,34px);}
+    .hero-quicklinks{grid-template-columns:repeat(3,1fr);}
   }
-
+  @media (max-width:620px){
+    .nav{grid-template-columns:1fr auto; gap:8px; padding:8px 12px 6px;}
+    .nav-left{grid-column:1; grid-row:1;}
+    .nav-center{grid-column:1/-1; grid-row:2; gap:5px; align-items:stretch;}
+    .nav-brand{grid-column:2; grid-row:1; justify-content:flex-end;}
+    .nav-right{grid-column:1; grid-row:1; justify-content:flex-start; order:0;}
+    .nav-left{order:0;}
+    .nav-center .nav-links{gap:17px; justify-content:flex-start; padding:1px 2px 2px;}
+    .nav-link{font-size:11px;}
+    .nav-search{width:100%;}
+    .nav-search input{font-size:11px; padding:7px 8px;}
+    .nav-search button{width:31px;height:31px;}
+    .nav-brand .logo{font-size:18px;}
+    .nav-brand .logo svg{width:20px;height:20px;}
+    .hero{padding-top:12px;}
+    .hero-banner{min-height:300px;}
+    .hero-copy{right:7%; width:62%;}
+    .hero-copy p{font-size:11.5px; line-height:1.8; margin-bottom:12px;}
+    .hero-copy .hero-btn{font-size:11.5px; padding:10px 17px;}
+    .hero-trust{font-size:9.5px; gap:5px 10px;}
+    .hero-arrow{width:32px;height:32px;font-size:17px;}
+    .hero-quicklinks{grid-template-columns:repeat(3,1fr); gap:8px;}
+    .ql-card{padding:11px 6px; min-height:82px;}
+    .ql-ic{width:36px;height:36px;font-size:17px;}
+    .ql-card h4{font-size:11px;}
+    .ql-card p{font-size:9px;}
+  }
+  .carousel-shell{position:relative; display:flex; align-items:center; gap:8px;}
+  .carousel-shell .carousel-track{flex:1; min-width:0;}
+  .carousel-arrow{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--teal);box-shadow:0 8px 18px -14px rgba(0,0,0,.35);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 auto;}
+  .carousel-arrow:hover{transform:translateY(-1px);background:var(--bg-alt);}
+  .promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+  .promo-card{min-height:150px;border-radius:20px;overflow:hidden;position:relative;color:#fff;background:#075246;display:flex;align-items:center;}
+  .promo-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 50%,rgba(232,162,61,.32),transparent 26%),linear-gradient(90deg,rgba(2,38,31,.1),rgba(2,38,31,.86));}
+  .promo-card::after{position:absolute;left:6%;bottom:-15px;font-size:90px;opacity:.16;transform:rotate(-10deg);}
+  .promo-discount::after{content:"A♠ K♥ Q♦ J♣";}
+  .promo-packs::after{content:"♠  ♥  ♦  ♣";letter-spacing:10px;}
+  .promo-card>div{position:relative;z-index:1;padding:24px 30px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-right:auto;width:62%;}
+  .promo-card span{font-size:13px;color:#fff;}
+  .promo-card strong{font-size:22px;color:#F0B743;font-family:'Vazirmatn';}
+  .promo-card button{margin-top:8px;background:#F0B743;color:#17382F;border:0;border-radius:999px;padding:9px 18px;font-family:inherit;font-weight:800;cursor:pointer;font-size:12px;}
+  @media (max-width:620px){.promo-grid{grid-template-columns:1fr;}.promo-card{min-height:130px}.promo-card>div{width:72%;padding:20px}.promo-card strong{font-size:18px}.carousel-arrow{width:31px;height:31px;font-size:16px}.carousel-shell{gap:3px}}
   /* categories home */
   .cat-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
   .cat-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:24px; text-align:center; cursor:pointer; transition:transform .2s ease;}
@@ -202,7 +262,7 @@
 
   /* product grid */
   .product-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  .carousel-track{display:flex; gap:16px; overflow-x:auto; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:2px 2px 10px;}
+  .carousel-track{direction:rtl; display:flex; gap:16px; overflow-x:auto; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:2px 2px 10px;}
   .carousel-track::-webkit-scrollbar{height:5px;}
   .carousel-track::-webkit-scrollbar-thumb{background:var(--line); border-radius:10px;}
   .carousel-item{flex:0 0 200px; scroll-snap-align:start; display:flex;}
@@ -431,7 +491,7 @@
 
   @media (max-width:860px){
     .hero-grid{grid-template-columns:1fr;}
-    .nav-links{display:none;}
+    .nav-links{display:flex;}
     .product-grid{grid-template-columns:1fr 1fr;}
     .cat-grid{grid-template-columns:1fr 1fr;}
     .guide-grid{grid-template-columns:1fr;}
@@ -447,139 +507,40 @@
     .cart-drawer{width:100vw;}
   }
 </style>
-
-<style id="v10-luxury-ui">
-:root{
-  --bg:#F7F1E6;--bg-alt:#EFE5D3;--card:#FFFCF6;--ink:#123F36;--ink-soft:#61716B;
-  --amber:#D6A43A;--amber-deep:#B77D1F;--teal:#0B5B4F;--rust:#B85A36;--line:#DCCDB5;
-  --radius:18px;--shadow:0 18px 50px rgba(17,63,54,.08);--shadow-lg:0 26px 70px rgba(17,63,54,.13);
-}
-body{background:radial-gradient(circle at 50% -10%,#fffaf0 0,#f7f1e6 44%,#f4eddf 100%);color:var(--ink)}
-.wrap{max-width:1240px;padding-left:22px;padding-right:22px}
-header{background:rgba(11,91,79,.98);border:0;box-shadow:0 10px 28px rgba(8,55,47,.12);backdrop-filter:blur(12px)}
-.nav{min-height:74px;padding:10px 22px;display:grid;grid-template-columns:auto minmax(340px,1fr) auto;align-items:center;gap:24px;direction:rtl}
-.nav-left{display:flex;align-items:center;gap:18px;order:1}.nav-right{display:flex;align-items:center;gap:10px;order:3}
-.logo{color:#fff;font-size:23px;white-space:nowrap}.logo span{color:#E8B94F}.logo svg{stroke:#E8B94F}
-.burger{display:none;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);order:0}.burger span,.burger::before,.burger::after{background:#fff}
-.desktop-nav{display:flex;justify-content:center;align-items:center;gap:22px;order:2}.desktop-nav a{color:#F8F3E9;font-size:13px;font-weight:600;opacity:.9;cursor:pointer;white-space:nowrap}.desktop-nav a:hover{color:#F0C85A;opacity:1}
-.nav-search{height:42px;background:#fff;border:0;border-radius:999px;display:flex;align-items:center;gap:8px;padding:4px 8px 4px 14px;min-width:0}.nav-search input{border:0;outline:0;background:transparent;flex:1;min-width:0;font:13px 'IBM Plex Sans Arabic';color:var(--ink)}.nav-search button{border:0;background:#EEF4EF;color:var(--teal);width:34px;height:34px;border-radius:50%;cursor:pointer}
-.nav-search-wrap{display:flex;align-items:center;gap:18px;min-width:0}.nav-search-wrap .desktop-nav{flex:1}.nav-search-wrap{order:2}
-.cart-btn{background:#E9B442;color:#123F36;border:1px solid rgba(255,255,255,.25);padding:10px 16px;font-weight:800;box-shadow:0 8px 18px rgba(0,0,0,.12)}
-.cart-count{background:#B85A36;color:#fff;left:auto;right:-5px;top:-5px}.header-heart{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;position:relative}.header-heart .fav-count{position:absolute;top:-5px;right:-4px;background:#B85A36;color:#fff;width:18px;height:18px;border-radius:50%;font:700 10px Vazirmatn;display:none;align-items:center;justify-content:center}
-#dataErrorBanner{background:#9E452D;box-shadow:0 4px 16px rgba(0,0,0,.08)}
-main.wrap{padding-top:18px}section.page{padding:34px 0 52px}
-.hero{padding:18px 0 30px}.hero-grid{grid-template-columns:1fr 1fr;gap:0;align-items:stretch;background:linear-gradient(135deg,#075B4F,#0E695B);border-radius:26px;overflow:hidden;box-shadow:var(--shadow-lg);min-height:470px;direction:rtl}
-.hero-grid>div:first-child{padding:58px 58px 52px 46px;display:flex;flex-direction:column;justify-content:center}.hero-grid>div:last-child{order:2}
-.hero h1{font-size:clamp(32px,4vw,52px);line-height:1.35;color:#fff;margin-bottom:15px}.hero h1 em{color:#E7B83F}.hero p.lead{color:rgba(255,255,255,.78);max-width:520px;font-size:15.5px;line-height:2;margin-bottom:24px}
-.hero .eyebrow{background:rgba(231,184,63,.12);border-color:rgba(231,184,63,.35);color:#F1C75A;margin-bottom:15px}.hero-ctas .btn-primary{background:#E7B83F;color:#123F36;box-shadow:none}.hero-search{max-width:500px!important;background:#fff!important;border:0!important;box-shadow:0 12px 30px rgba(0,0,0,.12)}
-.hero-search button{background:#0B5B4F!important;color:#fff!important}.hero .trust-row{color:rgba(255,255,255,.78);gap:13px 20px}.hero .dot{background:#E7B83F}
-.hero-art{height:100%;min-height:470px;aspect-ratio:auto;border-radius:0;background:#0B5B4F}.hero-art img{object-fit:cover!important;object-position:center;height:100%!important;width:100%!important}.hero-art:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,91,79,.2),rgba(7,91,79,0));pointer-events:none}
-.hero-quicklinks{grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}.ql-card{padding:15px 12px;border-radius:16px;background:rgba(255,252,246,.9);border-color:#E0D4C1;box-shadow:0 8px 22px rgba(17,63,54,.05)}.ql-card:hover{transform:translateY(-3px);box-shadow:0 16px 28px rgba(17,63,54,.1)}.ql-ic{background:#EAF1ED;color:var(--teal);width:42px;height:42px}
-.section-head{margin:0 auto 25px}.section-head .eyebrow{background:transparent;border:0;padding:0;color:var(--amber-deep);font-size:12px;margin-bottom:4px}.section-head h2{color:var(--ink);font-size:28px}.section-head p{color:var(--ink-soft)}
-.cat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:42px!important}.cat-card{padding:17px 10px;background:rgba(255,252,246,.8);border-color:#E2D6C4;border-radius:16px;box-shadow:0 7px 20px rgba(17,63,54,.04)}.cat-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(17,63,54,.08)}.cat-ic-wrap{width:56px;height:56px;background:#EDF2ED;margin-bottom:8px}.cat-card h3{font-size:14px;color:var(--ink);margin-bottom:2px}.cat-card p{font-size:11px}
-.carousel-track{gap:14px;padding:4px 2px 12px}.carousel-item{flex:0 0 214px}.p-card{padding:10px 10px 12px;border-radius:16px;background:rgba(255,252,246,.95);border-color:#E1D5C2;box-shadow:0 8px 22px rgba(17,63,54,.055);cursor:pointer}.p-card:hover{transform:translateY(-5px);box-shadow:0 20px 32px rgba(17,63,54,.11)}.p-thumb{aspect-ratio:1/.86;border-radius:12px;margin-bottom:10px;background:#F0E7D9!important}.p-thumb img{object-fit:cover!important}.p-tag{font-size:10.5px;color:var(--teal);margin-bottom:2px}.p-card h3{font-size:14px;margin-bottom:2px;color:var(--ink)}.p-card .desc{font-size:11.5px;line-height:1.65;margin-bottom:9px;min-height:37px;color:var(--ink-soft)}.price{font-size:15px;color:var(--ink)}.price small{font-size:10px}.add-btn{width:34px;height:34px;background:#EAF1ED;border-color:#D6E2DC;color:var(--teal);font-weight:900}.add-btn:hover{background:var(--teal)}.new-badge{top:8px;right:8px;background:#E7B83F;color:#173F36}.stock-note{font-size:10.5px}
-.p-card .fav-btn{position:absolute;top:8px;left:8px;width:31px;height:31px;border-radius:50%;border:1px solid #E1D5C2;background:rgba(255,252,246,.94);color:#9B9A91;z-index:3;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px}.p-card .fav-btn.active{color:#B85A36;background:#FFF4EC;border-color:#E9C6B6}
-/* product detail */
-[data-route="/product"]{padding-top:20px}.pd-breadcrumb{font-size:12px;color:var(--ink-soft);margin:0 0 18px}.pd-breadcrumb a{cursor:pointer;color:var(--teal)}.pd-grid{grid-template-columns:1.03fr .97fr;gap:28px;align-items:start}.pd-gallery-card,.pd-info-card{background:rgba(255,252,246,.92);border:1px solid #E1D5C2;border-radius:24px;box-shadow:var(--shadow)}.pd-gallery-card{padding:14px}.pd-gallery-main{aspect-ratio:1/.92;border-radius:18px;background:#F1E9DB;margin:0 0 12px}.pd-gallery-main img{border-radius:18px!important}.pd-thumbs{gap:9px;justify-content:flex-start}.pd-thumbs .th{width:66px;height:66px;border-radius:12px;background:#F1E9DB;border:2px solid transparent}.pd-thumbs .th.active{border-color:#E7B83F;box-shadow:0 0 0 2px rgba(231,184,63,.16)}
-.pd-info-card{padding:30px}.pd-topline{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}.pd-tag{background:#EDF2ED;color:var(--teal);display:inline-flex;padding:6px 11px;border-radius:999px;font-size:11px}.pd-rating{color:#B77D1F;font-weight:800;font-size:13px}.pd-title{font-size:clamp(29px,4vw,42px);color:var(--ink);margin:13px 0 8px}.pd-price{font-size:28px;color:var(--teal);margin:4px 0 18px}.pd-desc{font-size:14px;line-height:2;color:var(--ink-soft);padding-bottom:17px;border-bottom:1px solid #E9DFCF}.pd-feature-box{background:#F3F7F3;border:1px solid #DFEAE3;border-radius:15px;padding:14px 16px;margin:17px 0}.pd-feature-box h4{font-size:13px;margin-bottom:7px}.pd-features{margin:0;gap:6px}.pd-features li{font-size:12.5px}.pd-qty{background:#F6F0E6;border:1px solid #E2D6C4;border-radius:13px;padding:5px 8px;display:inline-flex;margin:0 0 12px;gap:13px}.pd-qty button{background:#fff;width:32px;height:32px}.pd-buy-row{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center}.pd-buy-btn{height:48px!important;background:var(--teal)!important;border-radius:12px!important;font-size:14px!important}.pd-benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.pd-benefit{background:#FBF7EF;border:1px solid #E8DDCA;border-radius:12px;padding:9px;text-align:center;font-size:10.5px;color:var(--ink-soft)}.pd-benefit b{display:block;color:var(--ink);font-size:11px;margin-bottom:2px}
-.product-tabs{display:flex;gap:4px;background:#EFE7DA;border-radius:15px;padding:4px;margin:30px 0 16px}.product-tabs button{flex:1;border:0;background:transparent;border-radius:11px;padding:11px 8px;font:700 12px 'IBM Plex Sans Arabic';color:var(--ink-soft);cursor:pointer}.product-tabs button.active{background:#fffdf8;color:var(--teal);box-shadow:0 4px 14px rgba(17,63,54,.07)}.pd-description-card{background:rgba(255,252,246,.92);border:1px solid #E1D5C2;border-radius:20px;padding:24px;line-height:2;color:var(--ink-soft);box-shadow:var(--shadow)}.pd-description-card h3{color:var(--ink);font-size:18px;margin-bottom:10px}.pd-specs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.pd-spec{background:#F7F1E7;border-radius:10px;padding:9px 11px;font-size:12px}.pd-spec b{color:var(--ink)}
-.related-wrap{margin-top:34px}.related-wrap .section-head{text-align:right;margin-bottom:14px}.related-wrap .section-head h2{font-size:21px}.related-wrap .product-grid{grid-template-columns:repeat(4,1fr)}
-.reviews-box{margin-top:30px;border:1px solid #E1D5C2;border-radius:22px;background:rgba(255,252,246,.92);padding:24px;box-shadow:var(--shadow)}.reviews-box>h3{font-size:21px;color:var(--ink)}.review-form{background:#F7F1E7;border:1px solid #E5DACA;border-radius:16px;padding:15px;margin-bottom:18px}.review-form input,.review-form textarea{background:#fffdf9;border-color:#E0D5C3;border-radius:11px}.review-form textarea{min-height:100px}.review-summary{background:#fffdf9;border-color:#E2D6C4}.review-item{background:#fffdf9;border-color:#E2D6C4}.review-item .rname{color:var(--ink)}
-.cta-band{padding-bottom:20px!important}.cta-box{background:linear-gradient(135deg,#075B4F,#0D6A5B);border-radius:24px;padding:42px;text-align:center;color:#fff;box-shadow:var(--shadow-lg)}.cta-box h2{font-size:28px}.cta-box p{color:rgba(255,255,255,.75);margin:7px 0 17px}.btn-white{display:inline-block;background:#fff;color:var(--teal);padding:11px 24px;border-radius:999px;font-weight:800}
-footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:22px 0;border-bottom:1px solid rgba(255,255,255,.14);margin-bottom:24px}.trust-item{display:flex;gap:10px;align-items:center}.trust-ic{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.09);display:flex;align-items:center;justify-content:center;flex-shrink:0}.trust-item h5{font-size:11.5px;color:#fff;margin-bottom:1px}.trust-item span{font-size:9.5px;color:rgba(255,255,255,.62)}.foot-grid{grid-template-columns:1.4fr 1fr 1fr}.foot-grid h5{color:#E7B83F}.foot-grid .logo span{color:#E7B83F}.foot-grid .logo svg{stroke:#E7B83F}.foot-grid p,.foot-grid li,.foot-bottom{color:rgba(255,255,255,.62)!important}.foot-bottom{border-color:rgba(255,255,255,.14)}
-.chat-fab{background:#E7B83F;color:#173F36;box-shadow:0 12px 26px rgba(183,125,31,.3);left:22px}
-/* remove accidental loading banner until an actual catalog request fails */
-#dataErrorBanner{display:none!important}#dataErrorBanner.has-error{display:flex!important}
-@media(max-width:1050px){.desktop-nav{gap:13px}.desktop-nav a{font-size:11.5px}.nav{gap:12px}.cat-grid{grid-template-columns:repeat(3,1fr)}.related-wrap .product-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:860px){
-  .nav{min-height:64px;display:flex;justify-content:space-between;padding:8px 14px}.nav-left{order:2}.nav-right{order:1}.nav-search-wrap{display:none}.burger{display:flex}.header-heart{display:none}.logo{font-size:20px}.cart-btn{padding:8px 13px;font-size:12px}
-  main.wrap{padding-top:10px}.hero{padding-top:10px}.hero-grid{grid-template-columns:1fr;min-height:0;border-radius:22px}.hero-grid>div:first-child{padding:27px 23px 30px;order:2}.hero-grid>div:last-child{order:1;min-height:270px}.hero-art{min-height:270px}.hero h1{font-size:31px}.hero p.lead{font-size:13.5px}.hero-search{max-width:none!important}.hero-quicklinks{grid-template-columns:1fr 1fr;gap:8px}.ql-card{padding:12px 8px}.ql-ic{width:36px;height:36px;font-size:17px}.ql-card h4{font-size:12px}.ql-card p{font-size:9.5px}
-  .cat-grid{grid-template-columns:repeat(3,1fr);gap:8px}.cat-card{padding:13px 6px}.cat-ic-wrap{width:48px;height:48px}.cat-card h3{font-size:12px}.cat-card p{font-size:9px}
-  .carousel-item{flex-basis:190px}.pd-grid{grid-template-columns:1fr;gap:14px}.pd-gallery-card,.pd-info-card{border-radius:19px}.pd-info-card{padding:21px}.pd-gallery-main{aspect-ratio:1/.92}.pd-title{font-size:30px}.pd-benefits{grid-template-columns:1fr 1fr 1fr}.related-wrap .product-grid{grid-template-columns:1fr 1fr}.product-tabs{overflow:auto}.product-tabs button{min-width:110px}.pd-specs{grid-template-columns:1fr}.trust-bar{grid-template-columns:repeat(2,1fr)}.foot-grid{grid-template-columns:1fr 1fr}
-}
-@media(max-width:520px){.wrap{padding-left:14px;padding-right:14px}.hero-grid>div:first-child{padding:24px 18px 26px}.hero h1{font-size:28px}.hero-art{min-height:250px}.hero-quicklinks{grid-template-columns:1fr 1fr}.cat-grid{grid-template-columns:repeat(3,1fr)}.carousel-item{flex-basis:180px}.pd-buy-row{grid-template-columns:96px 1fr}.pd-benefits{grid-template-columns:1fr 1fr 1fr}.reviews-box{padding:15px}.trust-bar{grid-template-columns:1fr 1fr}.foot-grid{grid-template-columns:1fr}.section-head h2{font-size:23px}}
-</style>
-
-
-<style id="v10-favorites-css">
-.favorites-modal{position:fixed;inset:0;background:rgba(4,40,35,.42);z-index:94;display:flex;justify-content:flex-start;align-items:flex-start;padding:86px 22px;opacity:0;pointer-events:none;transition:opacity .2s}.favorites-modal.open{opacity:1;pointer-events:auto}.favorites-box{width:min(380px,calc(100vw - 44px));background:#FFFCF6;border:1px solid #E1D5C2;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.22);overflow:hidden}.favorites-head{display:flex;justify-content:space-between;align-items:center;padding:17px 18px;border-bottom:1px solid #E8DDCB}.favorites-head span{font-size:10px;color:#B77D1F}.favorites-head h3{font-size:18px}.favorites-head button{width:32px;height:32px;border:0;border-radius:50%;background:#F1E9DB;cursor:pointer}.favorites-list{padding:10px;max-height:65vh;overflow:auto}.favorite-row{display:grid;grid-template-columns:58px 1fr 34px;gap:10px;align-items:center;padding:9px;border-radius:13px;cursor:pointer}.favorite-row:hover{background:#F7F1E6}.favorite-row img{width:58px;height:58px;border-radius:10px;object-fit:cover}.favorite-row b{display:block;font-size:13px}.favorite-row span{display:block;color:#0B5B4F;font:700 12px Vazirmatn;margin-top:3px}.favorite-row button{border:0;background:#FFF0E8;color:#B85A36;width:32px;height:32px;border-radius:50%;cursor:pointer}.favorite-empty{text-align:center;padding:30px 15px;color:#61716B;font-size:13px}
-@media(max-width:860px){.favorites-modal{padding:74px 12px;justify-content:center}.favorites-box{width:min(390px,100%)}}
-</style>
-
-<style id="v11-home-luxury">
-/* V11 — خانه‌گرم: هدر دو ردیفه + Hero بنری + سکشن‌های فروشگاهی */
-@media(min-width:861px){
-  header .nav{grid-template-columns:minmax(250px,1fr) minmax(360px,620px) minmax(250px,1fr);grid-template-rows:58px 38px;min-height:104px;padding:8px 22px 7px;gap:0 22px;align-items:center}
-  header .nav-search-wrap{display:contents}
-  header .nav-left{grid-column:3;grid-row:1;justify-self:end;display:flex;align-items:center;gap:12px}
-  header .nav-right{grid-column:1;grid-row:1;justify-self:start;display:flex;align-items:center;gap:10px}
-  header .nav-search{grid-column:2;grid-row:1;width:100%;height:40px;box-shadow:0 7px 20px rgba(0,0,0,.08)}
-  header .desktop-nav{grid-column:1/4;grid-row:2;display:flex;justify-content:center;gap:30px;height:36px;align-items:center;border-top:1px solid rgba(255,255,255,.09)}
-  header .desktop-nav a{font-size:12.5px;padding:5px 2px}
-  header .burger{display:none}
-}
-@media(max-width:860px){
-  header .nav{display:grid;grid-template-columns:1fr auto;grid-template-rows:56px 42px;min-height:106px;padding:7px 12px;gap:3px 10px}
-  header .nav-left{grid-column:2;grid-row:1;order:0;display:flex;align-items:center;gap:9px}
-  header .nav-right{grid-column:1;grid-row:1;order:0;justify-self:start}
-  header .nav-search-wrap{grid-column:1/3;grid-row:2;display:block;order:0}
-  header .desktop-nav{display:none}
-  header .nav-search{display:flex;width:100%;height:38px}
-  header .header-heart{display:none}
-  header .logo{font-size:19px}
-  header .cart-btn{font-size:11.5px;padding:8px 12px}
-  header .burger{display:flex;width:38px;height:38px;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
-}
-.home-hero-slider{position:relative;min-height:420px;height:min(47vw,500px);border-radius:24px;overflow:hidden;background:#0b5b4f;box-shadow:var(--shadow-lg);isolation:isolate}
-.home-hero-media,.home-hero-media img,.home-hero-overlay{position:absolute;inset:0;width:100%;height:100%}
-.home-hero-media{z-index:0;background:linear-gradient(135deg,#0b5b4f,#145f54)}
-.home-hero-media img{object-fit:cover;object-position:center;transition:opacity .35s ease,transform .7s ease;transform:scale(1.015)}
-.home-hero-overlay{z-index:1;background:linear-gradient(90deg,rgba(5,49,42,.15) 0%,rgba(5,49,42,.42) 38%,rgba(5,49,42,.9) 74%,rgba(5,49,42,.96) 100%)}
-.home-hero-content{position:absolute;z-index:3;right:7%;top:50%;transform:translateY(-50%);width:min(510px,45%);color:#fff;text-align:right}
-.home-hero-kicker{display:inline-flex;align-items:center;border:1px solid rgba(231,184,63,.4);background:rgba(231,184,63,.12);color:#f2ca61;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;margin-bottom:14px}
-.home-hero-content h1{font-size:clamp(30px,4vw,51px);line-height:1.42;margin-bottom:13px;color:#fff}.home-hero-content h1 em{color:#e7b83f}
-.home-hero-content p{font-size:14px;line-height:2;color:rgba(255,255,255,.8);margin-bottom:20px;max-width:490px}
-.home-hero-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.home-hero-cta{display:inline-flex;align-items:center;justify-content:center;background:#e7b83f;color:#123f36;border-radius:999px;padding:11px 22px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 25px rgba(0,0,0,.14)}
-.home-hero-trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;color:rgba(255,255,255,.76);font-size:11px}.home-hero-trust span::first-letter{color:#e7b83f}
-.home-hero-arrow{position:absolute;z-index:4;top:50%;transform:translateY(-50%);width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.9);color:#123f36;font-size:30px;line-height:1;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.15)}.home-hero-arrow.prev{left:18px}.home-hero-arrow.next{right:18px}
-.home-hero-dots{position:absolute;z-index:4;left:50%;bottom:17px;transform:translateX(-50%);display:flex;gap:7px}.home-hero-dot{width:8px;height:8px;border:0;border-radius:50%;background:rgba(255,255,255,.55);padding:0;cursor:pointer}.home-hero-dot.active{width:25px;border-radius:999px;background:#e7b83f}
-.home-service-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0 48px}.home-service-card{display:flex;align-items:center;justify-content:center;gap:11px;min-height:78px;padding:12px 10px;border-radius:16px;background:rgba(255,252,246,.9);border:1px solid #e2d6c4;box-shadow:0 7px 20px rgba(17,63,54,.045);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}.home-service-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(17,63,54,.09)}.service-icon{width:38px;height:38px;border-radius:50%;background:#edf2ed;display:grid;place-items:center;flex:0 0 auto;font-size:17px}.home-service-card b{display:block;font-size:12px;color:var(--ink)}.home-service-card small{display:block;font-size:9.5px;color:var(--ink-soft);margin-top:2px}
-.home-section-intro{margin-bottom:24px}.home-cat-grid{margin-bottom:55px!important}
-.home-product-section{position:relative;margin-top:5px}.home-product-section .section-head{margin-bottom:22px}.home-product-carousel-wrap{position:relative}.home-product-carousel-wrap .carousel-track{padding-left:28px;padding-right:28px;scrollbar-width:none}.home-product-carousel-wrap .carousel-track::-webkit-scrollbar{display:none}.home-product-carousel-wrap .carousel-item{flex-basis:214px}.home-carousel-arrow{position:absolute;z-index:4;top:47%;transform:translateY(-50%);width:34px;height:34px;border:1px solid #d8cbb7;border-radius:50%;background:#fffdf9;color:var(--teal);font-size:24px;line-height:1;cursor:pointer;box-shadow:0 8px 18px rgba(17,63,54,.09)}.home-carousel-arrow.prev{left:1px}.home-carousel-arrow.next{right:1px}
-.home-promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:56px 0 58px}.home-promo-card{position:relative;min-height:180px;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(17,63,54,.1);isolation:isolate}.home-promo-media,.home-promo-media img,.home-promo-overlay{position:absolute;inset:0;width:100%;height:100%}.home-promo-media{z-index:0;background:#0b5b4f}.home-promo-media img{object-fit:cover;object-position:center}.home-promo-overlay{z-index:1;background:linear-gradient(90deg,rgba(5,49,42,.96),rgba(5,49,42,.62),rgba(5,49,42,.16))}.home-promo-content{position:relative;z-index:2;min-height:180px;padding:24px 28px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;color:#fff;text-align:right}.home-promo-content span{font-size:11px;color:rgba(255,255,255,.75);margin-bottom:3px}.home-promo-content strong{font:800 23px 'Vazirmatn';color:#fff;margin-bottom:3px}.home-promo-content small{font-size:11px;color:rgba(255,255,255,.72);margin-bottom:14px}.home-promo-content b{font-size:12px;color:#123f36;background:#e7b83f;border-radius:999px;padding:8px 15px}.newest-home-section{margin-bottom:6px}
-@media(max-width:860px){
-  .home-hero-slider{height:470px;min-height:0;border-radius:20px}.home-hero-overlay{background:linear-gradient(180deg,rgba(5,49,42,.08),rgba(5,49,42,.4) 35%,rgba(5,49,42,.94) 72%,rgba(5,49,42,.98))}.home-hero-content{right:24px;left:24px;top:auto;bottom:34px;transform:none;width:auto}.home-hero-content h1{font-size:32px}.home-hero-content p{font-size:12.5px}.home-hero-actions{gap:7px}.home-hero-arrow{width:34px;height:34px;font-size:26px}.home-hero-arrow.prev{left:12px}.home-hero-arrow.next{right:12px}.home-service-row{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:42px}.home-service-card{min-height:70px;justify-content:flex-start;padding:10px}.home-promo-grid{grid-template-columns:1fr;gap:10px;margin:45px 0}.home-promo-card,.home-promo-content{min-height:155px}.home-promo-content{padding:20px}.home-promo-content strong{font-size:20px}.home-product-carousel-wrap .carousel-track{padding-left:22px;padding-right:22px}.home-carousel-arrow{display:none}
-}
-@media(max-width:520px){
-  .wrap{padding-left:14px;padding-right:14px}.home-hero-slider{height:455px;border-radius:18px}.home-hero-media img{object-position:center}.home-hero-content{right:19px;left:19px;bottom:30px}.home-hero-kicker{font-size:10px;padding:6px 11px}.home-hero-content h1{font-size:28px;line-height:1.5}.home-hero-content p{font-size:11.5px;line-height:1.9;margin-bottom:14px}.home-hero-cta{font-size:11.5px;padding:9px 16px}.home-hero-trust{gap:8px 13px;font-size:9px;margin-top:12px}.home-service-row{grid-template-columns:1fr 1fr;margin-top:10px;margin-bottom:42px}.home-service-card{min-height:66px}.home-service-card b{font-size:11px}.home-service-card small{font-size:8.5px}.home-cat-grid{grid-template-columns:repeat(3,1fr)!important;gap:7px!important;margin-bottom:45px!important}.home-cat-grid .cat-card{padding:11px 5px}.home-cat-grid .cat-ic-wrap{width:45px;height:45px}.home-cat-grid .cat-card h3{font-size:11px}.home-cat-grid .cat-card p{font-size:8px}.home-product-carousel-wrap .carousel-item{flex-basis:184px}.home-product-carousel-wrap .carousel-track{gap:9px;padding-left:17px;padding-right:17px}.home-promo-content strong{font-size:18px}.home-promo-content small{font-size:9.5px}.home-promo-card,.home-promo-content{min-height:145px}.section-head{margin-bottom:20px}.section-head h2{font-size:23px}
-}
-@media (prefers-reduced-motion:reduce){.home-hero-media img{transition:none}.home-hero-slider *{scroll-behavior:auto}}
-</style>
 </head>
 <body>
 
 <header>
   <div class="nav wrap">
     <div class="nav-left">
-      <div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8B94F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="11" height="15" rx="2" transform="rotate(15 13.5 9.5)"></rect><rect x="5" y="6" width="11" height="15" rx="2"></rect><path d="M10.5 12.5c-.8-1-.5-2.3.5-2.3.6 0 1 .4 1 1 0-.6.4-1 1-1 1 0 1.3 1.3 2.3.5 2.3l-1.5 1.7z"></path></svg>خانه<span>گرم</span></div>
-      <button class="burger" onclick="toggleMenu()" aria-label="باز کردن منو"><span></span></button>
-    </div>
-    <div class="nav-search-wrap">
-      <nav class="desktop-nav" aria-label="منوی اصلی">
-        <a onclick="go('/')">خانه</a><a onclick="go('/products')">محصولات</a><a onclick="go('/products')">دسته‌بندی‌ها</a><a onclick="go('/guides')">راهنما</a><a onclick="go('/faq')">سوالات متداول</a><a onclick="go('/track')">پیگیری سفارش</a><a onclick="go('/contact')">تماس با ما</a>
-      </nav>
-      <div class="nav-search">
-        <input id="headerSearch" type="text" placeholder="جست‌وجوی محصول، برند یا دسته‌بندی..." onkeydown="if(event.key==='Enter') runHeaderSearch()">
-        <button type="button" onclick="runHeaderSearch()" aria-label="جست‌وجو">⌕</button>
+      <div class="nav-right">
+        <button class="cart-btn" onclick="openCart()" aria-label="سبد خرید">🛒 سبد خرید<span class="cart-count" id="cartCount" style="display:none;">۰</span></button>
       </div>
     </div>
-    <div class="nav-right">
-      <button class="header-heart" type="button" onclick="openFavorites()" aria-label="علاقه‌مندی‌ها">♡<span class="fav-count" id="favCount">۰</span></button>
-      <button class="cart-btn" onclick="openCart()" aria-label="سبد خرید">🛍️ سبد خرید<span class="cart-count" id="cartCount" style="display:none;">۰</span></button>
+    <div class="nav-center">
+      <div class="nav-search">
+        <input id="headerSearch" type="text" placeholder="جست‌وجوی محصولات، برند یا دسته‌بندی..." onkeydown="if(event.key==='Enter') runHeaderSearch()" aria-label="جست‌وجوی محصولات">
+        <button type="button" onclick="runHeaderSearch()" aria-label="جست‌وجو">⌕</button>
+      </div>
+      <nav class="nav-links" aria-label="ناوبری اصلی">
+        <a class="nav-link active" onclick="go('/')">خانه</a>
+        <a class="nav-link" onclick="go('/products')">محصولات</a>
+        <a class="nav-link" onclick="go('/guides')">راهنما</a>
+        <a class="nav-link" onclick="go('/faq')">سوالات متداول</a>
+        <a class="nav-link" onclick="go('/track')">پیگیری سفارش</a>
+        <a class="nav-link" onclick="go('/about')">درباره ما</a>
+        <a class="nav-link" onclick="go('/contact')">تماس با ما</a>
+      </nav>
+    </div>
+    <div class="nav-brand">
+      <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8A23D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="11" height="15" rx="2" transform="rotate(15 13.5 9.5)"></rect><rect x="5" y="6" width="11" height="15" rx="2"></rect><path d="M10.5 12.5c-.8-1-.5-2.3.5-2.3.6 0 1 .4 1 1 0-.6.4-1 1-1 1 0 1.3 1.3.5 2.3l-1.5 1.7z"></path></svg>خانه<span>گرم</span></div>
     </div>
   </div>
   <div id="dataErrorBanner">
-    <div style="display:flex;flex-direction:column;gap:3px;text-align:center;"><span>⚠️ دریافت اطلاعات فروشگاه با مشکل مواجه شد.</span><span id="dataErrorDetail" style="font-size:11px;font-weight:400;opacity:.9;direction:ltr;word-break:break-all;"></span></div>
+    <div style="display:flex; flex-direction:column; gap:3px; text-align:center;">
+      <span>⚠️ مشکل در اتصال به سرور، اطلاعات لود نشد.</span>
+      <span id="dataErrorDetail" style="font-size:11px; font-weight:400; opacity:.9; direction:ltr; word-break:break-all;"></span>
+    </div>
     <button id="dataErrorRetryBtn" onclick="retryDataLoad()">تلاش دوباره</button>
   </div>
 </header>
@@ -611,8 +572,6 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
     <a class="menu-item" href="https://wa.me/989999439534" target="_blank" rel="noopener" onclick="toggleMenu();">💬 ارتباط با ما (واتساپ)</a>
   </div>
 </nav>
-
-<div class="favorites-modal" id="favoritesModal"><div class="favorites-box"><div class="favorites-head"><div><span>انتخاب‌های شما</span><h3>علاقه‌مندی‌ها</h3></div><button type="button" onclick="closeFavorites()">✕</button></div><div class="favorites-list"></div></div></div>
 
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
 <aside class="cart-drawer" id="cartDrawer">
@@ -721,55 +680,89 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 
 <!-- HOME -->
 <section class="page" data-route="/">
-  <div class="home-hero-slider" id="homeHeroSlider" aria-label="پیشنهادهای خانه‌گرم">
-    <div class="home-hero-media">
-      <img id="homeHeroImage" src="" alt="کارت‌های بازی خانه‌گرم" decoding="async" fetchpriority="high">
-    </div>
-    <div class="home-hero-overlay"></div>
-    <div class="home-hero-content">
-      <div class="home-hero-kicker" id="homeHeroKicker">🔥 ارسال به سراسر کشور</div>
-      <h1 id="homeHeroTitle">کارت‌های بازی با کیفیت و اصالت</h1>
-      <p id="homeHeroText">انتخابی مطمئن برای دورهمی‌های خانوادگی، بازی‌های حرفه‌ای و لحظه‌هایی که دوست دارید ماندگار بمانند.</p>
-      <div class="home-hero-actions">
-        <a class="home-hero-cta" id="homeHeroCta" onclick="go('/products')">مشاهده محصولات ←</a>
+  <div class="hero">
+    <div class="hero-banner" id="homeHero" aria-label="پیشنهادهای خانه‌گرم">
+      <div class="hero-slide active" data-slide="0">
+        <div class="hero-fallback"></div>
+        <div class="hero-copy">
+          <div class="hero-kicker">🔥 انتخاب ویژه خانه‌گرم</div>
+          <h1>کارت‌های بازی با <em>کیفیت و اصالت</em></h1>
+          <p>برای دورهمی‌های خانوادگی، جمع‌های دوستانه و لحظه‌های خاص؛ انتخاب دقیق، تجربه بهتر.</p>
+          <button class="hero-btn" onclick="go('/products')">مشاهده محصولات <span>←</span></button>
+          <div class="hero-trust"><span><i></i> ارسال به سراسر کشور</span><span><i></i> پرداخت امن</span><span><i></i> پشتیبانی واقعی</span></div>
+        </div>
       </div>
-      <div class="home-hero-trust"><span>✓ کیفیت مطمئن</span><span>✓ ارسال سریع</span><span>✓ پشتیبانی واقعی</span></div>
+      <div class="hero-slide" data-slide="1">
+        <div class="hero-fallback" style="background:radial-gradient(circle at 80% 18%,rgba(232,162,61,.42),transparent 28%),linear-gradient(135deg,#06372F,#0B6757 55%,#082E29);"></div>
+        <div class="hero-copy">
+          <div class="hero-kicker">✨ انتخاب برای دورهمی</div>
+          <h1>یک انتخاب شیک برای <em>لحظه‌های ماندگار</em></h1>
+          <p>از مدل‌های اقتصادی تا گزینه‌های خاص؛ محصولت را با خیال راحت از خانه‌گرم انتخاب کن.</p>
+          <button class="hero-btn" onclick="go('/products')">شروع خرید <span>←</span></button>
+        </div>
+      </div>
+      <div class="hero-slide" data-slide="2">
+        <div class="hero-fallback" style="background:radial-gradient(circle at 20% 70%,rgba(232,162,61,.38),transparent 25%),linear-gradient(135deg,#092F2A,#0A5B4C 48%,#042D27);"></div>
+        <div class="hero-copy">
+          <div class="hero-kicker">🎁 پک‌های ویژه</div>
+          <h1>برای بازی بیشتر، <em>انتخاب بهتر</em></h1>
+          <p>پک‌های کاربردی و جذاب برای هدیه، دورهمی و کسانی که پاسور خوب را می‌شناسند.</p>
+          <button class="hero-btn" onclick="go('/products')">دیدن پک‌ها <span>←</span></button>
+        </div>
+      </div>
+      <div class="hero-controls" aria-label="کنترل بنر">
+        <button class="hero-arrow" type="button" onclick="heroPrev()" aria-label="بنر قبلی">→</button>
+        <button class="hero-arrow" type="button" onclick="heroNext()" aria-label="بنر بعدی">←</button>
+      </div>
+      <div class="hero-dots" id="heroDots" aria-label="انتخاب بنر"></div>
     </div>
-    <button type="button" class="home-hero-arrow prev" onclick="changeHomeHero(-1)" aria-label="بنر قبلی">‹</button>
-    <button type="button" class="home-hero-arrow next" onclick="changeHomeHero(1)" aria-label="بنر بعدی">›</button>
-    <div class="home-hero-dots" id="homeHeroDots" aria-label="انتخاب بنر"></div>
+    <div class="hero-quicklinks">
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">⭐</div><h4>جدیدترین‌ها</h4><p>تازه‌ترین انتخاب‌های فروشگاه</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🎲</div><h4>تاس و شطرنج</h4><p>برای بازی‌های متفاوت</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">♠</div><h4>بازی‌های کارتی</h4><p>برای دورهمی‌های ماندگار</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🃏</div><h4>کارت</h4><p>انتخاب‌های متنوع پاسور</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🟢</div><h4>اکسسوری</h4><p>مکمل‌های کاربردی بازی</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🎁</div><h4>پک‌های ویژه</h4><p>انتخاب آماده برای هدیه</p></a>
+    </div>
   </div>
 
-  <div class="home-service-row">
-    <a class="home-service-card" onclick="go('/products')"><span class="service-icon">⭐</span><span><b>جدیدترین‌ها</b><small>تازه‌ترین انتخاب‌های فروشگاه</small></span></a>
-    <a class="home-service-card" onclick="go('/products')"><span class="service-icon">♠</span><span><b>کارت‌های بازی</b><small>برای بازی‌های مختلف</small></span></a>
-    <a class="home-service-card" onclick="go('/track')"><span class="service-icon">📦</span><span><b>پیگیری سفارش</b><small>وضعیت سفارشتون رو ببینید</small></span></a>
-    <a class="home-service-card" href="https://wa.me/989999439534" target="_blank" rel="noopener"><span class="service-icon">💬</span><span><b>مشاوره واتساپ</b><small>قبل از خرید راهنمایی بگیرید</small></span></a>
+  <div class="section-head" style="margin-top:22px;">
+    <div class="eyebrow">انتخاب بر اساس سلیقه</div>
+    <h2>چی نیاز داری؟</h2>
+    <p>از بین دسته‌های خانه‌گرم، سریع به چیزی که می‌خوای برس.</p>
   </div>
+  <div class="cat-grid" style="margin-bottom:54px;" id="homeCatGrid"></div>
 
-  <div class="section-head home-section-intro"><div class="eyebrow">انتخاب بر اساس سلیقه</div><h2>چی نیاز داری؟</h2><p>از بین دسته‌های خانه‌گرم، سریع به چیزی که می‌خوای برس.</p></div>
-  <div class="cat-grid home-cat-grid" id="homeCatGrid"></div>
-
-  <div id="featuredSection" class="home-product-section">
-    <div class="section-head"><div class="eyebrow">🔥 انتخاب محبوب مشتری‌ها</div><h2>محبوب‌ترین محصولات</h2><p>محصولاتی که بیشتر دیده و انتخاب شده‌اند.</p></div>
-    <div class="home-product-carousel-wrap"><div class="carousel-track" id="homeFeatured"></div><button type="button" class="home-carousel-arrow prev" onclick="moveHomeProductCarousel('homeFeatured',-1)" aria-label="محصول قبلی">‹</button><button type="button" class="home-carousel-arrow next" onclick="moveHomeProductCarousel('homeFeatured',1)" aria-label="محصول بعدی">›</button></div>
+  <div id="featuredSection">
+    <div class="section-head">
+      <div class="eyebrow">🔥 انتخاب محبوب مشتری‌ها</div>
+      <h2>محبوب‌ترین محصولات</h2>
+      <p>محصولاتی که بیشتر دیده شده‌اند و انتخاب شده‌اند.</p>
+    </div>
+    <div class="carousel-shell">
+      <button class="carousel-arrow carousel-prev" type="button" onclick="scrollHomeCarousel('homeFeatured',-1)" aria-label="محصول قبلی">→</button>
+      <div class="carousel-track" id="homeFeatured"></div>
+      <button class="carousel-arrow carousel-next" type="button" onclick="scrollHomeCarousel('homeFeatured',1)" aria-label="محصول بعدی">←</button>
+    </div>
     <div class="carousel-dots" id="homeFeaturedDots"></div>
   </div>
 
-  <div class="home-promo-grid" id="homePromoGrid">
-    <a class="home-promo-card home-promo-packs" onclick="go('/products')">
-      <div class="home-promo-media"><img id="homePromoPackImage" src="" alt="پک‌های ویژه خانه‌گرم" loading="lazy" decoding="async"></div>
-      <div class="home-promo-overlay"></div><div class="home-promo-content"><span>برای دورهمی‌های خاص</span><strong>پک‌های ویژه خانه‌گرم</strong><small>ترکیب‌های پیشنهادی برای انتخاب راحت‌تر</small><b>مشاهده پک‌ها ←</b></div>
-    </a>
-    <a class="home-promo-card home-promo-offers" onclick="go('/products')">
-      <div class="home-promo-media"><img id="homePromoOfferImage" src="" alt="پیشنهادهای ویژه خانه‌گرم" loading="lazy" decoding="async"></div>
-      <div class="home-promo-overlay"></div><div class="home-promo-content"><span>انتخاب‌های جذاب</span><strong>پیشنهادهای ویژه</strong><small>محصولات منتخب با ارزش خرید بالا</small><b>مشاهده محصولات ←</b></div>
-    </a>
+  <div class="promo-grid">
+    <div class="promo-card promo-discount"><div><span>🔥 تخفیف‌های شگفت‌انگیز</span><strong>تا ۳۰٪ تخفیف</strong><button onclick="go('/products')">مشاهده همه ←</button></div></div>
+    <div class="promo-card promo-packs"><div><span>🎁 پک‌های ویژه</span><strong>برای دورهمی‌های خاص</strong><button onclick="go('/products')">مشاهده پک‌ها ←</button></div></div>
   </div>
 
-  <div id="newestSection" class="home-product-section newest-home-section">
-    <div class="section-head"><div class="eyebrow">✨ تازه از راه رسیده</div><h2>جدیدترین محصولات</h2><p>تازه‌ترین محصولاتی که به فروشگاه خانه‌گرم اضافه شده‌اند.</p></div>
-    <div class="home-product-carousel-wrap"><div class="carousel-track" id="homeNewest"></div><button type="button" class="home-carousel-arrow prev" onclick="moveHomeProductCarousel('homeNewest',-1)" aria-label="محصول قبلی">‹</button><button type="button" class="home-carousel-arrow next" onclick="moveHomeProductCarousel('homeNewest',1)" aria-label="محصول بعدی">›</button></div>
+  <div id="newestSection" style="margin-top:46px;">
+    <div class="section-head">
+      <div class="eyebrow">✨ تازه از راه رسیده</div>
+      <h2>جدیدترین محصولات</h2>
+      <p>جدیدترین انتخاب‌ها را قبل از بقیه ببین.</p>
+    </div>
+    <div class="carousel-shell">
+      <button class="carousel-arrow carousel-prev" type="button" onclick="scrollHomeCarousel('homeNewest',-1)" aria-label="محصول قبلی">→</button>
+      <div class="carousel-track" id="homeNewest"></div>
+      <button class="carousel-arrow carousel-next" type="button" onclick="scrollHomeCarousel('homeNewest',1)" aria-label="محصول بعدی">←</button>
+    </div>
     <div class="carousel-dots" id="homeNewestDots"></div>
   </div>
 </section>
@@ -792,27 +785,25 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 
 <!-- PRODUCT DETAIL -->
 <section class="page" data-route="/product" hidden>
-  <div class="pd-breadcrumb"><a onclick="go('/')">خانه</a> <span>›</span> <a onclick="go('/products')">محصولات</a> <span>›</span> <span>جزئیات محصول</span></div>
   <div class="pd-grid" id="productDetailRoot"></div>
-  <div class="product-tabs" id="productTabs">
-    <button class="active" onclick="scrollToProductPart('pdDescription')">توضیحات و مشخصات</button>
-    <button onclick="scrollToProductPart('reviewSection')">نظرات مشتری‌ها</button>
-    <button onclick="scrollToProductPart('relatedProductsBox')">محصولات مشابه</button>
-  </div>
-  <div id="pdDescription" class="pd-description-card"><h3>معرفی محصول</h3><div id="pdDescriptionContent">توضیحات محصول در بالا نمایش داده می‌شود.</div><div id="pdSpecs" class="pd-specs"></div></div>
-  <div id="relatedProductsBox" class="related-wrap"></div>
-  <div class="reviews-box" id="reviewSection">
-    <h3 style="margin-bottom:7px;">نظرات مشتری‌ها</h3>
-    <p style="font-size:12px;color:var(--ink-soft);margin-bottom:16px;">تجربه واقعی خریداران به انتخاب بهتر کمک می‌کند.</p>
+  <div id="relatedProductsBox" style="margin-top:44px;"></div>
+  <div class="reviews-box">
+    <h3 style="margin-bottom:16px;">نظرات مشتری‌ها</h3>
     <div class="review-form">
-      <input type="tel" id="revPhone" placeholder="شماره تلفن (۰۹xxxxxxxxx)" maxlength="11"><input type="text" id="revName" placeholder="نام و نام خانوادگی">
-      <div class="star-pick" id="starPick"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div>
-      <textarea id="revComment" placeholder="نظرتون رو درباره این محصول بنویسید..."></textarea>
+      <input type="tel" id="revPhone" placeholder="شماره تلفن (۰۹xxxxxxxxx)" maxlength="11">
+      <input type="text" id="revName" placeholder="نام و نام خانوادگی">
+      <div class="star-pick" id="starPick">
+        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+      </div>
+      <textarea id="revComment" placeholder="نظرتون رو بنویسید..."></textarea>
       <input type="text" id="revHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <div class="full" id="reviewTurnstileWrap" style="grid-column:1/-1;display:flex;justify-content:center;margin:6px 0;"><div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAEyiz3cF7LsLUew0" data-error-callback="onTurnstileScriptError"></div></div>
-      <button class="btn-primary full" style="grid-column:1/-1;background:var(--teal);" onclick="submitReview()">ثبت نظر</button>
+      <div class="full" id="reviewTurnstileWrap" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
+        <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAEyiz3cF7LsLUew0" data-error-callback="onTurnstileScriptError"></div>
+      </div>
+      <button class="btn-primary full" style="grid-column:1/-1;" onclick="submitReview()">ثبت نظر</button>
     </div>
-    <div id="reviewSummary"></div><div id="reviewList"></div>
+    <div id="reviewSummary"></div>
+    <div id="reviewList"></div>
   </div>
 </section>
 
@@ -1286,8 +1277,8 @@ function updateDataErrorBanner(){
   const banner = document.getElementById('dataErrorBanner');
   const detail = document.getElementById('dataErrorDetail');
   if(!banner) return;
-  const hasError = productsLoadError && categoriesLoadError;
-  banner.classList.toggle('has-error', hasError);
+  const hasError = productsLoadError || categoriesLoadError;
+  banner.style.display = hasError ? 'flex' : 'none';
   if(hasError && detail) detail.textContent = 'اتصال موقتاً برقرار نشد؛ دوباره تلاش کنید.';
 }
 async function retryDataLoad(){
@@ -1673,9 +1664,9 @@ function renderJalaliPanel(inputId){
   }
   panel.innerHTML = `
     <div class="jp-head">
-      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',-1)">›</button>
+      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',-1)">‹</button>
       <span>${PERSIAN_MONTHS[st.jm-1]} ${toFa(st.jy)}</span>
-      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',1)">‹</button>
+      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',1)">›</button>
     </div>
     <div class="jp-grid">
       ${['ش','ی','د','س','چ','پ','ج'].map(d=>`<div class="jp-dow">${d}</div>`).join('')}
@@ -1880,7 +1871,6 @@ async function render(){
   window.scrollTo({top:0, behavior:'instant'});
   renderCart();
   renderMenuCategories();
-  renderFavoriteButtons();
 }
 window.addEventListener('popstate', render);
 window.addEventListener('hashchange', ()=>{
@@ -1929,39 +1919,21 @@ function openCart(){ document.getElementById('cartDrawer').classList.add('open')
 function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
 
 /* ============ RENDER: HOME ============ */
-function getFavorites(){
-  try{ const v=JSON.parse(localStorage.getItem('kg_favorites')||'[]'); return Array.isArray(v)?v:[]; }catch(e){ return []; }
-}
-function saveFavorites(v){ try{ localStorage.setItem('kg_favorites', JSON.stringify(v)); }catch(e){} updateFavoriteCount(); }
-function isFavorite(id){ return getFavorites().includes(id); }
-function toggleFavorite(id, ev){
-  if(ev) ev.stopPropagation();
-  const fav=getFavorites(); const idx=fav.indexOf(id);
-  if(idx>=0) fav.splice(idx,1); else fav.push(id);
-  saveFavorites(fav); renderFavoriteButtons(); showToast(idx>=0?'از علاقه‌مندی‌ها حذف شد':'به علاقه‌مندی‌ها اضافه شد ❤️');
-}
-function updateFavoriteCount(){
-  const el=document.getElementById('favCount'); if(!el) return; const n=getFavorites().length; el.textContent=toFa(n); el.style.display=n?'flex':'none';
-}
-function renderFavoriteButtons(){ document.querySelectorAll('.fav-btn').forEach(b=>{ const on=isFavorite(b.dataset.id); b.classList.toggle('active',on); b.textContent=on?'♥':'♡'; b.setAttribute('aria-label',on?'حذف از علاقه‌مندی‌ها':'افزودن به علاقه‌مندی‌ها'); }); updateFavoriteCount(); }
-function openFavorites(){
-  const fav=getFavorites().map(findProduct).filter(Boolean);
-  const box=document.getElementById('favoritesModal'); if(!box) return;
-  box.querySelector('.favorites-list').innerHTML=fav.length?fav.map(p=>`<div class="favorite-row" onclick="document.getElementById('favoritesModal').classList.remove('open');go('/product?id=${encodeURIComponent(p.id)}')"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" alt="" loading="lazy" decoding="async"><div><b>${escapeHtml(p.name)}</b><span>${formatToman(p.price)}</span></div><button type="button" onclick="event.stopPropagation();toggleFavorite('${p.id}');openFavorites();">♥</button></div>`).join(''):`<div class="favorite-empty">هنوز محصولی به علاقه‌مندی‌ها اضافه نکردی.<br><button class="btn-primary" style="margin-top:10px;" onclick="document.getElementById('favoritesModal').classList.remove('open');go('/products')">دیدن محصولات</button></div>`;
-  box.classList.add('open'); updateFavoriteCount();
-}
-function closeFavorites(){ const box=document.getElementById('favoritesModal'); if(box) box.classList.remove('open'); }
-function runHeaderSearch(){ const q=document.getElementById('headerSearch').value.trim(); if(q) go('/products?q='+encodeURIComponent(q)); else go('/products'); }
-function scrollToProductPart(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); document.querySelectorAll('#productTabs button').forEach(b=>b.classList.remove('active')); const buttons=document.querySelectorAll('#productTabs button'); const map={pdDescription:0,reviewSection:1,relatedProductsBox:2}; if(buttons[map[id]]) buttons[map[id]].classList.add('active'); }
 function productCardHTML(p){
-  const low=p.stock<=5&&p.stock>0,out=p.stock<=0,isNew=NEWEST_PRODUCT_IDS.has(p.id),fav=isFavorite(p.id);
-  return `<div class="p-card" style="${out?'opacity:.58;':''}" onclick="go('/product?id=${encodeURIComponent(p.id)}')">
-    ${isNew?`<span class="new-badge">جدید</span>`:''}
-    <button type="button" class="fav-btn ${fav?'active':''}" data-id="${escapeHtml(p.id)}" onclick="toggleFavorite('${escapeHtml(p.id)}',event)" aria-label="${fav?'حذف از علاقه‌مندی‌ها':'افزودن به علاقه‌مندی‌ها'}">${fav?'♥':'♡'}</button>
-    <div class="p-thumb" style="padding:0;overflow:hidden;"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" onerror="this.onerror=null;this.src='${escapeHtml(p.img)}';" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:12px;${out?'filter:grayscale(.6);':''}"></div>
-    <span class="p-tag">${escapeHtml(p.tag)}</span><h3>${escapeHtml(p.name)}</h3><p class="desc">${escapeHtml(p.desc)}</p>
-    <div class="p-foot"><div class="price">${toFa(p.price.toLocaleString('en-US'))}<small> تومان</small></div><button class="add-btn" onclick="event.stopPropagation();addToCart('${escapeHtml(p.id)}')" aria-label="افزودن به سبد" ${out?'disabled style="opacity:.4;cursor:not-allowed;"':''}>+</button></div>
-    <div class="stock-note ${low?'low':''}" style="${out?'color:var(--rust);font-weight:700;':''}">${p.stock>0?(low?'تنها '+toFa(p.stock)+' عدد باقی مانده':'موجود در انبار'):'ناموجود — به‌زودی شارژ می‌شه'}</div>
+  const low = p.stock <= 5 && p.stock > 0;
+  const out = p.stock <= 0;
+  const isNew = NEWEST_PRODUCT_IDS.has(p.id);
+  return `<div class="p-card" style="${out?'opacity:.5;':''}" onclick="go('/product?id=${p.id}')">
+    ${isNew ? `<span class="new-badge">جدید</span>` : ''}
+    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(p.img)}';" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
+    <span class="p-tag">${escapeHtml(p.tag)}</span>
+    <h3>${escapeHtml(p.name)}</h3>
+    <p class="desc">${escapeHtml(p.desc)}</p>
+    <div class="p-foot">
+      <div class="price">${toFa(p.price.toLocaleString('en-US'))}<small> تومان</small></div>
+      <button class="add-btn" onclick="event.stopPropagation(); addToCart('${p.id}')" aria-label="افزودن به سبد" ${out?'disabled style="opacity:.4; cursor:not-allowed;"':''}>+</button>
+    </div>
+    <div class="stock-note ${low?'low':''}" style="${out?'color:var(--rust); font-weight:700;':''}">${p.stock>0 ? (low ? 'تنها '+toFa(p.stock)+' عدد باقی مانده' : 'موجود در انبار') : 'ناموجود — به‌زودی شارژ می‌شه'}</div>
   </div>`;
 }
 function sortByStock(list){
@@ -1971,9 +1943,9 @@ function carouselCardHTML(p){
   return `<div class="carousel-item">${productCardHTML(p)}</div>`;
 }
 function renderHome(){
-  const featured = sortByStock(PRODUCTS).slice(0,6);
+  const featured = sortByStock(PRODUCTS).slice(0,10);
   const featuredSection = document.getElementById('featuredSection');
-  if(featuredSection) featuredSection.style.display = featured.length ? '' : 'none';
+  featuredSection.style.display = featured.length ? '' : 'none';
   if(featured.length){
     document.getElementById('homeFeatured').innerHTML = featured.map(carouselCardHTML).join('');
     initAutoCarousel('homeFeatured', 'homeFeaturedDots');
@@ -1981,7 +1953,7 @@ function renderHome(){
 
   const newest = [...PRODUCTS].sort((a,b)=>productSortCode(b)-productSortCode(a)).slice(0,10);
   const newestSection = document.getElementById('newestSection');
-  if(newestSection) newestSection.style.display = newest.length ? '' : 'none';
+  newestSection.style.display = newest.length ? '' : 'none';
   if(newest.length){
     document.getElementById('homeNewest').innerHTML = newest.map(carouselCardHTML).join('');
     initAutoCarousel('homeNewest', 'homeNewestDots');
@@ -1993,85 +1965,65 @@ function renderHome(){
       <h3>${escapeHtml(c.name)}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
     </div>`).join('');
 
-  renderHomeHero();
-  renderHomePromoImages();
+  renderHeroBanner();
 }
-
 let HERO_IMAGE_URL = null;
+let HERO_BANNER_URLS = [];
 async function loadHeroImage(){
   try{
-    const { data, error } = await sbClient.from('admin_meta').select('value').eq('key','hero_image_url').maybeSingle();
-    HERO_IMAGE_URL = (!error && data && data.value) ? data.value : null;
-  }catch(e){ HERO_IMAGE_URL = null; }
+    const { data, error } = await sbClient.from('admin_meta').select('key,value').in('key',['hero_image_url','hero_banner_1','hero_banner_2','hero_banner_3']);
+    if(error || !Array.isArray(data)){ HERO_IMAGE_URL = null; HERO_BANNER_URLS = []; return; }
+    const map = Object.fromEntries(data.map(row=>[row.key,row.value]));
+    HERO_IMAGE_URL = map.hero_image_url || null;
+    HERO_BANNER_URLS = [map.hero_banner_1,map.hero_banner_2,map.hero_banner_3].filter(Boolean);
+    if(!HERO_BANNER_URLS.length && HERO_IMAGE_URL) HERO_BANNER_URLS = [HERO_IMAGE_URL];
+  }catch(e){ HERO_IMAGE_URL = null; HERO_BANNER_URLS = []; }
 }
-
-let homeHeroIndex = 0;
-let homeHeroTimer = null;
-let homeHeroSlides = [];
-function buildHomeHeroSlides(){
-  const fallbackProducts = sortByStock(PRODUCTS).filter(p=>p.img);
-  const firstImage = HERO_IMAGE_URL || (fallbackProducts[0] ? fallbackProducts[0].img : '');
-  const secondProduct = fallbackProducts[1] || fallbackProducts[0];
-  const thirdProduct = fallbackProducts[2] || fallbackProducts[0];
-  homeHeroSlides = [
-    {image:firstImage, kicker:'🔥 ارسال به سراسر کشور', title:'کارت‌های بازی با کیفیت و اصالت', text:'انتخابی مطمئن برای دورهمی‌های خانوادگی، بازی‌های حرفه‌ای و لحظه‌هایی که دوست دارید ماندگار بمانند.', cta:'مشاهده محصولات ←', path:'/products'},
-    {image:secondProduct ? secondProduct.img : firstImage, kicker:'✨ انتخاب‌های محبوب خانه‌گرم', title:secondProduct ? `${secondProduct.name}؛ انتخابی برای لحظه‌های خوب` : 'محصولات محبوب خانه‌گرم', text:secondProduct && secondProduct.desc ? secondProduct.desc : 'محصولات منتخب با کیفیتی که برای خرید مطمئن انتخاب شده‌اند.', cta:'مشاهده محصول ←', path:secondProduct ? '/product?id='+encodeURIComponent(secondProduct.id) : '/products'},
-    {image:thirdProduct ? thirdProduct.img : firstImage, kicker:'🃏 برای دورهمی‌های خاص', title:'انتخاب درست، شروع یک بازی خوب', text:'از میان محصولات خانه‌گرم، کارت مناسب سبک بازی و دورهمی خودت را پیدا کن.', cta:'دیدن همه محصولات ←', path:'/products'}
-  ].filter(s=>s.image);
-  if(!homeHeroSlides.length){
-    homeHeroSlides = [{image:'',kicker:'🔥 خانه‌گرم',title:'کارت‌های بازی برای لحظه‌های خوب',text:'انتخابی مطمئن با پشتیبانی واقعی.',cta:'مشاهده محصولات ←',path:'/products'}];
-  }
+let heroIndex = 0;
+let heroTimer = null;
+function renderHeroBanner(){
+  const hero = document.getElementById('homeHero');
+  if(!hero) return;
+  const slides = Array.from(hero.querySelectorAll('.hero-slide'));
+  const urls = HERO_BANNER_URLS;
+  slides.forEach((slide,i)=>{
+    const old = slide.querySelector('.hero-slide-img');
+    if(old) old.remove();
+    if(urls[i]){
+      const img = document.createElement('img');
+      img.className='hero-slide-img'; img.alt='بنر خانه‌گرم'; img.decoding='async';
+      if(i===0){ img.loading='eager'; img.fetchPriority='high'; } else { img.loading='lazy'; }
+      img.src=urls[i];
+      slide.insertBefore(img, slide.firstChild);
+    }
+  });
+  heroIndex = 0;
+  updateHeroBanner();
+  if(heroTimer) clearInterval(heroTimer);
+  heroTimer = setInterval(()=>{ if(!document.hidden) heroNext(); }, 5000);
 }
-function renderHomeHero(){
-  const slider = document.getElementById('homeHeroSlider');
-  const img = document.getElementById('homeHeroImage');
-  if(!slider || !img) return;
-  buildHomeHeroSlides();
-  homeHeroIndex = Math.min(homeHeroIndex, homeHeroSlides.length-1);
-  const slide = homeHeroSlides[homeHeroIndex];
-  img.src = slide.image || '';
-  img.alt = slide.title || 'خانه‌گرم';
-  const kicker = document.getElementById('homeHeroKicker');
-  const title = document.getElementById('homeHeroTitle');
-  const text = document.getElementById('homeHeroText');
-  const cta = document.getElementById('homeHeroCta');
-  if(kicker) kicker.textContent = slide.kicker;
-  if(title) title.textContent = slide.title;
-  if(text) text.textContent = slide.text;
-  if(cta){ cta.textContent = slide.cta; cta.onclick = ()=>go(slide.path); }
-  const dots = document.getElementById('homeHeroDots');
-  if(dots){
-    dots.innerHTML = homeHeroSlides.map((_,i)=>`<button type="button" class="home-hero-dot ${i===homeHeroIndex?'active':''}" onclick="setHomeHero(${i})" aria-label="بنر ${toFa(i+1)}"></button>`).join('');
-  }
-  clearInterval(homeHeroTimer);
-  if(homeHeroSlides.length>1){
-    homeHeroTimer = setInterval(()=>changeHomeHero(1), 5200);
-  }
+function updateHeroBanner(){
+  const hero=document.getElementById('homeHero'); if(!hero) return;
+  const slides=Array.from(hero.querySelectorAll('.hero-slide'));
+  slides.forEach((s,i)=>s.classList.toggle('active',i===heroIndex));
+  const dots=document.getElementById('heroDots');
+  if(dots) dots.innerHTML=slides.map((_,i)=>`<button type="button" class="hero-dot ${i===heroIndex?'active':''}" onclick="heroGo(${i})" aria-label="بنر ${i+1}"></button>`).join('');
 }
-function setHomeHero(index){
-  if(!homeHeroSlides.length) buildHomeHeroSlides();
-  homeHeroIndex = (index + homeHeroSlides.length) % homeHeroSlides.length;
-  renderHomeHero();
+function heroGo(i){ const count=document.querySelectorAll('#homeHero .hero-slide').length; if(!count) return; heroIndex=(i+count)%count; updateHeroBanner(); }
+function heroNext(){ heroGo(heroIndex+1); }
+function heroPrev(){ heroGo(heroIndex-1); }
+function runHeaderSearch(){
+  const q=(document.getElementById('headerSearch')?.value||'').trim();
+  go('/products' + (q ? '?q='+encodeURIComponent(q) : ''));
 }
-function changeHomeHero(delta){ setHomeHero(homeHeroIndex + delta); }
-function stopHomeHero(){ clearInterval(homeHeroTimer); homeHeroTimer = null; }
-function renderHomePromoImages(){
-  const items = sortByStock(PRODUCTS).filter(p=>p.img);
-  const pack = document.getElementById('homePromoPackImage');
-  const offer = document.getElementById('homePromoOfferImage');
-  if(pack) pack.src = items[0] ? items[0].img : '';
-  if(offer) offer.src = items[1] ? items[1].img : (items[0] ? items[0].img : '');
-}
-function moveHomeProductCarousel(trackId, direction){
-  const track = document.getElementById(trackId);
-  if(!track) return;
-  const amount = Math.max(190, Math.round(track.clientWidth * .72));
-  track.scrollBy({left:direction * amount, behavior:'smooth'});
+function scrollHomeCarousel(trackId, direction){
+  const track=document.getElementById(trackId); if(!track) return;
+  const amount=Math.max(220, Math.floor(track.clientWidth*.78));
+  track.scrollBy({left: direction * amount, behavior:'smooth'});
 }
 
 const carouselState = {};
 function stopHomeCarousels(){
-  stopHomeHero();
   Object.values(carouselState).forEach(st=>{
     clearInterval(st.timer); clearTimeout(st.resumeT);
     if(st.observer) st.observer.disconnect();
@@ -2237,30 +2189,35 @@ function trackProductView(productId){
   }).catch(()=>{});
 }
 function renderProductDetail(id){
-  const p=findProduct(id),root=document.getElementById('productDetailRoot');
-  if(!p){updateProductStructuredData(null);root.innerHTML='<p>محصول پیدا نشد.</p>';return;}
-  const images=(p.images&&p.images.length)?p.images:(p.img?[p.img]:[]); pdCurrentImages=images; updateProductStructuredData(p);
-  const favorite=isFavorite(p.id);
-  root.innerHTML=`
-    <div class="pd-gallery-card">
-      <div class="pd-gallery-main" style="padding:0;overflow:hidden;"><img id="pdMainImg" src="${escapeHtml(images[0]||'')}" data-fullsrc="${escapeHtml(images[0]||'')}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="eager" fetchpriority="high" decoding="async" style="width:100%;height:100%;object-fit:contain;"></div>
-      ${images.length>1?`<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})"><img src="${escapeHtml(productImageUrl(img,'thumb'))}" onerror="this.onerror=null;this.src='${escapeHtml(img)}';" data-fullsrc="${escapeHtml(img)}" loading="lazy" decoding="async" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:9px;"></div>`).join('')}</div>`:''}
+  const p = findProduct(id);
+  const root = document.getElementById('productDetailRoot');
+  if(!p){ updateProductStructuredData(null); root.innerHTML = '<p>محصول پیدا نشد.</p>'; return; }
+  const images = (p.images && p.images.length) ? p.images : (p.img ? [p.img] : []);
+  pdCurrentImages = images;
+  updateProductStructuredData(p);
+  root.innerHTML = `
+    <div>
+      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${escapeHtml(images[0]||'')}" data-fullsrc="${escapeHtml(images[0]||'')}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
+      ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(img)}';" data-fullsrc="${escapeHtml(img)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
     </div>
-    <div class="pd-info-card">
-      <div class="pd-topline"><span class="pd-tag">${escapeHtml(p.tag)||'کارت بازی'}${p.views>20?` · 👁️ ${toFa(p.views)} بازدید`:''}</span><button type="button" class="fav-btn ${favorite?'active':''}" data-id="${escapeHtml(p.id)}" onclick="toggleFavorite('${escapeHtml(p.id)}',event)" style="position:static;width:38px;height:38px;">${favorite?'♥':'♡'}</button></div>
+    <div>
+      <span class="pd-tag">${escapeHtml(p.tag)}${p.views>20 ? ` · 👁️ ${toFa(p.views)} بازدید` : ''}</span>
       <h1 class="pd-title">${escapeHtml(p.name)}</h1>
-      <div class="pd-rating" id="pdRating">☆ هنوز امتیازی ثبت نشده</div>
-      <div class="pd-price">${toFa(p.price.toLocaleString('en-US'))} <small style="font-size:12px;font-weight:600;color:var(--ink-soft);">تومان</small></div>
+      <div class="pd-price">${toFa(p.price.toLocaleString('en-US'))} تومان</div>
       <p class="pd-desc">${escapeHtml(p.desc)}</p>
-      ${p.features&&p.features.length?`<div class="pd-feature-box"><h4>ویژگی‌های کلیدی</h4><ul class="pd-features">${p.features.slice(0,5).map(f=>`<li>${escapeHtml(f)}</li>`).join('')}</ul></div>`:''}
-      <div class="stock-note ${p.stock<=5?'low':''}" style="font-size:12px;margin-bottom:11px;">${p.stock>0?(p.stock<=5?'تنها '+toFa(p.stock)+' عدد باقی مانده':'✓ موجود در انبار'):'ناموجود'}</div>
-      <div class="pd-buy-row"><div class="pd-qty"><button onclick="pdQty(-1)" aria-label="کاهش">−</button><span id="pdQtyVal">۱</span><button onclick="pdQty(1)" aria-label="افزایش">+</button></div><button class="btn-primary pd-buy-btn" onclick="pdAddToCart()" ${p.stock<=0?'disabled':''}>افزودن به سبد خرید</button></div>
-      <div class="pd-benefits"><div class="pd-benefit"><b>🚚 ارسال سریع</b>به سراسر کشور</div><div class="pd-benefit"><b>🛡️ ضمانت ارسال</b>پیگیری تا تحویل</div><div class="pd-benefit"><b>💬 پشتیبانی</b>قبل و بعد خرید</div></div>
+      <ul class="pd-features">${p.features.map(f=>`<li>${escapeHtml(f)}</li>`).join('')}</ul>
+      <div class="stock-note ${p.stock<=5?'low':''}" style="margin-bottom:14px;">${p.stock>0 ? (p.stock<=5?'تنها '+toFa(p.stock)+' عدد باقی مانده':'موجود در انبار') : 'ناموجود'}</div>
+      <div class="pd-qty">
+        <button onclick="pdQty(-1)">−</button><span id="pdQtyVal">۱</span><button onclick="pdQty(1)">+</button>
+      </div>
+      <button class="btn-primary" onclick="pdAddToCart()" style="width:100%;" ${p.stock<=0?'disabled':''}>افزودن به سبد خرید</button>
     </div>`;
-  pdQtyRaw=1;pdCurrentId=p.id;document.getElementById('pdQtyVal').textContent='۱';
-  const desc=document.getElementById('pdDescriptionContent'); if(desc) desc.innerHTML=`<p>${escapeHtml(p.desc||'توضیحاتی برای این محصول ثبت نشده است.')}</p>`;
-  const specs=document.getElementById('pdSpecs'); if(specs) specs.innerHTML=`<div class="pd-spec"><b>دسته‌بندی:</b> ${escapeHtml(catName(p.cat))}</div><div class="pd-spec"><b>برند:</b> ${escapeHtml(p.brand||'—')}</div><div class="pd-spec"><b>وضعیت:</b> ${p.stock>0?'موجود':'ناموجود'}</div><div class="pd-spec"><b>کد محصول:</b> ${escapeHtml(p.code||p.id)}</div>`;
-  renderReviews(p.id);renderRelatedProducts(p);renderFavoriteButtons();runWhenIdle(()=>trackProductView(p.id),1800);
+  pdQtyRaw = 1;
+  pdCurrentId = p.id;
+  document.getElementById('pdQtyVal').textContent = '۱';
+  renderReviews(p.id);
+  renderRelatedProducts(p);
+  runWhenIdle(()=>trackProductView(p.id), 1800);
 }
 function renderRelatedProducts(p){
   const box = document.getElementById('relatedProductsBox');
@@ -2271,16 +2228,15 @@ function renderRelatedProducts(p){
   }
   related = sortByStock(related).slice(0,4);
   if(related.length === 0){ box.innerHTML = ''; return; }
-  box.innerHTML = `<div class="section-head"><div class="eyebrow">پیشنهاد خانه‌گرم</div><h2>محصولات مشابه</h2><p>اگر این محصول رو پسندیدی، این گزینه‌ها رو هم ببین.</p></div><div class="product-grid">${related.map(productCardHTML).join('')}</div>`;
+  box.innerHTML = `
+    <div class="section-head" style="margin-bottom:22px;"><h2 style="font-size:20px;">این‌ها رو هم ببین</h2></div>
+    <div class="product-grid">${related.map(productCardHTML).join('')}</div>
+  `;
 }
 let pdCurrentImages = [];
 function pdSwitchImage(i){
-  const src = pdCurrentImages[i];
   const mainImg = document.getElementById('pdMainImg');
-  if(mainImg && src){
-    mainImg.src = src;
-    mainImg.dataset.fullsrc = src;
-  }
+  if(mainImg && pdCurrentImages[i]) mainImg.src = pdCurrentImages[i];
   document.querySelectorAll('.pd-thumbs .th').forEach(el=>el.classList.toggle('active', parseInt(el.dataset.idx)===i));
 }
 let pdQtyRaw = 1;
@@ -2317,8 +2273,6 @@ async function renderReviews(pid){
     return;
   }
   renderReviewSummary(data);
-  const ratingEl = document.getElementById('pdRating');
-  if(ratingEl){ const avg = data.reduce((sum,r)=>sum + Number(r.rating||0),0) / data.length; ratingEl.textContent = `★ ${toFa(avg.toFixed(1))} از ۵ · ${toFa(data.length)} نظر`; }
   box.innerHTML = data.map(r=>`
     <div class="review-item">
       <div class="rname">${escapeHtml(r.name) || 'مشتری خانه‌گرم'} — ${escapeHtml(r.phone_masked)}</div>
@@ -3311,7 +3265,7 @@ async function saveHeroImage(){
   HERO_IMAGE_URL = url;
   fileInput.value = '';
   renderHeroImagePreview();
-  renderHeroArt();
+  renderHeroBanner();
   showToast('عکس هیرو ذخیره شد ✅');
 }
 async function removeHeroImage(){
@@ -3320,7 +3274,7 @@ async function removeHeroImage(){
   if(error){ showToast('خطا در حذف'); return; }
   HERO_IMAGE_URL = null;
   renderHeroImagePreview();
-  renderHeroArt();
+  renderHeroBanner();
   showToast('برگشت به طرح پیش‌فرض ✅');
 }
 
@@ -3753,7 +3707,7 @@ function isValidPhone(phone){
 /* ============ INIT ============ */
 loadProductsFromDB().then(renderMenuCategories);
 loadCategoriesFromDB();
-loadHeroImage().then(()=>{ if(location.pathname === '/' && !location.hash) renderHomeHero(); });
+loadHeroImage().then(()=>{ if(location.pathname === '/' && !location.hash) renderHeroBanner(); });
 runWhenIdle(()=>sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{}), 2000);
 if(location.hash){
   const parsed = parseLegacyHash(location.hash);
