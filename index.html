@@ -505,6 +505,56 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 .favorites-modal{position:fixed;inset:0;background:rgba(4,40,35,.42);z-index:94;display:flex;justify-content:flex-start;align-items:flex-start;padding:86px 22px;opacity:0;pointer-events:none;transition:opacity .2s}.favorites-modal.open{opacity:1;pointer-events:auto}.favorites-box{width:min(380px,calc(100vw - 44px));background:#FFFCF6;border:1px solid #E1D5C2;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.22);overflow:hidden}.favorites-head{display:flex;justify-content:space-between;align-items:center;padding:17px 18px;border-bottom:1px solid #E8DDCB}.favorites-head span{font-size:10px;color:#B77D1F}.favorites-head h3{font-size:18px}.favorites-head button{width:32px;height:32px;border:0;border-radius:50%;background:#F1E9DB;cursor:pointer}.favorites-list{padding:10px;max-height:65vh;overflow:auto}.favorite-row{display:grid;grid-template-columns:58px 1fr 34px;gap:10px;align-items:center;padding:9px;border-radius:13px;cursor:pointer}.favorite-row:hover{background:#F7F1E6}.favorite-row img{width:58px;height:58px;border-radius:10px;object-fit:cover}.favorite-row b{display:block;font-size:13px}.favorite-row span{display:block;color:#0B5B4F;font:700 12px Vazirmatn;margin-top:3px}.favorite-row button{border:0;background:#FFF0E8;color:#B85A36;width:32px;height:32px;border-radius:50%;cursor:pointer}.favorite-empty{text-align:center;padding:30px 15px;color:#61716B;font-size:13px}
 @media(max-width:860px){.favorites-modal{padding:74px 12px;justify-content:center}.favorites-box{width:min(390px,100%)}}
 </style>
+
+<style id="v11-home-luxury">
+/* V11 — خانه‌گرم: هدر دو ردیفه + Hero بنری + سکشن‌های فروشگاهی */
+@media(min-width:861px){
+  header .nav{grid-template-columns:minmax(250px,1fr) minmax(360px,620px) minmax(250px,1fr);grid-template-rows:58px 38px;min-height:104px;padding:8px 22px 7px;gap:0 22px;align-items:center}
+  header .nav-search-wrap{display:contents}
+  header .nav-left{grid-column:3;grid-row:1;justify-self:end;display:flex;align-items:center;gap:12px}
+  header .nav-right{grid-column:1;grid-row:1;justify-self:start;display:flex;align-items:center;gap:10px}
+  header .nav-search{grid-column:2;grid-row:1;width:100%;height:40px;box-shadow:0 7px 20px rgba(0,0,0,.08)}
+  header .desktop-nav{grid-column:1/4;grid-row:2;display:flex;justify-content:center;gap:30px;height:36px;align-items:center;border-top:1px solid rgba(255,255,255,.09)}
+  header .desktop-nav a{font-size:12.5px;padding:5px 2px}
+  header .burger{display:none}
+}
+@media(max-width:860px){
+  header .nav{display:grid;grid-template-columns:1fr auto;grid-template-rows:56px 42px;min-height:106px;padding:7px 12px;gap:3px 10px}
+  header .nav-left{grid-column:2;grid-row:1;order:0;display:flex;align-items:center;gap:9px}
+  header .nav-right{grid-column:1;grid-row:1;order:0;justify-self:start}
+  header .nav-search-wrap{grid-column:1/3;grid-row:2;display:block;order:0}
+  header .desktop-nav{display:none}
+  header .nav-search{display:flex;width:100%;height:38px}
+  header .header-heart{display:none}
+  header .logo{font-size:19px}
+  header .cart-btn{font-size:11.5px;padding:8px 12px}
+  header .burger{display:flex;width:38px;height:38px;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
+}
+.home-hero-slider{position:relative;min-height:420px;height:min(47vw,500px);border-radius:24px;overflow:hidden;background:#0b5b4f;box-shadow:var(--shadow-lg);isolation:isolate}
+.home-hero-media,.home-hero-media img,.home-hero-overlay{position:absolute;inset:0;width:100%;height:100%}
+.home-hero-media{z-index:0;background:linear-gradient(135deg,#0b5b4f,#145f54)}
+.home-hero-media img{object-fit:cover;object-position:center;transition:opacity .35s ease,transform .7s ease;transform:scale(1.015)}
+.home-hero-overlay{z-index:1;background:linear-gradient(90deg,rgba(5,49,42,.15) 0%,rgba(5,49,42,.42) 38%,rgba(5,49,42,.9) 74%,rgba(5,49,42,.96) 100%)}
+.home-hero-content{position:absolute;z-index:3;right:7%;top:50%;transform:translateY(-50%);width:min(510px,45%);color:#fff;text-align:right}
+.home-hero-kicker{display:inline-flex;align-items:center;border:1px solid rgba(231,184,63,.4);background:rgba(231,184,63,.12);color:#f2ca61;border-radius:999px;padding:7px 14px;font-size:12px;font-weight:700;margin-bottom:14px}
+.home-hero-content h1{font-size:clamp(30px,4vw,51px);line-height:1.42;margin-bottom:13px;color:#fff}.home-hero-content h1 em{color:#e7b83f}
+.home-hero-content p{font-size:14px;line-height:2;color:rgba(255,255,255,.8);margin-bottom:20px;max-width:490px}
+.home-hero-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.home-hero-cta{display:inline-flex;align-items:center;justify-content:center;background:#e7b83f;color:#123f36;border-radius:999px;padding:11px 22px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 10px 25px rgba(0,0,0,.14)}
+.home-hero-trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;color:rgba(255,255,255,.76);font-size:11px}.home-hero-trust span::first-letter{color:#e7b83f}
+.home-hero-arrow{position:absolute;z-index:4;top:50%;transform:translateY(-50%);width:38px;height:38px;border:0;border-radius:50%;background:rgba(255,255,255,.9);color:#123f36;font-size:30px;line-height:1;cursor:pointer;box-shadow:0 8px 18px rgba(0,0,0,.15)}.home-hero-arrow.prev{left:18px}.home-hero-arrow.next{right:18px}
+.home-hero-dots{position:absolute;z-index:4;left:50%;bottom:17px;transform:translateX(-50%);display:flex;gap:7px}.home-hero-dot{width:8px;height:8px;border:0;border-radius:50%;background:rgba(255,255,255,.55);padding:0;cursor:pointer}.home-hero-dot.active{width:25px;border-radius:999px;background:#e7b83f}
+.home-service-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0 48px}.home-service-card{display:flex;align-items:center;justify-content:center;gap:11px;min-height:78px;padding:12px 10px;border-radius:16px;background:rgba(255,252,246,.9);border:1px solid #e2d6c4;box-shadow:0 7px 20px rgba(17,63,54,.045);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}.home-service-card:hover{transform:translateY(-3px);box-shadow:0 14px 28px rgba(17,63,54,.09)}.service-icon{width:38px;height:38px;border-radius:50%;background:#edf2ed;display:grid;place-items:center;flex:0 0 auto;font-size:17px}.home-service-card b{display:block;font-size:12px;color:var(--ink)}.home-service-card small{display:block;font-size:9.5px;color:var(--ink-soft);margin-top:2px}
+.home-section-intro{margin-bottom:24px}.home-cat-grid{margin-bottom:55px!important}
+.home-product-section{position:relative;margin-top:5px}.home-product-section .section-head{margin-bottom:22px}.home-product-carousel-wrap{position:relative}.home-product-carousel-wrap .carousel-track{padding-left:28px;padding-right:28px;scrollbar-width:none}.home-product-carousel-wrap .carousel-track::-webkit-scrollbar{display:none}.home-product-carousel-wrap .carousel-item{flex-basis:214px}.home-carousel-arrow{position:absolute;z-index:4;top:47%;transform:translateY(-50%);width:34px;height:34px;border:1px solid #d8cbb7;border-radius:50%;background:#fffdf9;color:var(--teal);font-size:24px;line-height:1;cursor:pointer;box-shadow:0 8px 18px rgba(17,63,54,.09)}.home-carousel-arrow.prev{left:1px}.home-carousel-arrow.next{right:1px}
+.home-promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:56px 0 58px}.home-promo-card{position:relative;min-height:180px;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(17,63,54,.1);isolation:isolate}.home-promo-media,.home-promo-media img,.home-promo-overlay{position:absolute;inset:0;width:100%;height:100%}.home-promo-media{z-index:0;background:#0b5b4f}.home-promo-media img{object-fit:cover;object-position:center}.home-promo-overlay{z-index:1;background:linear-gradient(90deg,rgba(5,49,42,.96),rgba(5,49,42,.62),rgba(5,49,42,.16))}.home-promo-content{position:relative;z-index:2;min-height:180px;padding:24px 28px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;color:#fff;text-align:right}.home-promo-content span{font-size:11px;color:rgba(255,255,255,.75);margin-bottom:3px}.home-promo-content strong{font:800 23px 'Vazirmatn';color:#fff;margin-bottom:3px}.home-promo-content small{font-size:11px;color:rgba(255,255,255,.72);margin-bottom:14px}.home-promo-content b{font-size:12px;color:#123f36;background:#e7b83f;border-radius:999px;padding:8px 15px}.newest-home-section{margin-bottom:6px}
+@media(max-width:860px){
+  .home-hero-slider{height:470px;min-height:0;border-radius:20px}.home-hero-overlay{background:linear-gradient(180deg,rgba(5,49,42,.08),rgba(5,49,42,.4) 35%,rgba(5,49,42,.94) 72%,rgba(5,49,42,.98))}.home-hero-content{right:24px;left:24px;top:auto;bottom:34px;transform:none;width:auto}.home-hero-content h1{font-size:32px}.home-hero-content p{font-size:12.5px}.home-hero-actions{gap:7px}.home-hero-arrow{width:34px;height:34px;font-size:26px}.home-hero-arrow.prev{left:12px}.home-hero-arrow.next{right:12px}.home-service-row{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:42px}.home-service-card{min-height:70px;justify-content:flex-start;padding:10px}.home-promo-grid{grid-template-columns:1fr;gap:10px;margin:45px 0}.home-promo-card,.home-promo-content{min-height:155px}.home-promo-content{padding:20px}.home-promo-content strong{font-size:20px}.home-product-carousel-wrap .carousel-track{padding-left:22px;padding-right:22px}.home-carousel-arrow{display:none}
+}
+@media(max-width:520px){
+  .wrap{padding-left:14px;padding-right:14px}.home-hero-slider{height:455px;border-radius:18px}.home-hero-media img{object-position:center}.home-hero-content{right:19px;left:19px;bottom:30px}.home-hero-kicker{font-size:10px;padding:6px 11px}.home-hero-content h1{font-size:28px;line-height:1.5}.home-hero-content p{font-size:11.5px;line-height:1.9;margin-bottom:14px}.home-hero-cta{font-size:11.5px;padding:9px 16px}.home-hero-trust{gap:8px 13px;font-size:9px;margin-top:12px}.home-service-row{grid-template-columns:1fr 1fr;margin-top:10px;margin-bottom:42px}.home-service-card{min-height:66px}.home-service-card b{font-size:11px}.home-service-card small{font-size:8.5px}.home-cat-grid{grid-template-columns:repeat(3,1fr)!important;gap:7px!important;margin-bottom:45px!important}.home-cat-grid .cat-card{padding:11px 5px}.home-cat-grid .cat-ic-wrap{width:45px;height:45px}.home-cat-grid .cat-card h3{font-size:11px}.home-cat-grid .cat-card p{font-size:8px}.home-product-carousel-wrap .carousel-item{flex-basis:184px}.home-product-carousel-wrap .carousel-track{gap:9px;padding-left:17px;padding-right:17px}.home-promo-content strong{font-size:18px}.home-promo-content small{font-size:9.5px}.home-promo-card,.home-promo-content{min-height:145px}.section-head{margin-bottom:20px}.section-head h2{font-size:23px}
+}
+@media (prefers-reduced-motion:reduce){.home-hero-media img{transition:none}.home-hero-slider *{scroll-behavior:auto}}
+</style>
 </head>
 <body>
 
@@ -671,42 +721,56 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 
 <!-- HOME -->
 <section class="page" data-route="/">
-  <div class="hero">
-    <div class="hero-grid">
-      <div>
-        <div class="eyebrow">🔥 ارسال به سراسر کشور</div>
-        <h1><em>کارت‌های بازی</em> با کیفیت و اصالت</h1>
-        <p class="lead">برای دورهمی‌های خانوادگی، بازی‌های حرفه‌ای و لحظه‌هایی که دوست دارید ماندگار بمانند؛ انتخابی دقیق با پشتیبانی واقعی خانه‌گرم.</p>
-        <div class="hero-search" style="display:flex;align-items:center;gap:0;margin-bottom:17px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 4px 4px 16px;max-width:500px;">
-          <input type="text" id="homeSearch" placeholder="جست‌وجوی محصول، برند یا دسته‌بندی..." onkeydown="if(event.key==='Enter') runHomeSearch()" style="flex:1;min-width:0;border:0;outline:0;background:transparent;padding:9px 0;font-family:inherit;font-size:13px;">
-          <button class="btn-primary" style="padding:10px 18px;flex-shrink:0;" onclick="runHomeSearch()">⌕</button>
-        </div>
-        <div class="hero-ctas" style="align-items:center;"><a class="btn-primary" onclick="go('/products')">مشاهده محصولات ←</a></div>
-        <div class="trust-row" id="whyUsRow">
-          <span><i class="dot"></i> ضمانت ۱۰۰٪ ارسال</span><span><i class="dot"></i> ارسال سریع</span><span><i class="dot"></i> پرداخت امن</span><span id="deliveredCountRow" style="display:none;"><i class="dot"></i><span id="deliveredCountVal"></span></span>
-        </div>
+  <div class="home-hero-slider" id="homeHeroSlider" aria-label="پیشنهادهای خانه‌گرم">
+    <div class="home-hero-media">
+      <img id="homeHeroImage" src="" alt="کارت‌های بازی خانه‌گرم" decoding="async" fetchpriority="high">
+    </div>
+    <div class="home-hero-overlay"></div>
+    <div class="home-hero-content">
+      <div class="home-hero-kicker" id="homeHeroKicker">🔥 ارسال به سراسر کشور</div>
+      <h1 id="homeHeroTitle">کارت‌های بازی با کیفیت و اصالت</h1>
+      <p id="homeHeroText">انتخابی مطمئن برای دورهمی‌های خانوادگی، بازی‌های حرفه‌ای و لحظه‌هایی که دوست دارید ماندگار بمانند.</p>
+      <div class="home-hero-actions">
+        <a class="home-hero-cta" id="homeHeroCta" onclick="go('/products')">مشاهده محصولات ←</a>
       </div>
-      <div class="hero-art" id="heroArt"><div class="emoji-stack"><span>🃏</span><span>♠️</span></div></div>
+      <div class="home-hero-trust"><span>✓ کیفیت مطمئن</span><span>✓ ارسال سریع</span><span>✓ پشتیبانی واقعی</span></div>
     </div>
-    <div class="hero-quicklinks">
-      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">⭐</div><h4>جدیدترین‌ها</h4><p>تازه‌ترین انتخاب‌های فروشگاه</p></a>
-      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">♠️</div><h4>کارت‌های بازی</h4><p>برای بازی‌های مختلف</p></a>
-      <a class="ql-card" onclick="go('/track')"><div class="ql-ic">📦</div><h4>پیگیری سفارش</h4><p>وضعیت سفارشتون رو ببینید</p></a>
-      <a class="ql-card" href="https://wa.me/989999439534" target="_blank" rel="noopener"><div class="ql-ic">💬</div><h4>مشاوره واتساپ</h4><p>قبل از خرید راهنمایی بگیرید</p></a>
-    </div>
+    <button type="button" class="home-hero-arrow prev" onclick="changeHomeHero(-1)" aria-label="بنر قبلی">‹</button>
+    <button type="button" class="home-hero-arrow next" onclick="changeHomeHero(1)" aria-label="بنر بعدی">›</button>
+    <div class="home-hero-dots" id="homeHeroDots" aria-label="انتخاب بنر"></div>
   </div>
 
-  <div class="section-head" style="margin-top:18px;"><div class="eyebrow">انتخاب بر اساس سلیقه</div><h2>چی نیاز داری؟</h2><p>از بین دسته‌های خانه‌گرم، سریع به چیزی که می‌خوای برس.</p></div>
-  <div class="cat-grid" id="homeCatGrid"></div>
+  <div class="home-service-row">
+    <a class="home-service-card" onclick="go('/products')"><span class="service-icon">⭐</span><span><b>جدیدترین‌ها</b><small>تازه‌ترین انتخاب‌های فروشگاه</small></span></a>
+    <a class="home-service-card" onclick="go('/products')"><span class="service-icon">♠</span><span><b>کارت‌های بازی</b><small>برای بازی‌های مختلف</small></span></a>
+    <a class="home-service-card" onclick="go('/track')"><span class="service-icon">📦</span><span><b>پیگیری سفارش</b><small>وضعیت سفارشتون رو ببینید</small></span></a>
+    <a class="home-service-card" href="https://wa.me/989999439534" target="_blank" rel="noopener"><span class="service-icon">💬</span><span><b>مشاوره واتساپ</b><small>قبل از خرید راهنمایی بگیرید</small></span></a>
+  </div>
 
-  <div id="featuredSection">
+  <div class="section-head home-section-intro"><div class="eyebrow">انتخاب بر اساس سلیقه</div><h2>چی نیاز داری؟</h2><p>از بین دسته‌های خانه‌گرم، سریع به چیزی که می‌خوای برس.</p></div>
+  <div class="cat-grid home-cat-grid" id="homeCatGrid"></div>
+
+  <div id="featuredSection" class="home-product-section">
     <div class="section-head"><div class="eyebrow">🔥 انتخاب محبوب مشتری‌ها</div><h2>محبوب‌ترین محصولات</h2><p>محصولاتی که بیشتر دیده و انتخاب شده‌اند.</p></div>
-    <div class="carousel-track" id="homeFeatured"></div><div class="carousel-dots" id="homeFeaturedDots"></div>
+    <div class="home-product-carousel-wrap"><div class="carousel-track" id="homeFeatured"></div><button type="button" class="home-carousel-arrow prev" onclick="moveHomeProductCarousel('homeFeatured',-1)" aria-label="محصول قبلی">‹</button><button type="button" class="home-carousel-arrow next" onclick="moveHomeProductCarousel('homeFeatured',1)" aria-label="محصول بعدی">›</button></div>
+    <div class="carousel-dots" id="homeFeaturedDots"></div>
   </div>
 
-  <div id="newestSection" style="margin-top:28px;">
-    <div class="section-head"><div class="eyebrow">تازه از راه رسیده</div><h2>جدیدترین محصولات</h2></div>
-    <div class="carousel-track" id="homeNewest"></div><div class="carousel-dots" id="homeNewestDots"></div>
+  <div class="home-promo-grid" id="homePromoGrid">
+    <a class="home-promo-card home-promo-packs" onclick="go('/products')">
+      <div class="home-promo-media"><img id="homePromoPackImage" src="" alt="پک‌های ویژه خانه‌گرم" loading="lazy" decoding="async"></div>
+      <div class="home-promo-overlay"></div><div class="home-promo-content"><span>برای دورهمی‌های خاص</span><strong>پک‌های ویژه خانه‌گرم</strong><small>ترکیب‌های پیشنهادی برای انتخاب راحت‌تر</small><b>مشاهده پک‌ها ←</b></div>
+    </a>
+    <a class="home-promo-card home-promo-offers" onclick="go('/products')">
+      <div class="home-promo-media"><img id="homePromoOfferImage" src="" alt="پیشنهادهای ویژه خانه‌گرم" loading="lazy" decoding="async"></div>
+      <div class="home-promo-overlay"></div><div class="home-promo-content"><span>انتخاب‌های جذاب</span><strong>پیشنهادهای ویژه</strong><small>محصولات منتخب با ارزش خرید بالا</small><b>مشاهده محصولات ←</b></div>
+    </a>
+  </div>
+
+  <div id="newestSection" class="home-product-section newest-home-section">
+    <div class="section-head"><div class="eyebrow">✨ تازه از راه رسیده</div><h2>جدیدترین محصولات</h2><p>تازه‌ترین محصولاتی که به فروشگاه خانه‌گرم اضافه شده‌اند.</p></div>
+    <div class="home-product-carousel-wrap"><div class="carousel-track" id="homeNewest"></div><button type="button" class="home-carousel-arrow prev" onclick="moveHomeProductCarousel('homeNewest',-1)" aria-label="محصول قبلی">‹</button><button type="button" class="home-carousel-arrow next" onclick="moveHomeProductCarousel('homeNewest',1)" aria-label="محصول بعدی">›</button></div>
+    <div class="carousel-dots" id="homeNewestDots"></div>
   </div>
 </section>
 
@@ -1222,7 +1286,7 @@ function updateDataErrorBanner(){
   const banner = document.getElementById('dataErrorBanner');
   const detail = document.getElementById('dataErrorDetail');
   if(!banner) return;
-  const hasError = productsLoadError || categoriesLoadError;
+  const hasError = productsLoadError && categoriesLoadError;
   banner.classList.toggle('has-error', hasError);
   if(hasError && detail) detail.textContent = 'اتصال موقتاً برقرار نشد؛ دوباره تلاش کنید.';
 }
@@ -1909,7 +1973,7 @@ function carouselCardHTML(p){
 function renderHome(){
   const featured = sortByStock(PRODUCTS).slice(0,6);
   const featuredSection = document.getElementById('featuredSection');
-  featuredSection.style.display = featured.length ? '' : 'none';
+  if(featuredSection) featuredSection.style.display = featured.length ? '' : 'none';
   if(featured.length){
     document.getElementById('homeFeatured').innerHTML = featured.map(carouselCardHTML).join('');
     initAutoCarousel('homeFeatured', 'homeFeaturedDots');
@@ -1917,21 +1981,22 @@ function renderHome(){
 
   const newest = [...PRODUCTS].sort((a,b)=>productSortCode(b)-productSortCode(a)).slice(0,10);
   const newestSection = document.getElementById('newestSection');
-  newestSection.style.display = newest.length ? '' : 'none';
+  if(newestSection) newestSection.style.display = newest.length ? '' : 'none';
   if(newest.length){
     document.getElementById('homeNewest').innerHTML = newest.map(carouselCardHTML).join('');
     initAutoCarousel('homeNewest', 'homeNewestDots');
   }
 
   document.getElementById('homeCatGrid').innerHTML = CATEGORIES.map(c=>`
-    <div class="cat-card" onclick="go('/products?cat=${c.id}')">
+    <div class="cat-card" onclick="go('/products?cat=${encodeURIComponent(c.id)}')">
       <div class="cat-ic-wrap">${c.image_url ? `<img src="${escapeHtml(c.image_url)}" loading="lazy" decoding="async" alt="${escapeHtml(c.name)}">` : `<span>${escapeHtml(c.emoji)||'📦'}</span>`}</div>
       <h3>${escapeHtml(c.name)}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
     </div>`).join('');
 
-  // hero art: عکس ثابت که ادمین از پنل تنظیم می‌کنه (admin_meta.hero_image_url)؛ اگه تنظیم نشده بود، ایموجی fallback
-  renderHeroArt();
+  renderHomeHero();
+  renderHomePromoImages();
 }
+
 let HERO_IMAGE_URL = null;
 async function loadHeroImage(){
   try{
@@ -1939,18 +2004,74 @@ async function loadHeroImage(){
     HERO_IMAGE_URL = (!error && data && data.value) ? data.value : null;
   }catch(e){ HERO_IMAGE_URL = null; }
 }
-function renderHeroArt(){
-  const heroArt = document.getElementById('heroArt');
-  if(!heroArt) return;
-  if(HERO_IMAGE_URL){
-    heroArt.innerHTML = `<img src="${escapeHtml(HERO_IMAGE_URL)}" alt="خانه‌گرم" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:cover;">`;
-  } else {
-    heroArt.innerHTML = `<div class="emoji-stack"><span>🃏</span><span>♠️</span></div>`;
+
+let homeHeroIndex = 0;
+let homeHeroTimer = null;
+let homeHeroSlides = [];
+function buildHomeHeroSlides(){
+  const fallbackProducts = sortByStock(PRODUCTS).filter(p=>p.img);
+  const firstImage = HERO_IMAGE_URL || (fallbackProducts[0] ? fallbackProducts[0].img : '');
+  const secondProduct = fallbackProducts[1] || fallbackProducts[0];
+  const thirdProduct = fallbackProducts[2] || fallbackProducts[0];
+  homeHeroSlides = [
+    {image:firstImage, kicker:'🔥 ارسال به سراسر کشور', title:'کارت‌های بازی با کیفیت و اصالت', text:'انتخابی مطمئن برای دورهمی‌های خانوادگی، بازی‌های حرفه‌ای و لحظه‌هایی که دوست دارید ماندگار بمانند.', cta:'مشاهده محصولات ←', path:'/products'},
+    {image:secondProduct ? secondProduct.img : firstImage, kicker:'✨ انتخاب‌های محبوب خانه‌گرم', title:secondProduct ? `${secondProduct.name}؛ انتخابی برای لحظه‌های خوب` : 'محصولات محبوب خانه‌گرم', text:secondProduct && secondProduct.desc ? secondProduct.desc : 'محصولات منتخب با کیفیتی که برای خرید مطمئن انتخاب شده‌اند.', cta:'مشاهده محصول ←', path:secondProduct ? '/product?id='+encodeURIComponent(secondProduct.id) : '/products'},
+    {image:thirdProduct ? thirdProduct.img : firstImage, kicker:'🃏 برای دورهمی‌های خاص', title:'انتخاب درست، شروع یک بازی خوب', text:'از میان محصولات خانه‌گرم، کارت مناسب سبک بازی و دورهمی خودت را پیدا کن.', cta:'دیدن همه محصولات ←', path:'/products'}
+  ].filter(s=>s.image);
+  if(!homeHeroSlides.length){
+    homeHeroSlides = [{image:'',kicker:'🔥 خانه‌گرم',title:'کارت‌های بازی برای لحظه‌های خوب',text:'انتخابی مطمئن با پشتیبانی واقعی.',cta:'مشاهده محصولات ←',path:'/products'}];
   }
+}
+function renderHomeHero(){
+  const slider = document.getElementById('homeHeroSlider');
+  const img = document.getElementById('homeHeroImage');
+  if(!slider || !img) return;
+  buildHomeHeroSlides();
+  homeHeroIndex = Math.min(homeHeroIndex, homeHeroSlides.length-1);
+  const slide = homeHeroSlides[homeHeroIndex];
+  img.src = slide.image || '';
+  img.alt = slide.title || 'خانه‌گرم';
+  const kicker = document.getElementById('homeHeroKicker');
+  const title = document.getElementById('homeHeroTitle');
+  const text = document.getElementById('homeHeroText');
+  const cta = document.getElementById('homeHeroCta');
+  if(kicker) kicker.textContent = slide.kicker;
+  if(title) title.textContent = slide.title;
+  if(text) text.textContent = slide.text;
+  if(cta){ cta.textContent = slide.cta; cta.onclick = ()=>go(slide.path); }
+  const dots = document.getElementById('homeHeroDots');
+  if(dots){
+    dots.innerHTML = homeHeroSlides.map((_,i)=>`<button type="button" class="home-hero-dot ${i===homeHeroIndex?'active':''}" onclick="setHomeHero(${i})" aria-label="بنر ${toFa(i+1)}"></button>`).join('');
+  }
+  clearInterval(homeHeroTimer);
+  if(homeHeroSlides.length>1){
+    homeHeroTimer = setInterval(()=>changeHomeHero(1), 5200);
+  }
+}
+function setHomeHero(index){
+  if(!homeHeroSlides.length) buildHomeHeroSlides();
+  homeHeroIndex = (index + homeHeroSlides.length) % homeHeroSlides.length;
+  renderHomeHero();
+}
+function changeHomeHero(delta){ setHomeHero(homeHeroIndex + delta); }
+function stopHomeHero(){ clearInterval(homeHeroTimer); homeHeroTimer = null; }
+function renderHomePromoImages(){
+  const items = sortByStock(PRODUCTS).filter(p=>p.img);
+  const pack = document.getElementById('homePromoPackImage');
+  const offer = document.getElementById('homePromoOfferImage');
+  if(pack) pack.src = items[0] ? items[0].img : '';
+  if(offer) offer.src = items[1] ? items[1].img : (items[0] ? items[0].img : '');
+}
+function moveHomeProductCarousel(trackId, direction){
+  const track = document.getElementById(trackId);
+  if(!track) return;
+  const amount = Math.max(190, Math.round(track.clientWidth * .72));
+  track.scrollBy({left:direction * amount, behavior:'smooth'});
 }
 
 const carouselState = {};
 function stopHomeCarousels(){
+  stopHomeHero();
   Object.values(carouselState).forEach(st=>{
     clearInterval(st.timer); clearTimeout(st.resumeT);
     if(st.observer) st.observer.disconnect();
@@ -3632,7 +3753,7 @@ function isValidPhone(phone){
 /* ============ INIT ============ */
 loadProductsFromDB().then(renderMenuCategories);
 loadCategoriesFromDB();
-loadHeroImage().then(()=>{ if(location.pathname === '/' && !location.hash) renderHeroArt(); });
+loadHeroImage().then(()=>{ if(location.pathname === '/' && !location.hash) renderHomeHero(); });
 runWhenIdle(()=>sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{}), 2000);
 if(location.hash){
   const parsed = parseLegacyHash(location.hash);
