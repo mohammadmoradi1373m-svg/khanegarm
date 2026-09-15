@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>خانه‌گرم | فروشگاه پاسور و کارت بازی</title>
 <meta name="description" id="metaDescTag" content="فروشگاه پاسور و کارت بازی خانه‌گرم — کیفیت مطمئن، همراهی واقعی.">
-<meta property="og:site_name" content="خانه‌گرم">
-<meta property="og:locale" content="fa_IR">
 <meta property="og:title" content="خانه‌گرم | فروشگاه پاسور و کارت بازی">
 <meta property="og:description" content="فروشگاه پاسور و کارت بازی خانه‌گرم — کیفیت مطمئن، همراهی واقعی، ارسال به سراسر کشور.">
 <meta property="og:image" content="https://owli.ir/og-image.jpg">
@@ -34,16 +32,9 @@
 </script>
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="خانه‌گرم | فروشگاه پاسور و کارت بازی">
-<meta name="twitter:description" content="فروشگاه پاسور و کارت بازی خانه‌گرم — کیفیت مطمئن، همراهی واقعی، ارسال به سراسر کشور.">
-<meta name="twitter:image" content="https://owli.ir/og-image.jpg">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 <meta name="theme-color" content="#FFF7EC">
 <meta name="enamad" content="18479006" />
-<link rel="preconnect" href="https://api.owli.ir" crossorigin>
-<link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
-<link rel="dns-prefetch" href="//api.owli.ir">
-<link rel="dns-prefetch" href="//challenges.cloudflare.com">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="alternate icon" href="favicon.svg">
 <style>
@@ -97,37 +88,26 @@
   .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
   section.page{padding:56px 0;}
   [hidden]{display:none !important;}
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto;}
-    *, *::before, *::after{scroll-behavior:auto !important; transition-duration:.01ms !important; animation-duration:.01ms !important; animation-iteration-count:1 !important;}
-  }
 
-  /* header: premium dark-green desktop navigation */
-  header{position:sticky; top:0; z-index:60; background:rgba(7,65,55,.97); color:#fff; border-bottom:1px solid rgba(232,162,61,.28); box-shadow:0 8px 24px -20px rgba(0,0,0,.55);}
+  /* header + hamburger menu */
+  header{position:sticky; top:0; z-index:60; background:rgba(255,247,236,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
   #dataErrorBanner{display:none; align-items:center; justify-content:center; gap:10px; background:var(--rust); color:#fff; padding:8px 16px; font-size:12.5px; font-weight:600; flex-wrap:wrap; text-align:center;}
   #dataErrorBanner button{background:#fff; color:var(--rust); border:none; padding:6px 14px; border-radius:100px; font-weight:700; font-size:12px; cursor:pointer; flex-shrink:0;}
   #dataErrorBanner button:disabled{opacity:.6; cursor:default;}
   .hp-field{position:absolute; left:-9999px; top:-9999px; width:0; height:0; overflow:hidden; opacity:0;}
-  .nav{display:grid; grid-template-columns:auto minmax(280px,1fr) auto; align-items:center; padding:12px 24px 9px; gap:24px; direction:rtl;}
-  .nav-left{display:flex; align-items:center; gap:10px; min-width:0; order:1;}
-  .nav-center{display:flex; flex-direction:column; align-items:center; gap:8px; min-width:0; order:2;}
-  .nav-links{display:flex; align-items:center; justify-content:center; gap:22px; width:100%; white-space:nowrap; overflow-x:auto; scrollbar-width:none;}
-  .nav-links::-webkit-scrollbar{display:none;}
-  .nav-link{font-size:12.5px; color:rgba(255,255,255,.9); cursor:pointer; padding:3px 0; border-bottom:2px solid transparent; transition:.18s ease;}
-  .nav-link:hover,.nav-link.active{color:#FFD66B; border-bottom-color:#D99A2B;}
-  .nav-search{width:min(470px,100%); display:flex; align-items:center; background:#fff; border-radius:999px; padding:4px 6px 4px 8px; box-shadow:0 6px 18px -14px rgba(0,0,0,.5);}
-  .nav-search input{flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--ink); font-family:inherit; font-size:12.5px; padding:8px 10px;}
-  .nav-search button{width:34px; height:34px; border:0; border-radius:50%; background:var(--amber); color:var(--ink); cursor:pointer;}
-  .nav-brand{display:flex; align-items:center; gap:8px; order:3;}
-  .nav-brand .logo{color:#fff; font-size:21px;}
-  .burger{display:none;}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 24px; gap:12px;}
+  .nav-left{display:flex; align-items:center; gap:10px;}
+  .burger{
+    width:42px; height:42px; border-radius:12px; border:1px solid var(--line); background:var(--card);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+  }
   .burger span, .burger::before, .burger::after{content:""; display:block; width:18px; height:2px; background:var(--ink); border-radius:2px; position:relative;}
   .burger{flex-direction:column; gap:4px;}
   .logo{font-family:'Vazirmatn'; font-weight:900; font-size:20px; display:inline-flex; align-items:center; gap:6px;}
   .logo svg{flex-shrink:0;}
-  .logo span{color:#E8A23D;}
-  .nav-right{display:flex; align-items:center; gap:9px; order:3;}
-  .cart-btn{position:relative; display:flex; align-items:center; gap:7px; background:var(--amber); color:var(--ink); border:1px solid rgba(255,255,255,.2); padding:9px 15px; border-radius:100px; font-weight:700; font-size:13px; cursor:pointer;}
+  .logo span{color:var(--rust);}
+  .nav-right{display:flex; align-items:center; gap:9px;}
+  .cart-btn{position:relative; display:flex; align-items:center; gap:7px; background:var(--bg-alt); border:1px solid var(--line); padding:9px 15px; border-radius:100px; font-weight:600; font-size:13.5px; cursor:pointer;}
   .cart-count{position:absolute; top:-6px; left:-6px; background:var(--rust); color:#fff; font-size:11px; font-weight:700; width:19px; height:19px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Vazirmatn';}
 
   /* dropdown menu panel (top-left) */
@@ -172,83 +152,30 @@
   .chip.active{background:var(--ink); color:#fff; border-color:var(--ink);}
   .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:20px;}
 
-  /* hero: full-width premium banner inspired by the approved reference */
-  .hero{padding:18px 0 26px;}
-  .hero-banner{position:relative; min-height:350px; border-radius:24px; overflow:hidden; background:#083f35; box-shadow:0 22px 50px -30px rgba(23,54,45,.7); isolation:isolate;}
-  .hero-slide{position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .45s ease;}
-  .hero-slide.active{opacity:1; pointer-events:auto;}
-  .hero-slide::before{content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(4,37,31,.1) 0%,rgba(4,37,31,.18) 35%,rgba(4,37,31,.86) 78%,rgba(4,37,31,.96) 100%); z-index:1;}
-  .hero-slide img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; z-index:0;}
-  .hero-copy{position:absolute; z-index:2; right:7%; top:50%; transform:translateY(-50%); width:min(520px,45%); color:#fff; text-align:right;}
-  .hero-kicker{display:inline-flex; align-items:center; gap:6px; background:rgba(232,162,61,.16); border:1px solid rgba(232,162,61,.42); color:#FFD66B; padding:6px 14px; border-radius:999px; font-size:12px; margin-bottom:14px;}
-  .hero-copy h1{font-size:clamp(27px,4vw,46px); line-height:1.28; margin-bottom:12px; color:#fff;}
-  .hero-copy h1 em{font-style:normal; color:#F0B743;}
-  .hero-copy p{font-size:14px; color:rgba(255,255,255,.86); max-width:500px; margin-bottom:20px;}
-  .hero-copy .hero-btn{display:inline-flex; align-items:center; gap:8px; background:#F0B743; color:#17382F; padding:12px 23px; border-radius:999px; font-weight:800; font-size:13px; border:0; cursor:pointer; box-shadow:0 10px 22px -14px rgba(0,0,0,.65);}
-  .hero-trust{display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:16px; color:rgba(255,255,255,.82); font-size:11.5px;}
-  .hero-trust span{display:flex; align-items:center; gap:6px;}
-  .hero-trust i{width:5px; height:5px; border-radius:50%; background:#E8A23D;}
-  .hero-controls{position:absolute; z-index:4; inset-inline:18px; top:50%; display:flex; justify-content:space-between; transform:translateY(-50%); pointer-events:none;}
-  .hero-arrow{pointer-events:auto; width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.55); background:rgba(255,255,255,.92); color:#174B40; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
-  .hero-dots{position:absolute; z-index:4; bottom:13px; left:50%; transform:translateX(-50%); display:flex; gap:6px;}
-  .hero-dot{width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.55); border:0; padding:0; cursor:pointer;}
-  .hero-dot.active{width:20px; border-radius:99px; background:#F0B743;}
-  .hero-fallback{position:absolute; inset:0; background:radial-gradient(circle at 18% 24%,rgba(232,162,61,.36),transparent 26%),linear-gradient(135deg,#063D33,#0A5B4C 52%,#06362F);}
-  .hero-fallback::after{content:"♠  ♥  ♦  ♣"; position:absolute; left:7%; bottom:12%; font-size:clamp(44px,8vw,100px); letter-spacing:12px; color:rgba(255,255,255,.14); transform:rotate(-7deg);}
-  .hero-quicklinks{display:grid; grid-template-columns:repeat(6,1fr); gap:12px; margin-top:14px;}
-  .ql-card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:15px 10px; text-align:center; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease; text-decoration:none; color:inherit; min-height:92px;}
+  /* hero */
+  .hero{padding:48px 0 40px;}
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:40px; align-items:center;}
+  .hero h1{font-size:clamp(28px,4vw,42px); line-height:1.32; margin-bottom:16px;}
+  .hero h1 em{font-style:normal; color:var(--rust);}
+  .hero p.lead{font-size:16px; color:var(--ink-soft); max-width:440px; margin-bottom:24px;}
+  .hero-ctas{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:22px;}
+  .trust-row{display:flex; gap:18px; flex-wrap:wrap; color:var(--ink-soft); font-size:13.5px; font-weight:600; margin-top:4px;}
+  .trust-row span{display:flex; align-items:center; gap:7px;}
+  .dot{width:6px; height:6px; border-radius:50%; background:var(--teal); flex-shrink:0;}
+  .hero-art{position:relative; aspect-ratio:1/0.85; border-radius:24px; background:linear-gradient(160deg,var(--amber),var(--rust)); display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .hero-art .emoji-stack{font-size:76px; display:flex; gap:14px; filter:drop-shadow(0 14px 20px rgba(0,0,0,.18));}
+
+  /* hero quicklinks */
+  .hero-quicklinks{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:28px;}
+  .ql-card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px 14px; text-align:center; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease; text-decoration:none; color:inherit;}
   .ql-card:hover{transform:translateY(-3px); box-shadow:0 14px 26px -16px rgba(59,42,30,.28);}
-  .ql-ic{width:42px; height:42px; border-radius:50%; background:#F2F4ED; display:flex; align-items:center; justify-content:center; margin:0 auto 7px; font-size:19px;}
-  .ql-card h4{font-size:13px; margin-bottom:2px;}
-  .ql-card p{font-size:10.5px; color:var(--ink-soft); line-height:1.45;}
+  .ql-ic{width:44px; height:44px; border-radius:50%; background:var(--bg-alt); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:20px;}
+  .ql-card h4{font-size:13.5px; margin-bottom:3px;}
+  .ql-card p{font-size:11.5px; color:var(--ink-soft); line-height:1.5;}
   @media (max-width:860px){
-    .hero-banner{min-height:320px; border-radius:20px;}
-    .hero-copy{right:6%; width:57%;}
-    .hero-copy h1{font-size:clamp(24px,5vw,34px);}
-    .hero-quicklinks{grid-template-columns:repeat(3,1fr);}
+    .hero-quicklinks{grid-template-columns:1fr 1fr;}
   }
-  @media (max-width:620px){
-    .nav{grid-template-columns:1fr auto; gap:8px; padding:8px 12px 6px;}
-    .nav-left{grid-column:1; grid-row:1;}
-    .nav-center{grid-column:1/-1; grid-row:2; gap:5px; align-items:stretch;}
-    .nav-brand{grid-column:2; grid-row:1; justify-content:flex-end;}
-    .nav-right{grid-column:1; grid-row:1; justify-content:flex-start; order:0;}
-    .nav-left{order:0;}
-    .nav-center .nav-links{gap:17px; justify-content:flex-start; padding:1px 2px 2px;}
-    .nav-link{font-size:11px;}
-    .nav-search{width:100%;}
-    .nav-search input{font-size:11px; padding:7px 8px;}
-    .nav-search button{width:31px;height:31px;}
-    .nav-brand .logo{font-size:18px;}
-    .nav-brand .logo svg{width:20px;height:20px;}
-    .hero{padding-top:12px;}
-    .hero-banner{min-height:300px;}
-    .hero-copy{right:7%; width:62%;}
-    .hero-copy p{font-size:11.5px; line-height:1.8; margin-bottom:12px;}
-    .hero-copy .hero-btn{font-size:11.5px; padding:10px 17px;}
-    .hero-trust{font-size:9.5px; gap:5px 10px;}
-    .hero-arrow{width:32px;height:32px;font-size:17px;}
-    .hero-quicklinks{grid-template-columns:repeat(3,1fr); gap:8px;}
-    .ql-card{padding:11px 6px; min-height:82px;}
-    .ql-ic{width:36px;height:36px;font-size:17px;}
-    .ql-card h4{font-size:11px;}
-    .ql-card p{font-size:9px;}
-  }
-  .carousel-shell{position:relative; display:flex; align-items:center; gap:8px;}
-  .carousel-shell .carousel-track{flex:1; min-width:0;}
-  .carousel-arrow{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--teal);box-shadow:0 8px 18px -14px rgba(0,0,0,.35);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 auto;}
-  .carousel-arrow:hover{transform:translateY(-1px);background:var(--bg-alt);}
-  .promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
-  .promo-card{min-height:150px;border-radius:20px;overflow:hidden;position:relative;color:#fff;background:#075246;display:flex;align-items:center;}
-  .promo-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 50%,rgba(232,162,61,.32),transparent 26%),linear-gradient(90deg,rgba(2,38,31,.1),rgba(2,38,31,.86));}
-  .promo-card::after{position:absolute;left:6%;bottom:-15px;font-size:90px;opacity:.16;transform:rotate(-10deg);}
-  .promo-discount::after{content:"A♠ K♥ Q♦ J♣";}
-  .promo-packs::after{content:"♠  ♥  ♦  ♣";letter-spacing:10px;}
-  .promo-card>div{position:relative;z-index:1;padding:24px 30px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-right:auto;width:62%;}
-  .promo-card span{font-size:13px;color:#fff;}
-  .promo-card strong{font-size:22px;color:#F0B743;font-family:'Vazirmatn';}
-  .promo-card button{margin-top:8px;background:#F0B743;color:#17382F;border:0;border-radius:999px;padding:9px 18px;font-family:inherit;font-weight:800;cursor:pointer;font-size:12px;}
-  @media (max-width:620px){.promo-grid{grid-template-columns:1fr;}.promo-card{min-height:130px}.promo-card>div{width:72%;padding:20px}.promo-card strong{font-size:18px}.carousel-arrow{width:31px;height:31px;font-size:16px}.carousel-shell{gap:3px}}
+
   /* categories home */
   .cat-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
   .cat-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:24px; text-align:center; cursor:pointer; transition:transform .2s ease;}
@@ -262,7 +189,7 @@
 
   /* product grid */
   .product-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  .carousel-track{direction:rtl; display:flex; gap:16px; overflow-x:auto; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:2px 2px 10px;}
+  .carousel-track{display:flex; gap:16px; overflow-x:auto; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:2px 2px 10px;}
   .carousel-track::-webkit-scrollbar{height:5px;}
   .carousel-track::-webkit-scrollbar-thumb{background:var(--line); border-radius:10px;}
   .carousel-item{flex:0 0 200px; scroll-snap-align:start; display:flex;}
@@ -491,7 +418,7 @@
 
   @media (max-width:860px){
     .hero-grid{grid-template-columns:1fr;}
-    .nav-links{display:flex;}
+    .nav-links{display:none;}
     .product-grid{grid-template-columns:1fr 1fr;}
     .cat-grid{grid-template-columns:1fr 1fr;}
     .guide-grid{grid-template-columns:1fr;}
@@ -506,34 +433,78 @@
     .cat-grid{grid-template-columns:1fr;}
     .cart-drawer{width:100vw;}
   }
+
+  /* ===== HOME PREMIUM VISUAL LAYER ===== */
+  .nav{direction:rtl; min-height:68px;}
+  .nav-left{order:3;}
+  .nav-right{order:1;}
+  .nav-center{order:2; display:flex; align-items:center; justify-content:center; flex:1; min-width:0; gap:22px;}
+  .nav-links{display:flex; align-items:center; justify-content:center; gap:22px; white-space:nowrap;}
+  .nav-links a{font-size:13px; font-weight:600; color:var(--ink-soft); cursor:pointer; position:relative; padding:8px 0;}
+  .nav-links a:hover{color:var(--teal);}
+  .nav-links a.active{color:var(--teal);}
+  .nav-links a.active::after{content:""; position:absolute; right:0; left:0; bottom:0; height:2px; background:var(--amber); border-radius:4px;}
+  .nav-search{width:min(360px,34vw); display:flex; align-items:center; gap:7px; background:var(--card); border:1px solid var(--line); border-radius:100px; padding:4px 7px 4px 15px;}
+  .nav-search input{width:100%; min-width:0; border:0; outline:0; background:transparent; font:inherit; font-size:12px; color:var(--ink);}
+  .nav-search button{width:32px;height:32px;border:0;border-radius:50%;background:var(--teal);color:#fff;cursor:pointer;flex-shrink:0;}
+  .premium-home{padding-top:28px !important;}
+  .hero{padding:0 0 28px;}
+  .hero-grid{display:block;}
+  .hero-copy{display:none !important;}
+  .hero-banner{position:relative; width:100%; aspect-ratio:1464/263; min-height:220px; border-radius:24px; overflow:hidden; box-shadow:0 20px 40px -24px rgba(59,42,30,.35); background:#0c4d42;}
+  .hero-slide{position:absolute; inset:0; opacity:0; transition:opacity .55s ease; pointer-events:none;}
+  .hero-slide.active{opacity:1; pointer-events:auto;}
+  .hero-slide img{width:100%;height:100%;display:block;object-fit:cover;}
+  .hero-control{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.65);background:rgba(255,255,255,.9);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;font-size:22px;box-shadow:0 8px 20px -10px rgba(0,0,0,.4);}
+  .hero-prev{left:14px}.hero-next{right:14px}
+  .hero-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5;}
+  .hero-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.08);cursor:pointer;transition:all .2s ease;}
+  .hero-dot.active{width:20px;border-radius:100px;background:#fff;}
+  .hero-quicklinks{margin-top:14px;}
+  .home-category-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:0 0 42px;}
+  .home-category-strip .cat-card{padding:16px 10px;border-radius:16px;}
+  .home-category-strip .cat-card h3{font-size:14px;}
+  .home-category-strip .cat-card p{font-size:11px;}
+  .home-category-strip .cat-ic-wrap{width:50px;height:50px;}
+  .home-section{margin-bottom:42px;}
+  .home-section .section-head{margin-bottom:20px;text-align:right;max-width:none;display:flex;align-items:end;justify-content:space-between;gap:14px;}
+  .home-section .section-head h2{margin:0;font-size:25px;}
+  .home-section .section-head .eyebrow{margin:0;}
+  .section-seeall{color:var(--teal);font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;}
+  .promo-grid{display:grid;grid-template-columns:1.04fr 1fr;gap:16px;margin:4px 0 44px;}
+  .promo-tile{position:relative;display:block;overflow:hidden;border-radius:20px;border:1px solid rgba(228,207,176,.75);box-shadow:0 12px 28px -20px rgba(59,42,30,.35);background:#0b4d42;}
+  .promo-tile img{width:100%;display:block;aspect-ratio:739/136;object-fit:cover;}
+  .promo-tile:focus-visible{outline:3px solid var(--amber);outline-offset:3px;}
+  @media(max-width:1000px){.nav-center{gap:10px}.nav-links{gap:12px}.nav-search{width:260px}.home-category-strip{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:860px){.nav-links{display:none}.nav-center{justify-content:flex-start}.nav-search{width:min(360px,52vw)}.hero-banner{aspect-ratio:1.65/1;min-height:190px}.home-section .section-head{align-items:center}.promo-grid{grid-template-columns:1fr}.promo-tile img{aspect-ratio:739/136}}
+  @media(max-width:520px){.nav{padding:10px 14px}.nav-center{order:2}.nav-search{width:170px}.nav-left{order:3}.nav-right{order:1}.home-category-strip{grid-template-columns:repeat(3,1fr);gap:8px}.home-category-strip .cat-card{padding:13px 5px}.home-category-strip .cat-ic-wrap{width:42px;height:42px}.home-category-strip .cat-card h3{font-size:12px}.hero-banner{aspect-ratio:1.48/1;min-height:210px}.hero-control{width:36px;height:36px;font-size:18px}.home-section .section-head h2{font-size:22px}.promo-grid{gap:10px}}
+
 </style>
 </head>
 <body>
 
 <header>
   <div class="nav wrap">
-    <div class="nav-left">
-      <div class="nav-right">
-        <button class="cart-btn" onclick="openCart()" aria-label="سبد خرید">🛒 سبد خرید<span class="cart-count" id="cartCount" style="display:none;">۰</span></button>
-      </div>
+    <div class="nav-right">
+      <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8A23D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="11" height="15" rx="2" transform="rotate(15 13.5 9.5)"></rect><rect x="5" y="6" width="11" height="15" rx="2"></rect><path d="M10.5 12.5c-.8-1-.5-2.3.5-2.3.6 0 1 .4 1 1 0-.6.4-1 1-1 1 0 1.3 1.3.5 2.3l-1.5 1.7z"></path></svg>خانه<span>گرم</span></div>
+      <button class="cart-btn" onclick="openCart()" aria-label="سبد خرید">🛍️ سبد خرید<span class="cart-count" id="cartCount" style="display:none;">۰</span></button>
     </div>
     <div class="nav-center">
-      <div class="nav-search">
-        <input id="headerSearch" type="text" placeholder="جست‌وجوی محصولات، برند یا دسته‌بندی..." onkeydown="if(event.key==='Enter') runHeaderSearch()" aria-label="جست‌وجوی محصولات">
-        <button type="button" onclick="runHeaderSearch()" aria-label="جست‌وجو">⌕</button>
-      </div>
-      <nav class="nav-links" aria-label="ناوبری اصلی">
-        <a class="nav-link active" onclick="go('/')">خانه</a>
-        <a class="nav-link" onclick="go('/products')">محصولات</a>
-        <a class="nav-link" onclick="go('/guides')">راهنما</a>
-        <a class="nav-link" onclick="go('/faq')">سوالات متداول</a>
-        <a class="nav-link" onclick="go('/track')">پیگیری سفارش</a>
-        <a class="nav-link" onclick="go('/about')">درباره ما</a>
-        <a class="nav-link" onclick="go('/contact')">تماس با ما</a>
+      <nav class="nav-links" aria-label="منوی اصلی">
+        <a onclick="go('/')" class="active">خانه</a>
+        <a onclick="go('/products')">محصولات</a>
+        <a onclick="go('/guides')">راهنما</a>
+        <a onclick="go('/track')">پیگیری سفارش</a>
+        <a onclick="go('/about')">درباره ما</a>
+        <a onclick="go('/contact')">تماس با ما</a>
       </nav>
+      <div class="nav-search">
+        <input type="search" id="headerSearch" placeholder="جست‌وجوی محصول، برند یا دسته‌بندی..." onkeydown="if(event.key==='Enter') runHeaderSearch()">
+        <button onclick="runHeaderSearch()" aria-label="جست‌وجو">⌕</button>
+      </div>
     </div>
-    <div class="nav-brand">
-      <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8A23D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="11" height="15" rx="2" transform="rotate(15 13.5 9.5)"></rect><rect x="5" y="6" width="11" height="15" rx="2"></rect><path d="M10.5 12.5c-.8-1-.5-2.3.5-2.3.6 0 1 .4 1 1 0-.6.4-1 1-1 1 0 1.3 1.3.5 2.3l-1.5 1.7z"></path></svg>خانه<span>گرم</span></div>
+    <div class="nav-left">
+      <button class="burger" onclick="toggleMenu()" aria-label="باز کردن منو"><span></span></button>
     </div>
   </div>
   <div id="dataErrorBanner">
@@ -647,7 +618,7 @@
     </div>
     <input type="text" id="ordHoneypot" name="website" class="hp-field" tabindex="-1" autocomplete="new-password" autocapitalize="off" spellcheck="false" aria-hidden="true" inputmode="none">
     <div class="full" id="checkoutTurnstileWrap" style="display:flex; justify-content:center; margin-top:14px;">
-      <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAEyiz3cF7LsLUew0" data-error-callback="onTurnstileScriptError"></div>
+      <div id="checkoutTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf" data-error-callback="onTurnstileScriptError"></div>
     </div>
     <div style="display:flex; gap:10px; margin-top:18px;">
       <button class="btn-primary" id="submitOrderBtn" style="flex:1;" onclick="submitOrder()">ثبت نهایی سفارش</button>
@@ -679,90 +650,42 @@
 <main id="app" class="wrap">
 
 <!-- HOME -->
-<section class="page" data-route="/">
+<section class="page premium-home" data-route="/">
   <div class="hero">
-    <div class="hero-banner" id="homeHero" aria-label="پیشنهادهای خانه‌گرم">
-      <div class="hero-slide active" data-slide="0">
-        <div class="hero-fallback"></div>
-        <div class="hero-copy">
-          <div class="hero-kicker">🔥 انتخاب ویژه خانه‌گرم</div>
-          <h1>کارت‌های بازی با <em>کیفیت و اصالت</em></h1>
-          <p>برای دورهمی‌های خانوادگی، جمع‌های دوستانه و لحظه‌های خاص؛ انتخاب دقیق، تجربه بهتر.</p>
-          <button class="hero-btn" onclick="go('/products')">مشاهده محصولات <span>←</span></button>
-          <div class="hero-trust"><span><i></i> ارسال به سراسر کشور</span><span><i></i> پرداخت امن</span><span><i></i> پشتیبانی واقعی</span></div>
-        </div>
+    <div class="hero-grid">
+      <div class="hero-copy" aria-hidden="true"></div>
+      <div class="hero-banner" id="heroBanner" aria-label="بنرهای ویژه خانه‌گرم">
+        <div class="hero-slide active"><img src="hero-home.webp" alt="کارت‌های بازی خانه‌گرم" width="1464" height="263" loading="eager" fetchpriority="high" decoding="async"></div>
+        <div class="hero-slide"><img src="hero-home-2.webp" alt="مجموعه کارت‌های بازی لوکس" width="1443" height="250" loading="lazy" decoding="async"></div>
+        <button class="hero-control hero-prev" type="button" onclick="changeHeroSlide(-1)" aria-label="بنر قبلی">‹</button>
+        <button class="hero-control hero-next" type="button" onclick="changeHeroSlide(1)" aria-label="بنر بعدی">›</button>
+        <div class="hero-dots" id="heroDots" aria-label="انتخاب بنر"></div>
       </div>
-      <div class="hero-slide" data-slide="1">
-        <div class="hero-fallback" style="background:radial-gradient(circle at 80% 18%,rgba(232,162,61,.42),transparent 28%),linear-gradient(135deg,#06372F,#0B6757 55%,#082E29);"></div>
-        <div class="hero-copy">
-          <div class="hero-kicker">✨ انتخاب برای دورهمی</div>
-          <h1>یک انتخاب شیک برای <em>لحظه‌های ماندگار</em></h1>
-          <p>از مدل‌های اقتصادی تا گزینه‌های خاص؛ محصولت را با خیال راحت از خانه‌گرم انتخاب کن.</p>
-          <button class="hero-btn" onclick="go('/products')">شروع خرید <span>←</span></button>
-        </div>
-      </div>
-      <div class="hero-slide" data-slide="2">
-        <div class="hero-fallback" style="background:radial-gradient(circle at 20% 70%,rgba(232,162,61,.38),transparent 25%),linear-gradient(135deg,#092F2A,#0A5B4C 48%,#042D27);"></div>
-        <div class="hero-copy">
-          <div class="hero-kicker">🎁 پک‌های ویژه</div>
-          <h1>برای بازی بیشتر، <em>انتخاب بهتر</em></h1>
-          <p>پک‌های کاربردی و جذاب برای هدیه، دورهمی و کسانی که پاسور خوب را می‌شناسند.</p>
-          <button class="hero-btn" onclick="go('/products')">دیدن پک‌ها <span>←</span></button>
-        </div>
-      </div>
-      <div class="hero-controls" aria-label="کنترل بنر">
-        <button class="hero-arrow" type="button" onclick="heroPrev()" aria-label="بنر قبلی">→</button>
-        <button class="hero-arrow" type="button" onclick="heroNext()" aria-label="بنر بعدی">←</button>
-      </div>
-      <div class="hero-dots" id="heroDots" aria-label="انتخاب بنر"></div>
-    </div>
-    <div class="hero-quicklinks">
-      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">⭐</div><h4>جدیدترین‌ها</h4><p>تازه‌ترین انتخاب‌های فروشگاه</p></a>
-      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🎲</div><h4>تاس و شطرنج</h4><p>برای بازی‌های متفاوت</p></a>
-      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">♠</div><h4>بازی‌های کارتی</h4><p>برای دورهمی‌های ماندگار</p></a>
-      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🃏</div><h4>کارت</h4><p>انتخاب‌های متنوع پاسور</p></a>
-      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🟢</div><h4>اکسسوری</h4><p>مکمل‌های کاربردی بازی</p></a>
-      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🎁</div><h4>پک‌های ویژه</h4><p>انتخاب آماده برای هدیه</p></a>
     </div>
   </div>
 
-  <div class="section-head" style="margin-top:22px;">
-    <div class="eyebrow">انتخاب بر اساس سلیقه</div>
-    <h2>چی نیاز داری؟</h2>
-    <p>از بین دسته‌های خانه‌گرم، سریع به چیزی که می‌خوای برس.</p>
-  </div>
-  <div class="cat-grid" style="margin-bottom:54px;" id="homeCatGrid"></div>
+  <div class="home-category-strip" id="homeCatGrid"></div>
 
-  <div id="featuredSection">
+  <div id="featuredSection" class="home-section">
     <div class="section-head">
-      <div class="eyebrow">🔥 انتخاب محبوب مشتری‌ها</div>
-      <h2>محبوب‌ترین محصولات</h2>
-      <p>محصولاتی که بیشتر دیده شده‌اند و انتخاب شده‌اند.</p>
+      <div><div class="eyebrow">🔥 انتخاب مشتری‌ها</div><h2>محبوب‌ترین محصولات</h2></div>
+      <a class="section-seeall" onclick="go('/products')">مشاهده همه ←</a>
     </div>
-    <div class="carousel-shell">
-      <button class="carousel-arrow carousel-prev" type="button" onclick="scrollHomeCarousel('homeFeatured',-1)" aria-label="محصول قبلی">→</button>
-      <div class="carousel-track" id="homeFeatured"></div>
-      <button class="carousel-arrow carousel-next" type="button" onclick="scrollHomeCarousel('homeFeatured',1)" aria-label="محصول بعدی">←</button>
-    </div>
+    <div class="carousel-track" id="homeFeatured"></div>
     <div class="carousel-dots" id="homeFeaturedDots"></div>
   </div>
 
-  <div class="promo-grid">
-    <div class="promo-card promo-discount"><div><span>🔥 تخفیف‌های شگفت‌انگیز</span><strong>تا ۳۰٪ تخفیف</strong><button onclick="go('/products')">مشاهده همه ←</button></div></div>
-    <div class="promo-card promo-packs"><div><span>🎁 پک‌های ویژه</span><strong>برای دورهمی‌های خاص</strong><button onclick="go('/products')">مشاهده پک‌ها ←</button></div></div>
+  <div class="promo-grid" aria-label="پیشنهادهای ویژه">
+    <a class="promo-tile" onclick="go('/products')"><img src="promo-packs.webp" alt="پک‌های ویژه خانه‌گرم" width="713" height="136" loading="lazy" decoding="async"></a>
+    <a class="promo-tile" onclick="go('/products')"><img src="promo-discount.webp" alt="تخفیف‌های شگفت‌انگیز خانه‌گرم" width="739" height="136" loading="lazy" decoding="async"></a>
   </div>
 
-  <div id="newestSection" style="margin-top:46px;">
+  <div id="newestSection" class="home-section">
     <div class="section-head">
-      <div class="eyebrow">✨ تازه از راه رسیده</div>
-      <h2>جدیدترین محصولات</h2>
-      <p>جدیدترین انتخاب‌ها را قبل از بقیه ببین.</p>
+      <div><div class="eyebrow">✨ تازه از راه رسیده</div><h2>جدیدترین محصولات</h2></div>
+      <a class="section-seeall" onclick="go('/products')">مشاهده همه ←</a>
     </div>
-    <div class="carousel-shell">
-      <button class="carousel-arrow carousel-prev" type="button" onclick="scrollHomeCarousel('homeNewest',-1)" aria-label="محصول قبلی">→</button>
-      <div class="carousel-track" id="homeNewest"></div>
-      <button class="carousel-arrow carousel-next" type="button" onclick="scrollHomeCarousel('homeNewest',1)" aria-label="محصول بعدی">←</button>
-    </div>
+    <div class="carousel-track" id="homeNewest" style="margin-bottom:8px;"></div>
     <div class="carousel-dots" id="homeNewestDots"></div>
   </div>
 </section>
@@ -798,7 +721,7 @@
       <textarea id="revComment" placeholder="نظرتون رو بنویسید..."></textarea>
       <input type="text" id="revHoneypot" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="full" id="reviewTurnstileWrap" style="grid-column:1/-1; display:flex; justify-content:center; margin:6px 0;">
-        <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAAEyiz3cF7LsLUew0" data-error-callback="onTurnstileScriptError"></div>
+        <div id="reviewTurnstileWidget" class="cf-turnstile" data-sitekey="0x4AAAAAADy4fm9r7uO3kYlf" data-error-callback="onTurnstileScriptError"></div>
       </div>
       <button class="btn-primary full" style="grid-column:1/-1;" onclick="submitReview()">ثبت نظر</button>
     </div>
@@ -966,7 +889,6 @@
           <option value="0">در حال بسته‌بندی</option>
           <option value="1">تحویل داده‌شده به پست/باربری</option>
           <option value="2">در حال ارسال</option>
-          <option value="3">تحویل داده‌شده</option>
         </select>
         <div class="jalali-picker-wrap">
           <input type="text" id="filterDateFrom" placeholder="از تاریخ" readonly onclick="toggleJalaliPicker('filterDateFrom')" onchange="filterAdminOrders()" style="border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-family:inherit; font-size:13px; width:108px; cursor:pointer; background:var(--card);">
@@ -992,7 +914,6 @@
           <option value="0">در حال بسته‌بندی</option>
           <option value="1">تحویل داده‌شده به پست/باربری</option>
           <option value="2">در حال ارسال</option>
-          <option value="3">تحویل داده‌شده</option>
         </select>
         <button class="btn-primary" style="padding:7px 14px; font-size:12.5px;" onclick="applyBulkStatus()">اعمال روی انتخاب‌شده‌ها</button>
         <button class="btn-ghost" style="padding:7px 14px; font-size:12.5px;" onclick="clearBulkSelection()">لغو انتخاب</button>
@@ -1167,7 +1088,7 @@
       </ul></div>
     </div>
     <div style="display:flex; justify-content:center; margin-bottom:20px;">
-      <a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK'><img loading='lazy' decoding='async' referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK' alt='نماد اعتماد الکترونیکی' style='cursor:pointer' code='WjmLO94Leg1r6jcKtAov4ZTxyxywxroK'></a>
+      <a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK'><img referrerpolicy='origin' src='https://trustseal.enamad.ir/logo.aspx?id=758961&Code=WjmLO94Leg1r6jcKtAov4ZTxyxywxroK' alt='نماد اعتماد الکترونیکی' style='cursor:pointer' code='WjmLO94Leg1r6jcKtAov4ZTxyxywxroK'></a>
     </div>
     <div class="foot-bottom"><span>© ۱۴۰۴ خانه‌گرم</span><span>ساخته‌شده با ❤️</span></div>
   </div>
@@ -1452,57 +1373,35 @@ function pruneCartOfMissingProducts(){
   cart = cart.filter(item => !!findProduct(item.id));
   if(cart.length !== before) saveJSON('kg_cart', cart);
 }
-function compressImage(file,maxDim,quality){
-  maxDim=maxDim||2500; quality=quality||0.86;
-  const TARGET_BYTES=4.7*1024*1024;
-  return new Promise(resolve=>{
-    if(!file||!file.type||!file.type.startsWith('image/')){resolve(null);return;}
-    const finish=(blob)=>{if(blob&&blob.size<=4.9*1024*1024)resolve(new File([blob],(file.name||'image').replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp',lastModified:Date.now()}));else resolve(null)};
-    const draw=(img,revoke)=>{
-      try{
-        let w=img.width||img.naturalWidth,h=img.height||img.naturalHeight;
-        if(!w||!h){if(revoke)URL.revokeObjectURL(revoke);resolve(null);return;}
-        if(Math.max(w,h)>maxDim){if(w>=h){h=Math.round(h*maxDim/w);w=maxDim}else{w=Math.round(w*maxDim/h);h=maxDim}}
-        const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:true});
-        if(!ctx){if(revoke)URL.revokeObjectURL(revoke);resolve(null);return;}
-        const tryEncode=q=>{canvas.width=w;canvas.height=h;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,w,h);canvas.toBlob(blob=>{
-          if(blob&&blob.size<=TARGET_BYTES){if(revoke)URL.revokeObjectURL(revoke);finish(blob);return;}
-          if(q>0.70){tryEncode(Math.max(0.70,+(q-0.06).toFixed(2)));return;}
-          if(w>1200||h>1200){w=Math.max(1,Math.round(w*.85));h=Math.max(1,Math.round(h*.85));tryEncode(.78);return;}
-          if(revoke)URL.revokeObjectURL(revoke);resolve(null);
-        },'image/webp',q)};
-        tryEncode(quality);
-      }catch(e){if(revoke)URL.revokeObjectURL(revoke);resolve(null)}
+function compressImage(file, maxDim, quality){
+  maxDim = maxDim || 1280; quality = quality || 0.8;
+  return new Promise((resolve)=>{
+    if(!file.type.startsWith('image/')){ resolve(file); return; }
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > maxDim || h > maxDim){
+          if(w > h){ h = Math.round(h * maxDim / w); w = maxDim; }
+          else { w = Math.round(w * maxDim / h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob((blob)=>{
+          if(!blob){ resolve(file); return; }
+          resolve(new File([blob], file.name.replace(/\.[^.]+$/,'') + '.jpg', {type:'image/jpeg'}));
+        }, 'image/jpeg', quality);
+      };
+      img.onerror = ()=> resolve(file);
+      img.src = e.target.result;
     };
-    const fallback=()=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>draw(img,url);img.onerror=()=>{URL.revokeObjectURL(url);resolve(null)};img.src=url};
-    if('createImageBitmap' in window){createImageBitmap(file,{imageOrientation:'from-image'}).then(bitmap=>{draw(bitmap,null);setTimeout(()=>{try{bitmap.close()}catch(e){}},0)}).catch(fallback)}else fallback();
+    reader.onerror = ()=> resolve(file);
+    reader.readAsDataURL(file);
   });
 }
-function compressImageVariants(file){
-  return new Promise(resolve=>{
-    if(!file||!file.type||!file.type.startsWith('image/')){resolve([null,null]);return;}
-    const finish=(mainBlob,thumbBlob)=>{if(!mainBlob||mainBlob.size>4.9*1024*1024||!thumbBlob){resolve([null,null]);return;}const base=(file.name||'product-image').replace(/\.[^.]+$/,'');resolve([new File([mainBlob],base+'.webp',{type:'image/webp',lastModified:Date.now()}),new File([thumbBlob],base+'_thumb.webp',{type:'image/webp',lastModified:Date.now()})])};
-    const draw=(img,revoke)=>{
-      try{
-        const ow=img.width||img.naturalWidth,oh=img.height||img.naturalHeight;if(!ow||!oh){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
-        let mw=ow,mh=oh;const scale=Math.min(1,2500/Math.max(mw,mh));mw=Math.max(1,Math.round(mw*scale));mh=Math.max(1,Math.round(mh*scale));
-        const tw=Math.max(1,Math.round(ow*Math.min(1,480/Math.max(ow,oh)))),th=Math.max(1,Math.round(oh*Math.min(1,480/Math.max(ow,oh))));
-        const mc=document.createElement('canvas'),tc=document.createElement('canvas'),mx=mc.getContext('2d',{alpha:true}),tx=tc.getContext('2d',{alpha:true});if(!mx||!tx){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
-        const makeMain=q=>new Promise(r=>{mc.width=mw;mc.height=mh;mx.imageSmoothingEnabled=true;mx.imageSmoothingQuality='high';mx.drawImage(img,0,0,mw,mh);mc.toBlob(r,'image/webp',q)});
-        const makeThumb=()=>new Promise(r=>{tc.width=tw;tc.height=th;tx.imageSmoothingEnabled=true;tx.imageSmoothingQuality='high';tx.drawImage(img,0,0,tw,th);tc.toBlob(r,'image/webp',.78)});
-        (async()=>{let q=.86,blob=null;while(q>=.70){blob=await makeMain(q);if(blob&&blob.size<=4.7*1024*1024)break;q=+(q-.06).toFixed(2)}while((!blob||blob.size>4.7*1024*1024)&&Math.max(mw,mh)>1200){mw=Math.max(1,Math.round(mw*.85));mh=Math.max(1,Math.round(mh*.85));blob=await makeMain(.78)}const thumb=await makeThumb();if(revoke)URL.revokeObjectURL(revoke);finish(blob,thumb)})().catch(()=>{if(revoke)URL.revokeObjectURL(revoke);resolve([null,null])});
-      }catch(e){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null])}
-    };
-    const fallback=()=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>draw(img,url);img.onerror=()=>{URL.revokeObjectURL(url);resolve([null,null])};img.src=url};
-    if('createImageBitmap' in window){createImageBitmap(file,{imageOrientation:'from-image'}).then(bitmap=>{draw(bitmap,null);setTimeout(()=>{try{bitmap.close()}catch(e){}},0)}).catch(fallback)}else fallback();
-  });
-}
-function getStorageSiblingUrl(url,suffix){
-  if(!url||!/^https?:\/\//i.test(url))return url;
-  try{const u=new URL(url),m=u.pathname.match(/^(.*\/)([^/]+)$/);if(!m)return url;const name=m[2],dot=name.lastIndexOf('.'),base=dot>0?name.slice(0,dot):name;u.pathname=m[1]+base+suffix+'.webp';u.search='';return u.toString()}catch(e){return url}
-}
-function productImageUrl(url,variant){if(!url)return '';if(variant==='thumb'&&/\.webp(?:$|[?#])/i.test(url))return getStorageSiblingUrl(url,'_thumb');return url}
-function imageUploadVariants(file){return compressImageVariants(file)}
 async function verifyTurnstile(token){
   if(!token) return false;
   try{
@@ -1664,9 +1563,9 @@ function renderJalaliPanel(inputId){
   }
   panel.innerHTML = `
     <div class="jp-head">
-      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',-1)">‹</button>
+      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',-1)">›</button>
       <span>${PERSIAN_MONTHS[st.jm-1]} ${toFa(st.jy)}</span>
-      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',1)">›</button>
+      <button type="button" class="jp-nav" onclick="event.stopPropagation(); jpChangeMonth('${inputId}',1)">‹</button>
     </div>
     <div class="jp-grid">
       ${['ش','ی','د','س','چ','پ','ج'].map(d=>`<div class="jp-dow">${d}</div>`).join('')}
@@ -1710,28 +1609,8 @@ function setPageMeta(title, description){
   if(tag) tag.setAttribute('content', description);
   const ogTitle = document.querySelector('meta[property="og:title"]');
   const ogDesc = document.querySelector('meta[property="og:description"]');
-  const twTitle = document.querySelector('meta[name="twitter:title"]');
-  const twDesc = document.querySelector('meta[name="twitter:description"]');
   if(ogTitle) ogTitle.setAttribute('content', title);
   if(ogDesc) ogDesc.setAttribute('content', description);
-  if(twTitle) twTitle.setAttribute('content', title);
-  if(twDesc) twDesc.setAttribute('content', description);
-  const canonical = document.querySelector('link[rel="canonical"]');
-  if(canonical) canonical.setAttribute('href', getCanonicalUrl());
-  const ogUrl = document.querySelector('meta[property="og:url"]');
-  if(ogUrl) ogUrl.setAttribute('content', getCanonicalUrl());
-}
-function getCanonicalUrl(){
-  const url = new URL(location.href);
-  url.hash = '';
-  return url.origin + (url.pathname || '/');
-}
-function runWhenIdle(fn, timeout){
-  if('requestIdleCallback' in window){
-    window.requestIdleCallback(fn, {timeout: timeout || 1500});
-  }else{
-    setTimeout(fn, 1);
-  }
 }
 function truncateDesc(text, max){
   max = max || 155;
@@ -1795,71 +1674,40 @@ function updatePageMeta(path, params){
 }
 
 /* ============ ROUTER ============ */
-function parseLocation(){
-  // Clean URLs are canonical. Hash URLs remain supported for backwards compatibility.
-  let path = location.pathname || '/';
-  let search = location.search || '';
-  if(location.hash){
-    const h = location.hash.replace(/^#/,'') || '/';
-    const parts = h.split('?');
-    path = parts[0] || '/';
-    search = parts[1] ? '?' + parts.slice(1).join('?') : '';
+function parseHash(){
+  let h = location.hash.replace(/^#/,'') || '/';
+  let [path, query] = h.split('?');
+  let params = {};
+  if(query){
+    query.split('&').forEach(kv=>{
+      const eq = kv.indexOf('=');
+      const rawKey = eq >= 0 ? kv.slice(0, eq) : kv;
+      const rawVal = eq >= 0 ? kv.slice(eq + 1) : '';
+      try{
+        const k = decodeURIComponent(rawKey);
+        const v = decodeURIComponent(rawVal);
+        if(k) params[k] = v;
+      }catch(e){
+        console.warn('Invalid hash query parameter ignored');
+      }
+    });
   }
-  const params = {};
-  const query = new URLSearchParams(search.replace(/^\?/,''));
-  query.forEach((v,k)=>{ params[k]=v; });
-  // /product/:id is the indexable product URL; internally it maps to the existing /product route.
-  const productMatch = path.match(/^\/product\/([^/]+)\/?$/);
-  if(productMatch){
-    try { params.id = decodeURIComponent(productMatch[1]); } catch(e) { params.id = ''; }
-    path = '/product';
-  }
-  if(path !== '/' && path.endsWith('/')) path = path.slice(0,-1);
   return {path: path || '/', params};
-}
-function cleanUrlFor(path, params){
-  const cleanPath = path === '/product' && params && params.id
-    ? '/product/' + encodeURIComponent(params.id)
-    : path;
-  const query = new URLSearchParams();
-  if(params){ Object.entries(params).forEach(([k,v])=>{
-    // The product id is already encoded into /product/:id; don't duplicate it as ?id=.
-    if(path === '/product' && k === 'id') return;
-    if(v !== null && v !== undefined && v !== '') query.set(k,v);
-  }); }
-  const qs = query.toString();
-  return cleanPath + (qs ? '?' + qs : '');
-}
-function parseLegacyHash(hash){
-  const h = String(hash || '').replace(/^#/,'') || '/';
-  const [path, ...rest] = h.split('?');
-  const params = {};
-  new URLSearchParams(rest.join('?')).forEach((v,k)=>{ params[k]=v; });
-  return {path:path || '/', params};
 }
 function runHomeSearch(){
   const q = document.getElementById('homeSearch').value.trim();
   go('/products?q=' + encodeURIComponent(q));
 }
-function go(hash){
-  const parsed = parseLegacyHash(hash);
-  const target = cleanUrlFor(parsed.path, parsed.params);
-  if(target === location.pathname + location.search){
-    render();
-  }else{
-    history.pushState({}, '', target);
-    render();
-  }
-}
+function go(hash){ location.hash = hash; }
 async function render(){
-  const {path, params} = parseLocation();
+  const {path, params} = parseHash();
   document.querySelectorAll('.page').forEach(sec=>{
     sec.hidden = sec.dataset.route !== path;
   });
   if(path === '/' || path === '/products' || path === '/product'){
     await ensureCatalogLoaded();
   }
-  if(path === '/'){ renderHome(); runWhenIdle(()=>renderDeliveredCount(), 1800); } else { stopHomeCarousels(); }
+  if(path === '/'){ renderHome(); renderDeliveredCount(); } else { stopHomeCarousels(); }
   if(path === '/products'){ renderProductList(params.cat, params.q, params.brand); }
   if(path === '/product'){ renderProductDetail(params.id); }
   if(path === '/track'){ /* results render on demand */ }
@@ -1872,16 +1720,7 @@ async function render(){
   renderCart();
   renderMenuCategories();
 }
-window.addEventListener('popstate', render);
-window.addEventListener('hashchange', ()=>{
-  // One-time migration of legacy #/ URLs to clean canonical paths.
-  if(location.hash){
-    const parsed = parseLegacyHash(location.hash);
-    history.replaceState({}, '', cleanUrlFor(parsed.path, parsed.params));
-    render();
-  }
-});
-
+window.addEventListener('hashchange', render);
 
 /* ============ MENU / CART TOGGLES ============ */
 function toggleMenu(){
@@ -1925,7 +1764,7 @@ function productCardHTML(p){
   const isNew = NEWEST_PRODUCT_IDS.has(p.id);
   return `<div class="p-card" style="${out?'opacity:.5;':''}" onclick="go('/product?id=${p.id}')">
     ${isNew ? `<span class="new-badge">جدید</span>` : ''}
-    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(p.img)}';" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
+    <div class="p-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:12px; ${out?'filter:grayscale(.6);':''}"></div>
     <span class="p-tag">${escapeHtml(p.tag)}</span>
     <h3>${escapeHtml(p.name)}</h3>
     <p class="desc">${escapeHtml(p.desc)}</p>
@@ -1942,8 +1781,33 @@ function sortByStock(list){
 function carouselCardHTML(p){
   return `<div class="carousel-item">${productCardHTML(p)}</div>`;
 }
+let heroSlideIndex = 0;
+let heroSlideTimer = null;
+function renderHeroDots(){
+  const dots=document.getElementById('heroDots');
+  const slides=document.querySelectorAll('#heroBanner .hero-slide');
+  if(!dots) return;
+  dots.innerHTML=Array.from(slides).map((_,i)=>`<button type="button" class="hero-dot ${i===heroSlideIndex?'active':''}" onclick="setHeroSlide(${i})" aria-label="بنر ${i+1}"></button>`).join('');
+}
+function setHeroSlide(index){
+  const slides=document.querySelectorAll('#heroBanner .hero-slide');
+  if(!slides.length) return;
+  heroSlideIndex=(index+slides.length)%slides.length;
+  slides.forEach((el,i)=>el.classList.toggle('active',i===heroSlideIndex));
+  renderHeroDots();
+  clearTimeout(heroSlideTimer);
+  heroSlideTimer=setTimeout(()=>setHeroSlide(heroSlideIndex+1),5000);
+}
+function changeHeroSlide(step){ setHeroSlide(heroSlideIndex+step); }
+function initHeroSlider(){ renderHeroDots(); setHeroSlide(heroSlideIndex); }
+function runHeaderSearch(){
+  const input=document.getElementById('headerSearch');
+  const q=(input?.value||'').trim();
+  go('/products'+(q?'?q='+encodeURIComponent(q):''));
+}
+
 function renderHome(){
-  const featured = sortByStock(PRODUCTS).slice(0,10);
+  const featured = sortByStock(PRODUCTS).slice(0,6);
   const featuredSection = document.getElementById('featuredSection');
   featuredSection.style.display = featured.length ? '' : 'none';
   if(featured.length){
@@ -1960,66 +1824,29 @@ function renderHome(){
   }
 
   document.getElementById('homeCatGrid').innerHTML = CATEGORIES.map(c=>`
-    <div class="cat-card" onclick="go('/products?cat=${encodeURIComponent(c.id)}')">
-      <div class="cat-ic-wrap">${c.image_url ? `<img src="${escapeHtml(c.image_url)}" loading="lazy" decoding="async" alt="${escapeHtml(c.name)}">` : `<span>${escapeHtml(c.emoji)||'📦'}</span>`}</div>
+    <div class="cat-card" onclick="go('/products?cat=${c.id}')">
+      <div class="cat-ic-wrap">${c.image_url ? `<img src="${escapeHtml(c.image_url)}" loading="lazy" alt="${escapeHtml(c.name)}">` : `<span>${escapeHtml(c.emoji)||'📦'}</span>`}</div>
       <h3>${escapeHtml(c.name)}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
     </div>`).join('');
 
-  renderHeroBanner();
+  // بنر تصویری مستقل از دیتابیس؛ فقط اولین تصویر eager است تا سرعت لود حفظ شود.
+  initHeroSlider();
 }
 let HERO_IMAGE_URL = null;
-let HERO_BANNER_URLS = [];
 async function loadHeroImage(){
   try{
-    const { data, error } = await sbClient.from('admin_meta').select('key,value').in('key',['hero_image_url','hero_banner_1','hero_banner_2','hero_banner_3']);
-    if(error || !Array.isArray(data)){ HERO_IMAGE_URL = null; HERO_BANNER_URLS = []; return; }
-    const map = Object.fromEntries(data.map(row=>[row.key,row.value]));
-    HERO_IMAGE_URL = map.hero_image_url || null;
-    HERO_BANNER_URLS = [map.hero_banner_1,map.hero_banner_2,map.hero_banner_3].filter(Boolean);
-    if(!HERO_BANNER_URLS.length && HERO_IMAGE_URL) HERO_BANNER_URLS = [HERO_IMAGE_URL];
-  }catch(e){ HERO_IMAGE_URL = null; HERO_BANNER_URLS = []; }
+    const { data, error } = await sbClient.from('admin_meta').select('value').eq('key','hero_image_url').maybeSingle();
+    HERO_IMAGE_URL = (!error && data && data.value) ? data.value : null;
+  }catch(e){ HERO_IMAGE_URL = null; }
 }
-let heroIndex = 0;
-let heroTimer = null;
-function renderHeroBanner(){
-  const hero = document.getElementById('homeHero');
-  if(!hero) return;
-  const slides = Array.from(hero.querySelectorAll('.hero-slide'));
-  const urls = HERO_BANNER_URLS;
-  slides.forEach((slide,i)=>{
-    const old = slide.querySelector('.hero-slide-img');
-    if(old) old.remove();
-    if(urls[i]){
-      const img = document.createElement('img');
-      img.className='hero-slide-img'; img.alt='بنر خانه‌گرم'; img.decoding='async';
-      if(i===0){ img.loading='eager'; img.fetchPriority='high'; } else { img.loading='lazy'; }
-      img.src=urls[i];
-      slide.insertBefore(img, slide.firstChild);
-    }
-  });
-  heroIndex = 0;
-  updateHeroBanner();
-  if(heroTimer) clearInterval(heroTimer);
-  heroTimer = setInterval(()=>{ if(!document.hidden) heroNext(); }, 5000);
-}
-function updateHeroBanner(){
-  const hero=document.getElementById('homeHero'); if(!hero) return;
-  const slides=Array.from(hero.querySelectorAll('.hero-slide'));
-  slides.forEach((s,i)=>s.classList.toggle('active',i===heroIndex));
-  const dots=document.getElementById('heroDots');
-  if(dots) dots.innerHTML=slides.map((_,i)=>`<button type="button" class="hero-dot ${i===heroIndex?'active':''}" onclick="heroGo(${i})" aria-label="بنر ${i+1}"></button>`).join('');
-}
-function heroGo(i){ const count=document.querySelectorAll('#homeHero .hero-slide').length; if(!count) return; heroIndex=(i+count)%count; updateHeroBanner(); }
-function heroNext(){ heroGo(heroIndex+1); }
-function heroPrev(){ heroGo(heroIndex-1); }
-function runHeaderSearch(){
-  const q=(document.getElementById('headerSearch')?.value||'').trim();
-  go('/products' + (q ? '?q='+encodeURIComponent(q) : ''));
-}
-function scrollHomeCarousel(trackId, direction){
-  const track=document.getElementById(trackId); if(!track) return;
-  const amount=Math.max(220, Math.floor(track.clientWidth*.78));
-  track.scrollBy({left: direction * amount, behavior:'smooth'});
+function renderHeroArt(){
+  const heroArt = document.getElementById('heroArt');
+  if(!heroArt) return;
+  if(HERO_IMAGE_URL){
+    heroArt.innerHTML = `<img src="${escapeHtml(HERO_IMAGE_URL)}" alt="خانه‌گرم" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:cover;">`;
+  } else {
+    heroArt.innerHTML = `<div class="emoji-stack"><span>🃏</span><span>♠️</span></div>`;
+  }
 }
 
 const carouselState = {};
@@ -2197,8 +2024,8 @@ function renderProductDetail(id){
   updateProductStructuredData(p);
   root.innerHTML = `
     <div>
-      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${escapeHtml(images[0]||'')}" data-fullsrc="${escapeHtml(images[0]||'')}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
-      ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(img)}';" data-fullsrc="${escapeHtml(img)}" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
+      <div class="pd-gallery-main" style="padding:0; overflow:hidden;"><img id="pdMainImg" src="${escapeHtml(images[0]||'')}" alt="${escapeHtml(p.name)} - ${escapeHtml(p.brand||'')} ${escapeHtml(p.tag||'')}" loading="eager" fetchpriority="high" decoding="async" style="width:100%; height:100%; object-fit:contain; border-radius:20px;"></div>
+      ${images.length>1 ? `<div class="pd-thumbs">${images.map((img,i)=>`<div class="th ${i===0?'active':''}" data-idx="${i}" onclick="pdSwitchImage(${i})" style="padding:0; overflow:hidden;"><img src="${escapeHtml(img)}" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:8px;"></div>`).join('')}</div>` : ''}
     </div>
     <div>
       <span class="pd-tag">${escapeHtml(p.tag)}${p.views>20 ? ` · 👁️ ${toFa(p.views)} بازدید` : ''}</span>
@@ -2217,7 +2044,7 @@ function renderProductDetail(id){
   document.getElementById('pdQtyVal').textContent = '۱';
   renderReviews(p.id);
   renderRelatedProducts(p);
-  runWhenIdle(()=>trackProductView(p.id), 1800);
+  trackProductView(p.id);
 }
 function renderRelatedProducts(p){
   const box = document.getElementById('relatedProductsBox');
@@ -2304,7 +2131,7 @@ function renderReviewSummary(data){
     </div>`;
 }
 async function submitReview(){
-  const {params} = parseLocation();
+  const {params} = parseHash();
   const pid = params.id;
   const phone = toEnDigits(document.getElementById('revPhone').value.trim());
   const name = document.getElementById('revName').value.trim();
@@ -2340,7 +2167,7 @@ async function submitReview(){
 /* ============ FAQ ============ */
 async function renderCommunityGuides(){
   const box = document.getElementById('communityGuides');
-  const { data, error } = await sbClient.from('guides').select('id,title,body,teaser,tag,created_at').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('guides').select('*').order('created_at', {ascending:false});
   if(error || !data || data.length === 0){ box.innerHTML=''; return; }
   box.innerHTML = data.map(g=>`
     <article class="guide-card">
@@ -2425,7 +2252,7 @@ function renderCart(){
     const p = findProduct(item.id);
     if(!p) return '';
     return `<div class="cart-item">
-      <div class="ci-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(p.img)}';" alt="" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></div>
+      <div class="ci-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(p.img)}" alt="" loading="lazy" style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></div>
       <div class="ci-info"><h4>${escapeHtml(p.name)}</h4><div class="ci-price">${formatToman(p.price)}</div></div>
       <div class="ci-controls">
         <button class="qty-btn" onclick="changeCartQty('${p.id}',-1)">−</button>
@@ -2609,16 +2436,12 @@ async function submitOrder(){
   btn.disabled = true;
   btn.textContent = 'در حال ثبت...';
 
-  const idempotencyKey = (window.crypto && typeof window.crypto.randomUUID === 'function')
-    ? window.crypto.randomUUID()
-    : ('kg-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
-  const { data, error } = await sbClient.rpc('create_order_idempotent', {
+  const { data, error } = await sbClient.rpc('create_order', {
     p_name: name, p_phone: phone, p_address: address, p_shipping: shipping,
     p_items: items, p_subtotal: subtotal, p_payment_method: paymentMethod, p_payment_ref: paymentRef,
     p_province: province, p_city: city, p_postal_code: postalCode,
     p_packaging_option: packagingOption, p_packaging_fee: packagingFee,
-    p_via_fallback: spamCheck.viaFallback,
-    p_idempotency_key: idempotencyKey
+    p_via_fallback: spamCheck.viaFallback
   });
 
   btn.disabled = false;
@@ -2635,15 +2458,7 @@ async function submitOrder(){
       showToast('اطلاعات سفارش معتبر نیست؛ لطفاً فیلدهای فرم را دوباره بررسی کنید');
     } else if(/permission denied|not authorized|NOT_AUTHORIZED/i.test(errMsg)){
       showToast('دسترسی ثبت سفارش از سمت سرور رد شد؛ لطفاً صفحه را تازه‌سازی و دوباره امتحان کنید');
-    } else if(errMsg.includes('IDEMPOTENCY_KEY_REUSED')){
-      showToast('این درخواست سفارش قبلاً ثبت شده؛ لطفاً نتیجه سفارش را بررسی کنید');
-    } else if(errMsg.includes('INVALID_IDEMPOTENCY_KEY')){
-      showToast('خطای امنیتی موقت در ثبت سفارش؛ لطفاً دوباره امتحان کنید');
-    } else if(errMsg.includes('FALLBACK_ORDER_RATE_LIMITED')){
-      showToast('به‌دلیل فعال بودن حالت جایگزین امنیتی، فعلاً امکان ثبت سفارش دیگری وجود ندارد؛ لطفاً یک ساعت بعد دوباره امتحان کنید');
-    } else if(errMsg.includes('ORDER_RATE_LIMITED') || errMsg.includes('ORDER_IP_RATE_LIMITED')){
-      showToast('تعداد تلاش‌های ثبت سفارش بیش از حد مجاز شده؛ لطفاً کمی بعد دوباره امتحان کنید');
-    } else if(/function .*create_order(?:_idempotent)? .* does not exist/i.test(errMsg)){
+    } else if(/function .*create_order.* does not exist/i.test(errMsg)){
       showToast('نسخه فرم سفارش با سرور هماهنگ نیست؛ لطفاً صفحه را تازه‌سازی کنید');
     } else {
       showToast('ثبت سفارش با خطا مواجه شد؛ لطفاً دوباره امتحان کنید');
@@ -2682,8 +2497,8 @@ async function submitOrder(){
 }
 
 /* ============ ORDER TRACKING ============ */
-const STAGE_NAMES = ['در حال بسته‌بندی','تحویل داده‌شده به پست/باربری','در حال ارسال','تحویل داده‌شده'];
-const ORDER_STATUS_LABELS = { '-1':'لغو شده', '0':'در حال بسته‌بندی', '1':'تحویل داده‌شده به پست/باربری', '2':'در حال ارسال', '3':'تحویل داده‌شده' };
+const STAGE_NAMES = ['در حال بسته‌بندی','تحویل داده‌شده به پست/باربری','در حال ارسال'];
+const ORDER_STATUS_LABELS = { '-1':'لغو شده', '0':'در حال بسته‌بندی', '1':'تحویل داده‌شده به پست/باربری', '2':'در حال ارسال' };
 const PAY_STATUS_LABELS = { paid_cod:'پرداخت هنگام تحویل', awaiting_confirmation:'در انتظار تایید واریز', confirmed:'پرداخت تایید شد' };
 const PACKAGING_LABELS = { prepaid:'پیش‌پرداخت بسته‌بندی/ارسال', postpay:'پس‌کرایه' };
 async function trackOrder(){
@@ -2738,7 +2553,7 @@ async function renderAdminRoute(){
   const loggedIn = !!(sessionData && sessionData.session);
   document.getElementById('adminLoginBox').hidden = loggedIn;
   document.getElementById('adminPanelBox').hidden = !loggedIn;
-  if(loggedIn){ if(['products','categories'].includes(adminCurrentTab)) await loadCategoriesFromDB(); switchAdminTab(adminCurrentTab); }
+  if(loggedIn){ await loadCategoriesFromDB(); switchAdminTab(adminCurrentTab); }
 }
 async function adminLogin(){
   const email = document.getElementById('adminEmail').value.trim();
@@ -2774,16 +2589,10 @@ async function renderDashboard(){
   const box = document.getElementById('adminDashboard');
   box.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
 
-  const [ordersRes, productsRes, customersRes, visitsRes] = await Promise.all([
-    sbClient.from('orders').select('created_at,status,subtotal'),
-    sbClient.from('products').select('stock'),
-    sbClient.from('customers').select('created_at'),
-    sbClient.from('site_visits').select('visit_date,count')
-  ]);
-  const orders = ordersRes.data || [];
-  const products = productsRes.data || [];
-  const customers = customersRes.data || [];
-  const visits = visitsRes.data || [];
+  const { data: orders } = await sbClient.from('orders').select('*');
+  const { data: products } = await sbClient.from('products').select('*');
+  const { data: customers } = await sbClient.from('customers').select('*');
+  const { data: visits } = await sbClient.from('site_visits').select('*');
 
   const todayISO = tehranDateStr();
   const currentMonthPrefix = todayISO.slice(0,7);
@@ -2880,7 +2689,7 @@ async function openSalesReportModal(){
   document.getElementById('srDateTo').value=''; delete document.getElementById('srDateTo').dataset.iso;
   document.getElementById('srConfirmedOnly').checked = false;
   document.getElementById('salesReportModal').classList.add('open');
-  const { data, error } = await sbClient.from('products').select('id,cat,tag,brand,code,name,price,stock,description,features,img_url,images,views').order('name');
+  const { data, error } = await sbClient.from('products').select('*').order('name');
   if(error || !data){ document.getElementById('srProductList').innerHTML = '<p style="text-align:center; color:var(--rust); font-size:13px;">خطا در دریافت محصولات</p>'; return; }
   adminProductsCache = data;
   srSelectedProducts = new Set(data.map(p=>p.id));
@@ -2909,7 +2718,7 @@ async function downloadSalesReport(){
   const confirmedOnly = document.getElementById('srConfirmedOnly').checked;
 
   showToast('در حال آماده‌سازی گزارش...');
-  const { data: orders, error } = await sbClient.from('orders').select('created_at,payment_status,subtotal,items');
+  const { data: orders, error } = await sbClient.from('orders').select('*');
   if(error || !orders){ showToast('خطا در دریافت سفارش‌ها'); return; }
 
   let filtered = orders;
@@ -2944,7 +2753,7 @@ async function downloadSalesReport(){
 async function renderAdmin(){
   const box = document.getElementById('adminOrders');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('orders').select('id,order_code,name,phone,address,province,city,postal_code,shipping,packaging_option,packaging_fee,status,payment_status,payment_ref,tracking_code,subtotal,items,created_at,via_fallback').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('orders').select('*').order('created_at', {ascending:false});
   if(error){ box.innerHTML = '<p style="text-align:center; color:var(--rust);">خطا در دریافت سفارش‌ها.</p>'; return; }
   adminOrdersCache = data || [];
   filterAdminOrders();
@@ -3174,7 +2983,7 @@ function productAdminCardHTML(p){
 async function renderAdminProducts(){
   const box = document.getElementById('adminProducts');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('products').select('id,cat,tag,brand,code,name,price,stock,description,features,img_url,images,views').order('name');
+  const { data, error } = await sbClient.from('products').select('*').order('name');
   if(error || !data){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز محصولی ثبت نشده. از دکمه‌ی «+ افزودن محصول جدید» بالا استفاده کنید.</p>'; return; }
   adminProductsCache = data;
 
@@ -3214,13 +3023,9 @@ async function renderAdminProducts(){
 async function renderAdminCategories(){
   const box = document.getElementById('adminCategories');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const [catRes, productRes] = await Promise.all([
-    sbClient.from('categories').select('id,name,emoji,sort_order,image_url').order('sort_order'),
-    sbClient.from('products').select('cat')
-  ]);
-  const data = catRes.data, error = catRes.error;
+  const { data, error } = await sbClient.from('categories').select('*').order('sort_order');
   if(error){ box.innerHTML = '<p style="text-align:center; color:var(--rust);">خطا در دریافت دسته‌بندی‌ها.</p>'; return; }
-  const products = productRes.data || [];
+  const { data: products } = await sbClient.from('products').select('cat');
   const counts = {};
   (products||[]).forEach(p=>{ counts[p.cat] = (counts[p.cat]||0)+1; });
   if(!data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز دسته‌بندی‌ای ثبت نشده.</p>'; return; }
@@ -3248,11 +3053,10 @@ async function saveHeroImage(){
   const fileInput = document.getElementById('heroImageInput');
   if(!fileInput.files || !fileInput.files[0]){ showToast('لطفا یه عکس انتخاب کنید'); return; }
   const file = await compressImage(fileInput.files[0]);
-  if(!file){ showToast('این تصویر در مرورگر قابل تبدیل نیست یا حجم نهایی آن بیش از حد مجاز است'); return; }
-  const path = `hero_${Date.now()}.webp`;
+  const path = `hero_${Date.now()}.jpg`;
   let url;
   try{
-    const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}), 20000, 'UPLOAD_TIMEOUT');
+    const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true}), 20000, 'UPLOAD_TIMEOUT');
     if(upErr){ showToast('خطا در آپلود عکس'); return; }
     const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path);
     url = pub.publicUrl;
@@ -3265,7 +3069,7 @@ async function saveHeroImage(){
   HERO_IMAGE_URL = url;
   fileInput.value = '';
   renderHeroImagePreview();
-  renderHeroBanner();
+  renderHeroArt();
   showToast('عکس هیرو ذخیره شد ✅');
 }
 async function removeHeroImage(){
@@ -3274,7 +3078,7 @@ async function removeHeroImage(){
   if(error){ showToast('خطا در حذف'); return; }
   HERO_IMAGE_URL = null;
   renderHeroImagePreview();
-  renderHeroBanner();
+  renderHeroArt();
   showToast('برگشت به طرح پیش‌فرض ✅');
 }
 
@@ -3288,10 +3092,9 @@ async function addCategory(){
   let image_url = null;
   if(fileInput.files && fileInput.files[0]){
     const file = await compressImage(fileInput.files[0]);
-    if(!file){ showToast('این تصویر در مرورگر قابل تبدیل نیست یا حجم نهایی آن بیش از حد مجاز است'); return; }
-    const path = `cat_${id}_${Date.now()}.webp`;
+    const path = `cat_${id}_${Date.now()}.jpg`;
     try{
-      const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}), 20000, 'UPLOAD_TIMEOUT');
+      const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true}), 20000, 'UPLOAD_TIMEOUT');
       if(!upErr){ const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); image_url = pub.publicUrl; }
     }catch(e){
       showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
@@ -3333,10 +3136,9 @@ async function saveCategoryEdit(){
   const updates = {name, emoji};
   if(fileInput.files && fileInput.files[0]){
     const file = await compressImage(fileInput.files[0]);
-    if(!file){ showToast('این تصویر در مرورگر قابل تبدیل نیست یا حجم نهایی آن بیش از حد مجاز است'); return; }
-    const path = `cat_${categoryEditId}_${Date.now()}.webp`;
+    const path = `cat_${categoryEditId}_${Date.now()}.jpg`;
     try{
-      const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}), 20000, 'UPLOAD_TIMEOUT');
+      const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true}), 20000, 'UPLOAD_TIMEOUT');
       if(!upErr){ const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); updates.image_url = pub.publicUrl; }
     }catch(e){
       showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
@@ -3371,11 +3173,8 @@ async function deleteCategory(id, productCount){
 }
 let pfExistingImages = [];
 let pfNewFiles = [];
-let pfPreviewObjectUrls = [];
-function revokePfPreviewUrls(){ pfPreviewObjectUrls.forEach(u=>{try{URL.revokeObjectURL(u)}catch(e){}}); pfPreviewObjectUrls=[]; }
 function renderPfImagePreview(){
   const box = document.getElementById('pfImagePreview');
-  revokePfPreviewUrls();
   let html = '';
   pfExistingImages.forEach((url, i)=>{
     html += `<div style="position:relative; width:64px; height:64px;">
@@ -3384,7 +3183,7 @@ function renderPfImagePreview(){
     </div>`;
   });
   pfNewFiles.forEach((file, i)=>{
-    const url = URL.createObjectURL(file); pfPreviewObjectUrls.push(url);
+    const url = URL.createObjectURL(file);
     html += `<div style="position:relative; width:64px; height:64px;">
       <img src="${url}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; border:2px dashed var(--teal);">
       <button type="button" onclick="removePfNewFile(${i})" style="position:absolute; top:-6px; left:-6px; width:20px; height:20px; border-radius:50%; background:var(--rust); color:#fff; border:none; font-size:12px; cursor:pointer; line-height:1;">×</button>
@@ -3451,7 +3250,7 @@ async function openProductForm(id, presetCat){
   renderPfImagePreview();
   document.getElementById('productModal').classList.add('open');
 }
-function closeProductForm(){ document.getElementById('productModal').classList.remove('open'); revokePfPreviewUrls(); }
+function closeProductForm(){ document.getElementById('productModal').classList.remove('open'); }
 async function saveProduct(){
   const btn = document.getElementById('pfSaveBtn');
   const editId = btn.getAttribute('data-edit-id');
@@ -3476,20 +3275,15 @@ async function saveProduct(){
   // upload any newly-added files, keep whatever existing images weren't removed
   const uploadedUrls = [];
   for(const rawFile of pfNewFiles){
-    const [file, thumbFile] = await imageUploadVariants(rawFile);
-    if(!file || !thumbFile){ showToast('این تصویر در مرورگر قابل تبدیل نیست یا حجم نهایی آن بیش از حد مجاز است'); btn.disabled=false; btn.textContent='ذخیره'; return; }
-    const basePath = `${id}_${Date.now()}_${Math.floor(Math.random()*10000)}`;
-    const path = `${basePath}.${file.type==='image/webp'?'webp':'jpg'}`;
-    const thumbPath = `${basePath}_thumb.${thumbFile.type==='image/webp'?'webp':'jpg'}`;
+    const file = await compressImage(rawFile);
+    const path = `${id}_${Date.now()}_${Math.floor(Math.random()*10000)}.jpg`;
     let upErr;
     try{
-      const bucket = sbClient.storage.from('product-images');
-      const mainRes = await withTimeout(bucket.upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}),20000,'UPLOAD_TIMEOUT');
-      upErr = mainRes.error;
-      if(!upErr){
-        const thumbRes = await withTimeout(bucket.upload(thumbPath, thumbFile, {upsert:true, cacheControl:'31536000', contentType:thumbFile.type}),20000,'UPLOAD_TIMEOUT');
-        upErr = thumbRes.error;
-      }
+      const res = await withTimeout(
+        sbClient.storage.from('product-images').upload(path, file, {upsert:true}),
+        20000, 'UPLOAD_TIMEOUT'
+      );
+      upErr = res.error;
     }catch(e){
       showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
       btn.disabled=false; btn.textContent='ذخیره'; return;
@@ -3536,7 +3330,7 @@ let adminReviewsShown = 10;
 async function renderAdminReviews(){
   const box = document.getElementById('adminReviews');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('reviews').select('id,name,phone,rating,comment,status,via_fallback,created_at,product_id').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('reviews').select('*').order('created_at', {ascending:false});
   if(error || !data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">نظری ثبت نشده.</p>'; return; }
   const visible = data.slice(0, adminReviewsShown);
   box.innerHTML = visible.map(r=>`
@@ -3578,7 +3372,7 @@ async function deleteReview(id){
 async function renderAdminTodos(){
   const box = document.getElementById('adminTodos');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('admin_todos').select('id,text,done,created_at').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('admin_todos').select('*').order('created_at', {ascending:false});
   if(error){ box.innerHTML = '<p style="text-align:center; color:var(--rust);">خطا در دریافت وظایف.</p>'; return; }
   if(!data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">هنوز وظیفه‌ای ثبت نشده.</p>'; return; }
   box.innerHTML = data.map(t=>`
@@ -3611,7 +3405,7 @@ async function deleteTodo(id){
 async function renderAdminGuideSubmissions(){
   const box = document.getElementById('adminGuideSubmissions');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('guide_submissions').select('id,name,phone,title,body,status,created_at').eq('status','pending').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('guide_submissions').select('*').eq('status','pending').order('created_at', {ascending:false});
   if(error || !data || data.length===0){ box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">مطلب در انتظار بررسی نیست.</p>'; return; }
   box.innerHTML = data.map(s=>`
     <div class="admin-order">
@@ -3707,31 +3501,9 @@ function isValidPhone(phone){
 /* ============ INIT ============ */
 loadProductsFromDB().then(renderMenuCategories);
 loadCategoriesFromDB();
-loadHeroImage().then(()=>{ if(location.pathname === '/' && !location.hash) renderHeroBanner(); });
-runWhenIdle(()=>sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{}), 2000);
-if(location.hash){
-  const parsed = parseLegacyHash(location.hash);
-  history.replaceState({}, '', cleanUrlFor(parsed.path, parsed.params));
-}
-render();
+loadHeroImage().then(()=>{ if(!location.hash || location.hash === '#/') renderHeroArt(); });
+sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{});
+if(!location.hash){ location.hash = '#/'; } else { render(); }
 </script>
-<style>
-.pd-gallery-main{cursor:zoom-in;position:relative;background:var(--card)}
-.pd-gallery-main::after{content:'🔍 بزرگ‌نمایی';position:absolute;left:12px;bottom:12px;padding:5px 9px;border-radius:999px;background:rgba(59,42,30,.78);color:#fff;font-size:11px;pointer-events:none;opacity:.9}
-.image-zoom-modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(25,18,13,.92)}
-.image-zoom-modal.open{display:flex}.image-zoom-close{position:absolute;top:14px;right:14px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:26px;cursor:pointer;z-index:2}
-.image-zoom-stage{width:min(96vw,1200px);height:min(90vh,900px);display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}.image-zoom-stage img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;user-select:none;-webkit-user-drag:none;transform-origin:center center;will-change:transform;transition:transform .16s ease}.image-zoom-stage.zoomed img{cursor:grab}.image-zoom-stage.zoomed img:active{cursor:grabbing}.image-zoom-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.45);padding:6px 12px;border-radius:999px;font-size:12px;pointer-events:none}@media (prefers-reduced-motion:reduce){.image-zoom-stage img{transition:none}}
-</style>
-<div id="imageZoomModal" class="image-zoom-modal" role="dialog" aria-modal="true" aria-label="نمایش بزرگ تصویر محصول"><button class="image-zoom-close" type="button" onclick="closeImageZoom()" aria-label="بستن">×</button><div id="imageZoomStage" class="image-zoom-stage"><img id="imageZoomImg" src="" alt=""></div><div class="image-zoom-hint">کلیک/لمس برای زوم · دو انگشت در موبایل · کشیدن برای جابه‌جایی</div></div>
-<script>
-let imageZoomScale=1,imageZoomX=0,imageZoomY=0,imageZoomDrag=null,imageZoomPinch=null;
-function applyImageZoom(){const img=document.getElementById('imageZoomImg'),stage=document.getElementById('imageZoomStage');if(!img||!stage)return;img.style.transform=`translate(${imageZoomX}px,${imageZoomY}px) scale(${imageZoomScale})`;stage.classList.toggle('zoomed',imageZoomScale>1)}
-function openImageZoom(src,alt){const modal=document.getElementById('imageZoomModal'),img=document.getElementById('imageZoomImg');if(!modal||!img||!src)return;img.src=src;img.alt=alt||'';imageZoomScale=1;imageZoomX=0;imageZoomY=0;applyImageZoom();modal.classList.add('open');document.body.style.overflow='hidden'}
-function closeImageZoom(){const modal=document.getElementById('imageZoomModal');if(modal)modal.classList.remove('open');document.body.style.overflow='';imageZoomDrag=null;imageZoomPinch=null}
-function zoomBy(factor){imageZoomScale=Math.max(1,Math.min(4,imageZoomScale*factor));if(imageZoomScale===1){imageZoomX=0;imageZoomY=0}applyImageZoom()}
-(()=>{const stage=document.getElementById('imageZoomStage'),modal=document.getElementById('imageZoomModal');if(!stage||!modal)return;stage.addEventListener('click',e=>{if(e.target===stage||e.target.id==='imageZoomImg')zoomBy(imageZoomScale>1?.5:2)});stage.addEventListener('wheel',e=>{e.preventDefault();zoomBy(e.deltaY<0?1.2:.83)},{passive:false});stage.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&imageZoomScale<=1)return;stage.setPointerCapture(e.pointerId);imageZoomDrag={id:e.pointerId,x:e.clientX,y:e.clientY,ox:imageZoomX,oy:imageZoomY}});stage.addEventListener('pointermove',e=>{if(!imageZoomDrag||imageZoomDrag.id!==e.pointerId||imageZoomScale<=1)return;imageZoomX=imageZoomDrag.ox+(e.clientX-imageZoomDrag.x);imageZoomY=imageZoomDrag.oy+(e.clientY-imageZoomDrag.y);applyImageZoom()});['pointerup','pointercancel'].forEach(t=>stage.addEventListener(t,()=>{imageZoomDrag=null}));modal.addEventListener('click',e=>{if(e.target===modal)closeImageZoom()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeImageZoom()});stage.addEventListener('touchstart',e=>{if(e.touches.length===2){const a=e.touches[0],b=e.touches[1];imageZoomPinch=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}},{passive:true});stage.addEventListener('touchmove',e=>{if(e.touches.length===2&&imageZoomPinch){e.preventDefault();const a=e.touches[0],b=e.touches[1],d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);imageZoomScale=Math.max(1,Math.min(4,imageZoomScale*(d/imageZoomPinch)));imageZoomPinch=d;if(imageZoomScale===1){imageZoomX=0;imageZoomY=0}applyImageZoom()}},{passive:false});stage.addEventListener('touchend',()=>{imageZoomPinch=null},{passive:true})})();
-</script>
-<script>document.addEventListener('click',e=>{const main=e.target.closest('.pd-gallery-main');if(!main)return;const img=main.querySelector('#pdMainImg');if(img)openImageZoom(img.dataset.fullsrc||img.currentSrc||img.src,img.alt)});</script>
-
 </body>
 </html>
