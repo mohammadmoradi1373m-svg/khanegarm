@@ -172,7 +172,7 @@
   .hero-slide.active{display:block;}
   .hero-slide-media{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; z-index:-2;}
   .hero-slide::after{content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(270deg,rgba(2,45,39,.96) 0%,rgba(2,55,47,.84) 30%,rgba(2,55,47,.34) 56%,rgba(2,55,47,.04) 82%);} 
-  .hero-slide-content{min-height:clamp(300px,31vw,470px); width:min(58%,650px); margin-right:auto; margin-left:0; padding:clamp(32px,5vw,68px) clamp(28px,5vw,68px); display:flex; flex-direction:column; justify-content:center; text-align:right; color:#fff;}
+  .hero-slide-content{min-height:clamp(300px,31vw,470px); width:min(58%,650px); margin-left:auto; margin-right:0; padding:clamp(32px,5vw,68px) clamp(28px,5vw,68px); display:flex; flex-direction:column; justify-content:center; text-align:right; color:#fff;}
   .hero-slide .eyebrow{width:max-content; max-width:100%; background:rgba(216,161,58,.13); border-color:rgba(240,189,79,.34); color:#F0BD4F; margin-bottom:13px;}
   .hero-slide h1{font-size:clamp(28px,4vw,50px); line-height:1.32; margin-bottom:12px; color:#fff; letter-spacing:-.025em;}
   .hero-slide h1 em{font-style:normal; color:#F0BD4F;}
@@ -187,7 +187,6 @@
   .hero-trust{display:flex; gap:16px; flex-wrap:wrap; margin-top:15px; color:rgba(255,255,255,.76); font-size:12.5px; font-weight:600;}
   .hero-trust span{display:flex; align-items:center; gap:6px;}
   .hero-trust .dot{width:6px; height:6px; border-radius:50%; background:#F0BD4F; flex-shrink:0;}
-  .hero-quicklinks{
   .hero-quicklinks{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:28px;}
   .ql-card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px 14px; text-align:center; cursor:pointer; transition:transform .18s ease, box-shadow .18s ease; text-decoration:none; color:inherit;}
   .ql-card:hover{transform:translateY(-3px); box-shadow:0 14px 26px -16px rgba(59,42,30,.28);}
@@ -198,6 +197,14 @@
     .hero-quicklinks{grid-template-columns:1fr 1fr;}
   }
 
+  .promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;}
+  .promo-card{min-height:150px;border-radius:20px;overflow:hidden;position:relative;color:#fff;background:#075246;display:flex;align-items:center;background-size:cover;background-position:center;}
+  .promo-card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(2,38,31,.12),rgba(2,38,31,.88));}
+  .promo-card>div{position:relative;z-index:1;padding:24px 30px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-right:auto;width:64%;}
+  .promo-card span{font-size:13px;color:#fff;}
+  .promo-card strong{font-size:22px;color:#F0B743;font-family:'Vazirmatn';}
+  .promo-card button{margin-top:8px;background:#F0B743;color:#17382F;border:0;border-radius:999px;padding:9px 18px;font-family:inherit;font-weight:800;cursor:pointer;font-size:12px;}
+  @media (max-width:620px){.promo-grid{grid-template-columns:1fr;}.promo-card{min-height:130px}.promo-card>div{width:78%;padding:20px}.promo-card strong{font-size:18px}.carousel-arrow{width:31px;height:31px;font-size:16px}.carousel-shell{gap:3px}}
   /* categories home */
   .cat-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
   .cat-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:24px; text-align:center; cursor:pointer; transition:transform .2s ease;}
@@ -211,7 +218,11 @@
 
   /* product grid */
   .product-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  .carousel-track{display:flex; gap:16px; overflow-x:auto; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:2px 2px 10px;}
+  .carousel-shell{position:relative; display:flex; align-items:center; gap:8px; direction:ltr;}
+  .carousel-shell .carousel-track{flex:1; min-width:0;}
+  .carousel-arrow{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--teal);box-shadow:0 8px 18px -14px rgba(0,0,0,.35);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 auto;}
+  .carousel-arrow:hover{transform:translateY(-1px);background:var(--bg-alt);}
+  .carousel-track{direction:rtl; display:flex; gap:16px; overflow-x:auto; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; scroll-snap-type:x mandatory; padding:2px 2px 10px;}
   .carousel-track::-webkit-scrollbar{height:5px;}
   .carousel-track::-webkit-scrollbar-thumb{background:var(--line); border-radius:10px;}
   .carousel-item{flex:0 0 200px; scroll-snap-align:start; display:flex;}
@@ -684,9 +695,11 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
     <div class="hero-slider" id="heroSlider" aria-label="پیشنهادهای ویژه خانه‌گرم"></div>
     <div class="hero-quicklinks">
       <a class="ql-card" onclick="go('/products')"><div class="ql-ic">⭐</div><h4>جدیدترین‌ها</h4><p>تازه‌ترین انتخاب‌های فروشگاه</p></a>
-      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">♠️</div><h4>کارت‌های بازی</h4><p>برای بازی‌های مختلف</p></a>
-      <a class="ql-card" onclick="go('/track')"><div class="ql-ic">📦</div><h4>پیگیری سفارش</h4><p>وضعیت سفارشتون رو ببینید</p></a>
-      <a class="ql-card" href="https://wa.me/989999439534" target="_blank" rel="noopener"><div class="ql-ic">💬</div><h4>مشاوره واتساپ</h4><p>قبل از خرید راهنمایی بگیرید</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🎲</div><h4>تاس و شطرنج</h4><p>برای بازی‌های متفاوت</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">♠</div><h4>بازی‌های کارتی</h4><p>برای دورهمی‌های ماندگار</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🃏</div><h4>کارت</h4><p>انتخاب‌های متنوع پاسور</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🟢</div><h4>اکسسوری</h4><p>مکمل‌های کاربردی بازی</p></a>
+      <a class="ql-card" onclick="go('/products')"><div class="ql-ic">🎁</div><h4>پک‌های ویژه</h4><p>انتخاب آماده برای هدیه</p></a>
     </div>
   </div>
 
@@ -695,12 +708,27 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 
   <div id="featuredSection">
     <div class="section-head"><div class="eyebrow">🔥 انتخاب محبوب مشتری‌ها</div><h2>محبوب‌ترین محصولات</h2><p>محصولاتی که بیشتر دیده و انتخاب شده‌اند.</p></div>
-    <div class="carousel-track" id="homeFeatured"></div><div class="carousel-dots" id="homeFeaturedDots"></div>
+    <div class="carousel-shell">
+      <button class="carousel-arrow carousel-prev" type="button" onclick="scrollHomeCarousel('homeFeatured',-1)" aria-label="محصول قبلی">←</button>
+      <div class="carousel-track" id="homeFeatured"></div>
+      <button class="carousel-arrow carousel-next" type="button" onclick="scrollHomeCarousel('homeFeatured',1)" aria-label="محصول بعدی">→</button>
+    </div>
+    <div class="carousel-dots" id="homeFeaturedDots"></div>
   </div>
 
-  <div id="newestSection" style="margin-top:28px;">
-    <div class="section-head"><div class="eyebrow">تازه از راه رسیده</div><h2>جدیدترین محصولات</h2></div>
-    <div class="carousel-track" id="homeNewest"></div><div class="carousel-dots" id="homeNewestDots"></div>
+  <div class="promo-grid">
+    <div class="promo-card promo-discount" style="background-image:url('hero-home-3.webp');"><div><span>🔥 تخفیف‌های شگفت‌انگیز</span><strong>تا ۳۰٪ تخفیف</strong><button onclick="go('/products')">مشاهده همه ←</button></div></div>
+    <div class="promo-card promo-packs" style="background-image:url('hero-home-4.webp');"><div><span>🎁 پک‌های ویژه</span><strong>برای دورهمی‌های خاص</strong><button onclick="go('/products')">مشاهده پک‌ها ←</button></div></div>
+  </div>
+
+  <div id="newestSection" style="margin-top:46px;">
+    <div class="section-head"><div class="eyebrow">✨ تازه از راه رسیده</div><h2>جدیدترین محصولات</h2><p>جدیدترین انتخاب‌ها را قبل از بقیه ببین.</p></div>
+    <div class="carousel-shell">
+      <button class="carousel-arrow carousel-prev" type="button" onclick="scrollHomeCarousel('homeNewest',-1)" aria-label="محصول قبلی">←</button>
+      <div class="carousel-track" id="homeNewest"></div>
+      <button class="carousel-arrow carousel-next" type="button" onclick="scrollHomeCarousel('homeNewest',1)" aria-label="محصول بعدی">→</button>
+    </div>
+    <div class="carousel-dots" id="homeNewestDots"></div>
   </div>
 </section>
 
@@ -1734,9 +1762,15 @@ function updatePageMeta(path, params){
 
 /* ============ ROUTER ============ */
 function parseLocation(){
-  // Clean URLs are canonical. Hash URLs remain supported for backwards compatibility.
+  // Clean URLs are canonical. GitHub Pages sends unknown clean routes to 404.html;
+  // that page stores the original path in sessionStorage before returning here.
+  let recovered = '';
+  try { recovered = sessionStorage.getItem('__khanegarm_spa_path') || ''; if(recovered) sessionStorage.removeItem('__khanegarm_spa_path'); } catch(e) {}
   let path = location.pathname || '/';
   let search = location.search || '';
+  if(recovered){
+    try { const u = new URL(recovered, location.origin); path = u.pathname || '/'; search = u.search || ''; } catch(e) {}
+  }
   if(location.hash){
     const h = location.hash.replace(/^#/,'') || '/';
     const parts = h.split('?');
@@ -1965,7 +1999,7 @@ function renderHeroSlider(){
     <img class="hero-slide-media" src="${escapeHtml(active.image)}" alt="" ${HERO_INDEX===0?'fetchpriority="high" loading="eager"':'loading="lazy"'} decoding="async">
     <div class="hero-slide-content">
       <div class="eyebrow">${escapeHtml(active.eyebrow)}</div>
-      <h1>${escapeHtml(active.title).replace(escapeHtml(active.highlight),`<em>${escapeHtml(active.highlight)}</em>`)}</h1>
+      <h1>${active.highlight && escapeHtml(active.title).includes(escapeHtml(active.highlight)) ? escapeHtml(active.title).replace(escapeHtml(active.highlight),`<em>${escapeHtml(active.highlight)}</em>`) : escapeHtml(active.title)}</h1>
       <p>${escapeHtml(active.description)}</p>
       <div class="hero-ctas"><a class="btn-primary" onclick="heroCta('${escapeHtml(active.ctaPath)}')">${escapeHtml(active.ctaText)} ←</a></div>
       <div class="hero-trust"><span><i class="dot"></i> ارسال به سراسر کشور</span><span><i class="dot"></i> پشتیبانی واقعی</span><span><i class="dot"></i> پرداخت امن</span></div>
@@ -1990,6 +2024,11 @@ function stopHomeCarousels(){
 document.addEventListener('visibilitychange', ()=>{
   Object.values(carouselState).forEach(st=>{ st.tabHidden = document.hidden; });
 });
+function scrollHomeCarousel(trackId,direction){
+  const track=document.getElementById(trackId); if(!track)return;
+  const amount=Math.max(220,Math.floor(track.clientWidth*.78));
+  track.scrollBy({left:direction*amount,behavior:'smooth'});
+}
 function initAutoCarousel(trackId, dotsId){
   const track = document.getElementById(trackId);
   if(!track) return;
@@ -2186,7 +2225,7 @@ function renderRelatedProducts(p){
 let pdCurrentImages = [];
 function pdSwitchImage(i){
   const mainImg = document.getElementById('pdMainImg');
-  if(mainImg && pdCurrentImages[i]) mainImg.src = pdCurrentImages[i];
+  if(mainImg && pdCurrentImages[i]){ mainImg.src = pdCurrentImages[i]; mainImg.dataset.fullsrc = pdCurrentImages[i]; }
   document.querySelectorAll('.pd-thumbs .th').forEach(el=>el.classList.toggle('active', parseInt(el.dataset.idx)===i));
 }
 let pdQtyRaw = 1;
