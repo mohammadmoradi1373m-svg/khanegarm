@@ -914,7 +914,7 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
         <label>رمز عبور<input id="accountRegPassword" type="password" autocomplete="new-password" minlength="8" placeholder="حداقل ۸ کاراکتر" required></label>
         <label>تکرار رمز عبور<input id="accountRegPassword2" type="password" autocomplete="new-password" minlength="8" placeholder="تکرار رمز عبور" required></label>
       </div>
-      <p class="account-note">ایمیل فقط برای بازیابی رمز عبور است. ورود شما با نام کاربری و رمز عبور انجام می‌شود.</p>
+      <p class="account-note">ایمیل فقط برای بازیابی رمز عبور است و نیازی به تأیید آن برای ورود ندارید. ورود شما با نام کاربری و رمز عبور انجام می‌شود.</p>
       <button class="btn-primary" type="submit">ساخت حساب</button>
       <p id="accountRegisterError" class="account-error" hidden></p>
     </form>
@@ -954,7 +954,7 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 
   <div id="accountRecoveryComplete" class="card account-recovery-complete" hidden>
     <div class="eyebrow">بازیابی رمز عبور</div><h3>رمز عبور جدید</h3>
-    <p class="account-note">رمز جدیدت را وارد کن. بعد از ذخیره، می‌توانی با شماره موبایل وارد حساب شوی.</p>
+    <p class="account-note">رمز جدیدت را وارد کن. بعد از ذخیره، می‌توانی با نام کاربری وارد حساب شوی.</p>
     <form class="account-form" onsubmit="event.preventDefault(); accountCompleteRecovery();">
       <label>رمز عبور جدید<input id="accountNewPassword" type="password" minlength="8" autocomplete="new-password" required></label>
       <label>تکرار رمز عبور<input id="accountNewPassword2" type="password" minlength="8" autocomplete="new-password" required></label>
@@ -2963,8 +2963,8 @@ function friendlyProfileError(error){
 }
 function friendlyAuthError(error){
   const m=String(error?.message||'');
-  if(/invalid login credentials/i.test(m)) return 'شماره موبایل یا رمز عبور اشتباه است.';
-  if(/already registered|already been registered/i.test(m)) return 'این شماره موبایل قبلاً ثبت شده است.';
+  if(/invalid login credentials/i.test(m)) return 'نام کاربری یا رمز عبور اشتباه است.';
+  if(/already registered|already been registered|user already exists/i.test(m)) return 'این ایمیل قبلاً برای یک حساب استفاده شده است. اگر حساب داری، وارد شو یا از بازیابی رمز عبور استفاده کن.';
   if(/password/i.test(m)&&/weak|short|characters/i.test(m)) return 'رمز عبور ضعیف است؛ حداقل ۸ کاراکتر انتخاب کن.';
   if(/phone/i.test(m)&&/disabled|not enabled/i.test(m)) return 'ورود با شماره موبایل در تنظیمات احراز هویت فعال نیست.';
   return 'عملیات احراز هویت انجام نشد؛ لطفاً دوباره امتحان کن.';
