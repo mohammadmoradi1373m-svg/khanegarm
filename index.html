@@ -548,9 +548,129 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 @media(max-width:860px){.header-main-row .nav{grid-template-columns:auto minmax(0,1fr) auto;gap:10px}.nav-brand .logo{font-size:20px}.nav-actions{gap:6px}.header-main-row .nav-search{height:38px}.header-main-row .nav-search button{width:30px;height:30px}.account-btn{height:38px;min-width:38px;padding:0 9px}.header-heart{width:38px;height:38px}.cart-btn{padding:8px 11px;font-size:11px}.header-menu-row .desktop-nav{justify-content:flex-start;gap:22px;padding-left:14px;padding-right:14px}.account-cart-list{grid-template-columns:1fr 1fr}.pd-gallery-main{min-height:330px}}
 @media(max-width:620px){.header-main-row .nav{padding:7px 12px;grid-template-columns:auto 1fr auto}.nav-brand{gap:6px}.nav-brand .logo{font-size:18px}.nav-brand .logo svg{width:21px;height:21px}.header-main-row .nav-search input{font-size:11px}.account-btn .account-label{display:none}.header-heart{display:flex}.cart-btn{font-size:0;width:40px;height:38px;justify-content:center;padding:0}.cart-btn:before{content:'🛍️';font-size:17px}.cart-count{font-size:10px}.header-menu-row .desktop-nav{min-height:38px;gap:19px}.header-menu-row .desktop-nav a{font-size:11px}.checkout-profile-fields{grid-template-columns:1fr}.checkout-profile-fields .full{grid-column:auto}.account-cart-list{grid-template-columns:1fr}.account-cart-foot{align-items:stretch;flex-direction:column}.account-cart-foot .btn-primary{width:100%}.pd-info-card{padding:19px}.pd-title{font-size:29px}.pd-price{font-size:25px}.pd-buy-row{grid-template-columns:88px 1fr}.pd-benefits{grid-template-columns:1fr 1fr 1fr}.reviews-box{padding:15px}.hero-slider{border-radius:20px}.hero-slide-content{padding:25px 20px 28px}.hero h1{font-size:29px}[data-route="/"] .section-head h2{font-size:25px}}
 </style>
-<style id="v14-admin-customer-orders">.admin-customer-order-summary{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;padding:9px 11px;border:1px solid #E5D9C7;background:#FFFCF7;border-radius:11px;font-size:11px;color:var(--ink-soft)}.admin-customer-order-summary span{padding-left:8px;border-left:1px solid #E5D9C7}.admin-customer-order-summary span:last-child{border-left:0}.admin-customer-orders{margin:8px 0 12px;border:1px solid #E5D9C7;border-radius:11px;background:#FFFCF7;overflow:hidden}.admin-customer-orders summary{cursor:pointer;padding:9px 11px;font-size:11.5px;font-weight:700}.admin-customer-order-row{display:flex;justify-content:space-between;gap:10px;padding:8px 11px;border-top:1px dashed #E5D9C7;font-size:10.5px}.admin-customer-order-row span:last-child{color:var(--ink-soft);text-align:left}@media(max-width:520px){.admin-customer-order-row{flex-direction:column}.admin-customer-order-summary span{border-left:0}} </style>
 <style id="v12-recovery-error">.account-recovery-invalid{text-align:center;max-width:520px;margin:20px auto;padding:34px 26px}.recovery-error-icon{width:58px;height:58px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#F8EDE4;color:var(--rust);font-size:28px;font-weight:800}.account-recovery-invalid .eyebrow{margin-bottom:9px}.account-recovery-invalid h3{font-size:24px;margin-bottom:8px}.recovery-error-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:18px}.recovery-error-actions .btn-primary,.recovery-error-actions .btn-ghost{min-width:150px}@media(max-width:520px){.account-recovery-invalid{padding:28px 18px}.recovery-error-actions>*{width:100%}}</style>
 <style id="v13-account-orders">.account-order-group{display:grid;gap:9px}.account-order-group+.account-order-group{margin-top:8px;padding-top:10px;border-top:1px dashed var(--line)}.account-order-group h4{font-size:11.5px;color:var(--ink-soft);display:flex;justify-content:space-between}.account-order-group h4 span{background:#EEF4EF;color:var(--teal);border-radius:999px;padding:2px 7px;font-size:10px}</style>
+
+<style id="v14-home-luxury-mobile">
+/* V14 — Home storefront polish: balanced mobile rhythm, stronger hierarchy, cleaner cards */
+:root{
+  --lux-green:#0A5A4E;
+  --lux-green-2:#124A40;
+  --lux-gold:#D7A63B;
+  --lux-cream:#FBF6EC;
+  --lux-border:#E3D5BE;
+}
+
+/* Home rhythm */
+[data-route="/"]{padding-top:0;}
+[data-route="/"] .hero{padding:16px 0 10px;}
+[data-route="/"] .hero-slider{border:1px solid rgba(255,255,255,.14);box-shadow:0 22px 55px rgba(11,76,64,.16);}
+[data-route="/"] .hero-quicklinks{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:16px;}
+[data-route="/"] .ql-card{min-width:0;padding:15px 9px 13px;border-radius:17px;background:rgba(255,252,246,.94);box-shadow:0 8px 22px rgba(17,63,54,.055);}
+[data-route="/"] .ql-ic{width:40px;height:40px;margin-bottom:8px;font-size:18px;}
+[data-route="/"] .ql-card h4{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+[data-route="/"] .ql-card p{font-size:10.5px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
+[data-route="/"] .section-head{margin-top:30px;margin-bottom:20px;}
+[data-route="/"] .section-head .eyebrow{margin-bottom:9px;}
+[data-route="/"] .section-head h2{font-size:29px;line-height:1.45;}
+[data-route="/"] .section-head p{font-size:13.5px;}
+[data-route="/"] #homeCatGrid{margin-bottom:34px;}
+[data-route="/"] .cat-card{min-width:0;padding:16px 8px;border-radius:17px;}
+[data-route="/"] .cat-card h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+[data-route="/"] #featuredSection,
+[data-route="/"] #newestSection{padding-top:4px;}
+[data-route="/"] .promo-grid{margin-top:28px;}
+
+/* Product cards: more premium, less visual noise */
+[data-route="/"] .carousel-item{flex-basis:214px;}
+[data-route="/"] .p-card{padding:12px;border-radius:17px;box-shadow:0 7px 24px rgba(17,63,54,.055);}
+[data-route="/"] .p-thumb{border-radius:13px;margin-bottom:11px;background:#F0E9DD;}
+[data-route="/"] .p-card .desc{font-size:12px;line-height:1.65;margin-bottom:10px;}
+[data-route="/"] .price{font-size:15.5px;}
+[data-route="/"] .add-btn{width:35px;height:35px;background:#EEF3EE;color:var(--lux-green);}
+[data-route="/"] .stock-note{font-size:10.5px;}
+
+/* Desktop */
+@media (min-width:861px){
+  [data-route="/"] .hero-slider{min-height:430px;}
+  [data-route="/"] .hero-slide{min-height:430px;}
+  [data-route="/"] .hero-slide-content{min-height:430px;}
+  [data-route="/"] .cat-grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;}
+}
+
+/* Tablet / mobile */
+@media (max-width:860px){
+  .wrap{padding-left:14px;padding-right:14px;}
+  .header-main-row .nav{min-height:60px;padding:6px 12px;gap:8px;}
+  .nav-brand .logo{font-size:18px;}
+  .nav-brand .logo svg{width:21px;height:21px;}
+  .nav-actions{gap:5px;}
+  .header-main-row .nav-search{height:38px;padding-left:5px;}
+  .header-main-row .nav-search input{font-size:11px;}
+  .header-main-row .nav-search button{width:30px;height:30px;}
+  .account-btn{width:37px;min-width:37px;height:37px;}
+  .header-heart{width:37px;height:37px;}
+  .cart-btn{width:38px;height:37px;}
+  .header-menu-row .desktop-nav{min-height:36px;gap:18px;padding-left:12px;padding-right:12px;overflow-x:auto;scrollbar-width:none;justify-content:flex-start;}
+  .header-menu-row .desktop-nav::-webkit-scrollbar{display:none;}
+  .header-menu-row .desktop-nav a{font-size:10.5px;}
+
+  [data-route="/"] .hero{padding-top:12px;}
+  [data-route="/"] .hero-slider{border-radius:20px;}
+  [data-route="/"] .hero-slide{min-height:285px;}
+  [data-route="/"] .hero-slide-content{min-height:285px;width:72%;padding:22px 18px 27px 16px;}
+  [data-route="/"] .hero-slide h1{font-size:27px;line-height:1.4;margin-bottom:8px;}
+  [data-route="/"] .hero-slide p{font-size:11.5px;line-height:1.9;margin-bottom:13px;}
+  [data-route="/"] .hero-slide .eyebrow{font-size:10.5px;padding:5px 10px;margin-bottom:9px;}
+  [data-route="/"] .hero-slide .btn-primary{padding:9px 16px;font-size:12px;}
+  [data-route="/"] .hero-trust{gap:7px 11px;margin-top:10px;font-size:9.5px;}
+  [data-route="/"] .hero-arrow{width:34px;height:34px;font-size:18px;}
+  [data-route="/"] .hero-nav{padding:0 9px;}
+
+  [data-route="/"] .hero-quicklinks{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:11px;}
+  [data-route="/"] .ql-card{padding:10px 6px 9px;border-radius:14px;}
+  [data-route="/"] .ql-ic{width:34px;height:34px;font-size:16px;margin-bottom:6px;}
+  [data-route="/"] .ql-card h4{font-size:11px;}
+  [data-route="/"] .ql-card p{display:none;}
+
+  [data-route="/"] .section-head{margin-top:26px;margin-bottom:16px;}
+  [data-route="/"] .section-head h2{font-size:24px;}
+  [data-route="/"] .section-head p{font-size:12px;line-height:1.8;}
+  [data-route="/"] #homeCatGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:26px;}
+  [data-route="/"] .cat-card{padding:12px 5px;border-radius:14px;}
+  [data-route="/"] .cat-ic-wrap{width:44px;height:44px;margin-bottom:6px;}
+  [data-route="/"] .cat-card h3{font-size:11px;margin-bottom:1px;}
+  [data-route="/"] .cat-card p{font-size:8.5px;}
+
+  [data-route="/"] .carousel-shell{gap:4px;}
+  [data-route="/"] .carousel-item{flex-basis:190px;}
+  [data-route="/"] .carousel-arrow{width:32px;height:32px;font-size:15px;}
+  [data-route="/"] .carousel-track{gap:10px;padding-bottom:7px;}
+  [data-route="/"] .promo-grid{gap:9px;margin-top:22px;}
+  [data-route="/"] .promo-card{min-height:126px;border-radius:16px;}
+  [data-route="/"] .promo-card>div{padding:16px;width:80%;}
+  [data-route="/"] .promo-card strong{font-size:17px;}
+  [data-route="/"] .promo-card span{font-size:10.5px;}
+  [data-route="/"] .promo-card button{padding:7px 13px;font-size:10.5px;}
+}
+
+@media (max-width:520px){
+  [data-route="/"] .hero-slide-content{width:78%;padding:20px 16px 25px 13px;}
+  [data-route="/"] .hero-slide h1{font-size:25px;}
+  [data-route="/"] .hero-slide p{font-size:10.5px;max-width:250px;}
+  [data-route="/"] .hero-trust span:nth-child(3){display:none;}
+  [data-route="/"] .carousel-item{flex-basis:185px;}
+}
+
+@media (max-width:390px){
+  [data-route="/"] .hero-slide{min-height:265px;}
+  [data-route="/"] .hero-slide-content{min-height:265px;width:82%;padding-top:18px;}
+  [data-route="/"] .hero-slide h1{font-size:22px;}
+  [data-route="/"] .hero-slide p{display:none;}
+  [data-route="/"] .ql-card{padding-left:4px;padding-right:4px;}
+}
+</style>
+
 </head>
 <body>
 
@@ -2751,7 +2871,7 @@ async function submitOrder(){
   flag(nameEl, !name);
   flag(phoneEl, !phone || !isValidPhone(phone));
   flag(provinceEl, !province || !PROVINCE_CITIES[province]);
-  flag(cityEl, !isValidProvinceCity(province, city));
+  flag(cityEl, !city || city.length < 2);
   flag(addressEl, !address || address.length < 15);
   flag(postalEl, !/^[0-9]{10}$/.test(postalCode));
   if(!shipEl){ shipBox.classList.add('field-error'); if(!firstInvalid) firstInvalid = shipBox; }
@@ -2851,18 +2971,6 @@ async function submitOrder(){
     return;
   }
 
-  // For signed-in customers, persist any checkout-completed profile fields so the next order can reuse them.
-  try{
-    const {data:{session}}=await sbClient.auth.getSession();
-    if(session){
-      const {data:profile}=await sbClient.from('customers').select('username').eq('user_id',session.user.id).maybeSingle();
-      if(profile?.username){
-        const profileSync=await syncMyCustomerProfile(name, session.user.email||null, address, postalCode, profile.username, phone, province, city);
-        if(profileSync.error) console.warn('[account] checkout profile sync failed:',profileSync.error);
-      }
-    }
-  }catch(e){ console.warn('[account] checkout profile sync exception:',e); }
-
   cart = [];
   persistCart();
   renderCart();
@@ -2951,7 +3059,6 @@ function normalizePhone(v){
 }
 function toAuthPhone(v){ const p=normalizePhone(v); return p.startsWith('09') ? '+98'+p.slice(1) : p; }
 function validIranPhone(v){ return /^09\d{9}$/.test(normalizePhone(v)); }
-function isValidProvinceCity(province, city){ const cities=PROVINCE_CITIES[String(province||'')]||[]; return cities.includes(String(city||'').trim()); }
 function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim()); }
 function accountMessage(el,msg,ok=false){ if(!el)return; el.textContent=msg||''; el.hidden=!msg; if(ok) el.classList.add('ok'); else el.classList.remove('ok'); }
 function accountClearMessages(){ document.querySelectorAll('#accountAuthBox .account-error,#accountAuthBox .account-note,#accountPanel .account-error,#accountPanel .account-note').forEach(el=>{if(el.id!=='accountRecoveryMsg') el.hidden=true;}); }
@@ -3052,7 +3159,7 @@ async function accountRegister(){
   if(!validUsername(username)){accountMessage(err,'نام کاربری باید ۳ تا ۳۲ کاراکتر و فقط شامل حروف انگلیسی، عدد یا _ باشد.');return;}
   if(!validIranPhone(phone)){accountMessage(err,'شماره موبایل معتبر نیست.');return;}
   if(!validEmail(email)){accountMessage(err,'ایمیل بازیابی معتبر نیست.');return;}
-  if(!isValidProvinceCity(province,city)){accountMessage(err,'استان و شهر را درست انتخاب کن.');return;}
+  if(!PROVINCE_CITIES[province]||!city){accountMessage(err,'استان و شهر را انتخاب کن.');return;}
   if(!/^[0-9]{10}$/.test(postal)){accountMessage(err,'کد پستی باید دقیقاً ۱۰ رقم باشد.');return;}
   if(address.length<15){accountMessage(err,'آدرس را کامل‌تر وارد کن.');return;}
   if(pw.length<8){accountMessage(err,'رمز عبور باید حداقل ۸ کاراکتر باشد.');return;}
@@ -3156,7 +3263,7 @@ function accountProvinceChanged(){const p=document.getElementById('accountProfil
 function accountRegisterProvinceChanged(){const p=document.getElementById('accountRegProvince'),c=document.getElementById('accountRegCity');populateCitySelect(c,p?.value||'','');}
 async function accountSaveProfile(){
   const name=document.getElementById('accountProfileName').value.trim(),email=document.getElementById('accountProfileEmail').value.trim().toLowerCase(),province=document.getElementById('accountProfileProvince').value.trim(),city=document.getElementById('accountProfileCity').value.trim(),address=document.getElementById('accountProfileAddress').value.trim(),postal=document.getElementById('accountProfilePostal').value.trim(),msg=document.getElementById('accountProfileMsg'),err=document.getElementById('accountProfileError'); msg.hidden=true;err.hidden=true;
-  if(name.length<2){accountMessage(err,'نام معتبر وارد کن.');return;} if(!isValidProvinceCity(province,city)){accountMessage(err,'استان و شهر را درست انتخاب کن.');return;} if(!validEmail(email)){accountMessage(err,'ایمیل معتبر وارد کن.');return;} if(postal && !/^\d{10}$/.test(postal)){accountMessage(err,'کد پستی باید ۱۰ رقم باشد.');return;}
+  if(name.length<2){accountMessage(err,'نام معتبر وارد کن.');return;} if(!PROVINCE_CITIES[province]||!city){accountMessage(err,'استان و شهر را انتخاب کن.');return;} if(!validEmail(email)){accountMessage(err,'ایمیل معتبر وارد کن.');return;} if(postal && !/^\d{10}$/.test(postal)){accountMessage(err,'کد پستی باید ۱۰ رقم باشد.');return;}
   const {data:{user}}=await sbClient.auth.getUser(); if(!user)return;
   if(email!==String(user.email||'').toLowerCase()){
     const {error}=await sbClient.auth.updateUser({email}); if(error){accountMessage(err,'تغییر ایمیل انجام نشد: '+friendlyAuthError(error));return;}
@@ -3204,16 +3311,11 @@ let adminCurrentTab = 'dashboard';
 
 let adminCustomersCache=[];
 let adminFilteredCustomersCache=[];
-let adminCustomerOrdersMap=new Map();
 async function renderAdminCustomers(){
   const box=document.getElementById('adminCustomers'); if(!box)return; box.innerHTML='<p style="text-align:center;color:var(--ink-soft);">در حال بارگذاری مشتریان...</p>';
   const {data,error}=await sbClient.from('customers').select('phone,username,name,address,created_at,postal_code,email,user_id,province,city').order('created_at',{ascending:false});
   if(error){box.innerHTML='<p style="color:var(--rust);">دریافت مشتریان ناموفق بود.</p>';return;}
-  adminCustomersCache=data||[];
-  adminCustomerOrdersMap=new Map();
-  const {data:orderRows, error:orderError}=await sbClient.from('orders').select('phone,order_code,status,created_at,tracking_code,payment_status,subtotal').order('created_at',{ascending:false});
-  if(!orderError && Array.isArray(orderRows)){ orderRows.forEach(o=>{ const key=normalizePhone(o.phone); if(!adminCustomerOrdersMap.has(key)) adminCustomerOrdersMap.set(key,[]); adminCustomerOrdersMap.get(key).push(o); }); }
-  filterAdminCustomers();
+  adminCustomersCache=data||[]; filterAdminCustomers();
 }
 function setAdminCustomerSegment(segment){
   adminCustomerSegment=segment; document.querySelectorAll('.customer-segment-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.segment===segment)); filterAdminCustomers();
@@ -3223,7 +3325,7 @@ function filterAdminCustomers(){
   let base=adminCustomerSegment==='users'?adminCustomersCache.filter(c=>!!c.user_id):adminCustomerSegment==='guests'?adminCustomersCache.filter(c=>!c.user_id):adminCustomersCache;
   adminFilteredCustomersCache=!q?base:base.filter(c=>[c.username,c.name,c.phone,c.email,c.address,c.province,c.city].some(v=>String(v||'').toLowerCase().includes(q)));
   const box=document.getElementById('adminCustomers'); if(!box)return;
-  box.innerHTML=adminFilteredCustomersCache.length?adminFilteredCustomersCache.map(c=>{const pid='ac_'+String(c.phone).replace(/[^a-zA-Z0-9_]/g,'_'); const customerOrders=adminCustomerOrdersMap.get(normalizePhone(c.phone))||[]; const latestOrder=customerOrders[0]; const statusText=latestOrder?(ORDER_STATUS_LABELS[String(latestOrder.status)]||'نامشخص'):'بدون سفارش'; return `<div class="card admin-customer-card"><div class="admin-customer-head"><div><strong>${escapeHtml(c.name||'بدون نام')}</strong><span>${escapeHtml(c.phone)} ${c.email?`· ${escapeHtml(c.email)}`:'· ایمیل ثبت نشده'}</span></div><span class="customer-account-badge ${c.user_id?'has-account':'guest-account'}">${c.user_id?'حساب فعال':'مهمان'}</span></div><div class="admin-customer-order-summary"><span>سفارش‌ها: <b>${toFa(customerOrders.length)}</b></span><span>آخرین وضعیت: <b>${escapeHtml(statusText)}</b></span>${latestOrder?.tracking_code?`<span>رهگیری: <b>${escapeHtml(latestOrder.tracking_code)}</b></span>`:''}</div>${customerOrders.length?`<details class="admin-customer-orders"><summary>مشاهده سوابق سفارش (${toFa(customerOrders.length)})</summary><div>${customerOrders.map(o=>`<div class="admin-customer-order-row"><span><b>${escapeHtml(o.order_code)}</b> · ${escapeHtml(ORDER_STATUS_LABELS[String(o.status)]||'نامشخص')}</span><span>${escapeHtml(o.payment_status||'—')} · ${formatToman(Number(o.subtotal)||0)}</span></div>`).join('')}</div></details>`:''}<div class="admin-customer-grid"><label>نام<input id="${pid}_name" value="${escapeHtml(c.name||'')}" maxlength="120"></label><label>نام کاربری${c.user_id?`<input id="${pid}_username" value="${escapeHtml(c.username||'')}" maxlength="32" pattern="[A-Za-z0-9_]{3,32}">`:'<input value="—" disabled>'}</label><label>شماره موبایل<input id="${pid}_phone" value="${escapeHtml(c.phone||'')}" maxlength="11" readonly></label><label>ایمیل بازیابی${c.user_id?`<input id="${pid}_email" value="${escapeHtml(c.email||'')}" maxlength="254" type="email">`:'<input value="—" disabled>'}</label><label>استان<select id="${pid}_province" onchange="adminCustomerProvinceChanged('${pid}')"></select></label><label>شهر / شهرستان<select id="${pid}_city"></select></label><label>کد پستی<input id="${pid}_postal" value="${escapeHtml(c.postal_code||'')}" maxlength="10"></label><label class="full">آدرس دقیق<input id="${pid}_address" value="${escapeHtml(c.address||'')}" maxlength="1000"></label></div><div class="admin-customer-actions"><button class="btn-primary" style="padding:9px 15px;font-size:12px;" onclick="saveAdminCustomer('${escapeHtml(c.phone)}','${pid}')">ذخیره اطلاعات</button>${c.user_id?`<button class="btn-ghost" style="padding:9px 15px;font-size:12px;" onclick="resetAdminCustomerPassword('${escapeHtml(c.user_id)}')">تعیین رمز جدید</button>`:''}</div></div>`}).join(''):'<div class="card"><p style="text-align:center;color:var(--ink-soft);">مشتری‌ای در این گروه پیدا نشد.</p></div>';
+  box.innerHTML=adminFilteredCustomersCache.length?adminFilteredCustomersCache.map(c=>{const pid='ac_'+String(c.phone).replace(/[^a-zA-Z0-9_]/g,'_'); return `<div class="card admin-customer-card"><div class="admin-customer-head"><div><strong>${escapeHtml(c.name||'بدون نام')}</strong><span>${escapeHtml(c.phone)} ${c.email?`· ${escapeHtml(c.email)}`:'· ایمیل ثبت نشده'}</span></div><span class="customer-account-badge ${c.user_id?'has-account':'guest-account'}">${c.user_id?'حساب فعال':'مهمان'}</span></div><div class="admin-customer-grid"><label>نام<input id="${pid}_name" value="${escapeHtml(c.name||'')}" maxlength="120"></label><label>نام کاربری${c.user_id?`<input id="${pid}_username" value="${escapeHtml(c.username||'')}" maxlength="32" pattern="[A-Za-z0-9_]{3,32}">`:'<input value="—" disabled>'}</label><label>شماره موبایل<input id="${pid}_phone" value="${escapeHtml(c.phone||'')}" maxlength="11" readonly></label><label>ایمیل بازیابی${c.user_id?`<input id="${pid}_email" value="${escapeHtml(c.email||'')}" maxlength="254" type="email">`:'<input value="—" disabled>'}</label><label>استان<select id="${pid}_province" onchange="adminCustomerProvinceChanged('${pid}')"></select></label><label>شهر / شهرستان<select id="${pid}_city"></select></label><label>کد پستی<input id="${pid}_postal" value="${escapeHtml(c.postal_code||'')}" maxlength="10"></label><label class="full">آدرس دقیق<input id="${pid}_address" value="${escapeHtml(c.address||'')}" maxlength="1000"></label></div><div class="admin-customer-actions"><button class="btn-primary" style="padding:9px 15px;font-size:12px;" onclick="saveAdminCustomer('${escapeHtml(c.phone)}','${pid}')">ذخیره اطلاعات</button>${c.user_id?`<button class="btn-ghost" style="padding:9px 15px;font-size:12px;" onclick="resetAdminCustomerPassword('${escapeHtml(c.user_id)}')">تعیین رمز جدید</button>`:''}</div></div>`}).join(''):'<div class="card"><p style="text-align:center;color:var(--ink-soft);">مشتری‌ای در این گروه پیدا نشد.</p></div>';
   adminFilteredCustomersCache.forEach(c=>{const pid='ac_'+String(c.phone).replace(/[^a-zA-Z0-9_]/g,'_');const ps=document.getElementById(pid+'_province');const cs=document.getElementById(pid+'_city');populateProvinceSelect(ps,c.province||'');populateCitySelect(cs,c.province||'',c.city||'');});
 }
 function adminCustomerProvinceChanged(pid){const p=document.getElementById(pid+'_province'),c=document.getElementById(pid+'_city');populateCitySelect(c,p?.value||'','');}
