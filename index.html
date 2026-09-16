@@ -2844,30 +2844,33 @@ function switchAccountAuthTab(tab){
   const title=document.getElementById('accountPageTitle'), sub=document.getElementById('accountPageSubtitle');
   if(title&&sub){ const m={login:['ورود به حساب','با نام کاربری و رمز عبور وارد حساب شخصی خودت شو.'],register:['ساخت حساب','حساب شخصی خودت را بساز تا سفارش‌ها و اطلاعاتت همیشه همراهت باشد.'],recovery:['بازیابی رمز عبور','لینک بازیابی را به ایمیل ثبت‌شده حساب می‌فرستیم.']}; title.textContent=m[tab][0]; sub.textContent=m[tab][1]; }
 }
+let accountRecoveryFlow=false;
 async function prepareAuthCallback(){
-  // Supabase may return recovery callbacks as either an implicit-flow hash
-  // (#access_token=...&type=recovery) or a PKCE query (?code=...).
-  // For PKCE, exchange the one-time code before rendering the account page.
+  // Supabase recovery callbacks can arrive as an implicit-flow hash or a PKCE code.
+  // Keep an explicit in-memory recovery flag so the code is not lost when the URL is cleaned.
+  const hash=String(location.hash||'');
   const qs=new URLSearchParams(location.search||'');
   const code=qs.get('code');
+  if(/type=recovery/i.test(hash) || qs.get('type')==='recovery' || code) accountRecoveryFlow=true;
   if(code){
     try{
       const {error}=await sbClient.auth.exchangeCodeForSession(code);
-      if(error) console.warn('[auth] recovery code exchange failed',error);
-      else{
-        const next=new URL(location.href);
-        next.searchParams.delete('code');
-        history.replaceState({},'',next.pathname+(next.search?'?'+next.searchParams.toString():'')+(location.hash||''));
+      if(error){
+        console.warn('[auth] recovery code exchange failed',error);
+        return;
       }
+      const next=new URL(location.href);
+      next.searchParams.delete('code');
+      next.searchParams.delete('type');
+      history.replaceState({},'',next.pathname+(next.search?'?'+next.searchParams.toString():'')+(location.hash||''));
     }catch(e){ console.warn('[auth] recovery callback failed',e); }
   }
 }
 async function renderAccountRoute(){
   const {data:{session}}=await sbClient.auth.getSession();
   const authBox=document.getElementById('accountAuthBox'), panel=document.getElementById('accountPanel'), recovery=document.getElementById('accountRecoveryComplete');
-  const recovering=location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('type')==='recovery' || !!new URLSearchParams(location.search).get('code');
-  if(recovery){};
-  if(recovering || session && location.hash.includes('type=recovery')){ authBox.hidden=true; panel.hidden=true; recovery.hidden=false; return; }
+  const recovering=accountRecoveryFlow || location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('type')==='recovery' || !!new URLSearchParams(location.search).get('code');
+  if(recovering){ authBox.hidden=true; panel.hidden=true; recovery.hidden=false; return; }
   recovery.hidden=true;
   if(session){ authBox.hidden=true; panel.hidden=false; await loadAccountProfileAndOrders(); }
   else { authBox.hidden=false; panel.hidden=true; switchAccountAuthTab(accountAuthTab); }
@@ -2926,8 +2929,11 @@ async function accountCompleteRecovery(){
   const pw=document.getElementById('accountNewPassword').value,pw2=document.getElementById('accountNewPassword2').value,err=document.getElementById('accountRecoveryCompleteError'); err.hidden=true;
   if(pw.length<8){accountMessage(err,'رمز عبور باید حداقل ۸ کاراکتر باشد.');return;}
   if(pw!==pw2){accountMessage(err,'تکرار رمز عبور یکسان نیست.');return;}
+  const {data:{session}}=await sbClient.auth.getSession();
+  if(!session){accountMessage(err,'جلسه بازیابی معتبر نیست یا منقضی شده است. از ایمیل بازیابی جدید وارد شو.');return;}
   const {error}=await sbClient.auth.updateUser({password:pw});
-  if(error){accountMessage(err,'تغییر رمز عبور انجام نشد؛ دوباره از لینک بازیابی وارد شو.');return;}
+  if(error){console.warn('[auth] password update failed',error);accountMessage(err,'تغییر رمز عبور انجام نشد؛ دوباره از لینک بازیابی وارد شو.');return;}
+  accountRecoveryFlow=false;
   history.replaceState({},'', '/account'); showToast('رمز عبور با موفقیت تغییر کرد ✅'); await renderAccountRoute();
 }
 async function syncMyCustomerProfile(name,email,address,postal,username,phone){
