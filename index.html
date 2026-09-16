@@ -2845,6 +2845,7 @@ function switchAccountAuthTab(tab){
   if(title&&sub){ const m={login:['ورود به حساب','با نام کاربری و رمز عبور وارد حساب شخصی خودت شو.'],register:['ساخت حساب','حساب شخصی خودت را بساز تا سفارش‌ها و اطلاعاتت همیشه همراهت باشد.'],recovery:['بازیابی رمز عبور','لینک بازیابی را به ایمیل ثبت‌شده حساب می‌فرستیم.']}; title.textContent=m[tab][0]; sub.textContent=m[tab][1]; }
 }
 let accountRecoveryFlow=false;
+try{ accountRecoveryFlow=sessionStorage.getItem('__owli_password_recovery')==='1'; }catch(e){}
 async function prepareAuthCallback(){
   // Supabase recovery callbacks can arrive as an implicit-flow hash or a PKCE code.
   // Keep an explicit in-memory recovery flag so the code is not lost when the URL is cleaned.
@@ -2854,9 +2855,14 @@ async function prepareAuthCallback(){
   const type=qs.get('type');
   const errorCode=qs.get('error_code') || new URLSearchParams(hash.replace(/^#/,'')).get('error_code');
   const errorDescription=qs.get('error_description') || new URLSearchParams(hash.replace(/^#/,'')).get('error_description');
-  if(/type=recovery/i.test(hash) || type==='recovery' || code) accountRecoveryFlow=true;
+  if(/type=recovery/i.test(hash) || type==='recovery' || code){
+    accountRecoveryFlow=true;
+    try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
+  }
   if(errorCode || errorDescription){
     accountRecoveryFlow=true;
+    try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
+
     const msg=document.getElementById('accountRecoveryCompleteError');
     if(msg) accountMessage(msg,'لینک بازیابی معتبر نیست یا منقضی شده است. لطفاً یک لینک بازیابی جدید درخواست کن.');
     return;
@@ -2958,6 +2964,7 @@ async function accountCompleteRecovery(){
   const {error}=await sbClient.auth.updateUser({password:pw});
   if(error){console.warn('[auth] password update failed',error);accountMessage(err,'تغییر رمز عبور انجام نشد؛ دوباره از لینک بازیابی وارد شو.');return;}
   accountRecoveryFlow=false;
+  try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
   history.replaceState({},'', '/account'); showToast('رمز عبور با موفقیت تغییر کرد ✅'); await renderAccountRoute();
 }
 async function syncMyCustomerProfile(name,email,address,postal,username,phone){
@@ -3021,6 +3028,7 @@ sbClient.auth.onAuthStateChange((event,session)=>{
   updateAccountHeader(session);
   if(event==='PASSWORD_RECOVERY'){
     accountRecoveryFlow=true;
+    try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
     const box=document.getElementById('accountRecoveryComplete'); if(box) box.hidden=false;
     const authBox=document.getElementById('accountAuthBox'),panel=document.getElementById('accountPanel'); if(authBox)authBox.hidden=true;if(panel)panel.hidden=true;
   } else if(parseLocation().path==='/account' && event!=='INITIAL_SESSION') renderAccountRoute();
