@@ -3006,7 +3006,7 @@ async function renderAccountRoute(){
   const locationRecovery=currentPath==='/account/recovery' || (parsedLocation.path==='/account' && parsedLocation.params.recovery==='1');
   const qs=new URLSearchParams(location.search||'');
   const recoveryError=parsedLocation.params.recoveryError==='1' || qs.get('error_code') || qs.get('error_description') || qs.get('error')==='access_denied' || /^\/error=/i.test(currentPath);
-  const recovering=locationRecovery || accountRecoveryFlow || location.hash.includes('type=recovery') || qs.get('type')==='recovery' || qs.get('recovery')==='1' || !!qs.get('code') || !!qs.get('__spa_path');
+  const recovering=locationRecovery || location.hash.includes('type=recovery') || qs.get('type')==='recovery' || qs.get('recovery')==='1' || !!qs.get('code') || !!qs.get('__spa_path');
   // Recovery errors get a dedicated branded state instead of a blank/technical URL.
   if(recoveryError){
     if(authBox) authBox.hidden=true; if(panel) panel.hidden=true; if(recovery) recovery.hidden=true; if(recoveryInvalid) recoveryInvalid.hidden=false; updateAccountHeader(session); return;
