@@ -1890,6 +1890,9 @@ function parseLocation(){
     path = '/product';
   }
   if(path !== '/' && path.endsWith('/')) path = path.slice(0,-1);
+  // Password recovery has a dedicated clean URL. Internally it reuses the account page
+  // but remains distinguishable even when the auth callback arrives without a query marker.
+  if(path === '/account/recovery'){ params.recovery = '1'; path = '/account'; }
   return {path: path || '/', params};
 }
 function cleanUrlFor(path, params){
@@ -2895,7 +2898,8 @@ async function prepareAuthCallback(){
 async function renderAccountRoute(){
   const {data:{session}}=await sbClient.auth.getSession();
   const authBox=document.getElementById('accountAuthBox'), panel=document.getElementById('accountPanel'), recovery=document.getElementById('accountRecoveryComplete');
-  const recovering=accountRecoveryFlow || location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('type')==='recovery' || new URLSearchParams(location.search).get('recovery')==='1' || !!new URLSearchParams(location.search).get('code');
+  const locationRecovery=/^\/account\/recovery\/?$/.test(location.pathname||'');
+  const recovering=accountRecoveryFlow || locationRecovery || location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('type')==='recovery' || new URLSearchParams(location.search).get('recovery')==='1' || !!new URLSearchParams(location.search).get('code');
   if(recovering){ authBox.hidden=true; panel.hidden=true; recovery.hidden=false; return; }
   recovery.hidden=true;
   if(session){ authBox.hidden=true; panel.hidden=false; await loadAccountProfileAndOrders(); }
@@ -2944,7 +2948,7 @@ async function accountLogin(){
   await renderAccountRoute();
 }
 function getProductionAccountUrl(){
-  return 'https://owli.ir/account?recovery=1';
+  return 'https://owli.ir/account/recovery';
 }
 async function accountSendRecovery(){
   const email=document.getElementById('accountRecoveryEmail').value.trim().toLowerCase(), err=document.getElementById('accountRecoveryError'), msg=document.getElementById('accountRecoveryMsg'); err.hidden=true; msg.hidden=true;
@@ -3033,6 +3037,9 @@ sbClient.auth.onAuthStateChange((event,session)=>{
     try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
     const box=document.getElementById('accountRecoveryComplete'); if(box) box.hidden=false;
     const authBox=document.getElementById('accountAuthBox'),panel=document.getElementById('accountPanel'); if(authBox)authBox.hidden=true;if(panel)panel.hidden=true;
+    // Re-render after the recovery session is established so a late auth event
+    // cannot leave the normal login form visible.
+    if(parseLocation().path==='/account') setTimeout(()=>renderAccountRoute(),0);
   } else if(parseLocation().path==='/account' && event!=='INITIAL_SESSION') renderAccountRoute();
 });
 
