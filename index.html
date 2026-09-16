@@ -2851,19 +2851,37 @@ async function prepareAuthCallback(){
   const hash=String(location.hash||'');
   const qs=new URLSearchParams(location.search||'');
   const code=qs.get('code');
-  if(/type=recovery/i.test(hash) || qs.get('type')==='recovery' || code) accountRecoveryFlow=true;
+  const type=qs.get('type');
+  const errorCode=qs.get('error_code') || new URLSearchParams(hash.replace(/^#/,'')).get('error_code');
+  const errorDescription=qs.get('error_description') || new URLSearchParams(hash.replace(/^#/,'')).get('error_description');
+  if(/type=recovery/i.test(hash) || type==='recovery' || code) accountRecoveryFlow=true;
+  if(errorCode || errorDescription){
+    accountRecoveryFlow=true;
+    const msg=document.getElementById('accountRecoveryCompleteError');
+    if(msg) accountMessage(msg,'لینک بازیابی معتبر نیست یا منقضی شده است. لطفاً یک لینک بازیابی جدید درخواست کن.');
+    return;
+  }
   if(code){
     try{
       const {error}=await sbClient.auth.exchangeCodeForSession(code);
       if(error){
         console.warn('[auth] recovery code exchange failed',error);
+        const msg=document.getElementById('accountRecoveryCompleteError');
+        if(msg) accountMessage(msg,'لینک بازیابی معتبر نیست یا منقضی شده است. لطفاً یک لینک بازیابی جدید درخواست کن.');
         return;
       }
       const next=new URL(location.href);
       next.searchParams.delete('code');
       next.searchParams.delete('type');
+      next.searchParams.delete('error');
+      next.searchParams.delete('error_code');
+      next.searchParams.delete('error_description');
       history.replaceState({},'',next.pathname+(next.search?'?'+next.searchParams.toString():'')+(location.hash||''));
-    }catch(e){ console.warn('[auth] recovery callback failed',e); }
+    }catch(e){
+      console.warn('[auth] recovery callback failed',e);
+      const msg=document.getElementById('accountRecoveryCompleteError');
+      if(msg) accountMessage(msg,'پردازش لینک بازیابی انجام نشد. لطفاً یک لینک بازیابی جدید درخواست کن.');
+    }
   }
 }
 async function renderAccountRoute(){
@@ -2917,10 +2935,16 @@ async function accountLogin(){
   showToast('خوش آمدی 👋');
   await renderAccountRoute();
 }
+function getProductionAccountUrl(){
+  return 'https://owli.ir/account';
+}
 async function accountSendRecovery(){
   const email=document.getElementById('accountRecoveryEmail').value.trim().toLowerCase(), err=document.getElementById('accountRecoveryError'), msg=document.getElementById('accountRecoveryMsg'); err.hidden=true; msg.hidden=true;
   if(!validEmail(email)){accountMessage(err,'ایمیل معتبر وارد کن.');return;}
-  const redirectTo=location.origin+'/account';
+  // Password recovery must always return to the production account page.
+  // Do not derive this from location.origin: an old localhost/preview build can otherwise
+  // generate a localhost redirect that breaks recovery in production.
+  const redirectTo=getProductionAccountUrl();
   const {error}=await sbClient.auth.resetPasswordForEmail(email,{redirectTo});
   if(error){accountMessage(err,'ارسال لینک بازیابی انجام نشد؛ لطفاً کمی بعد دوباره امتحان کن.');return;}
   accountMessage(msg,'اگر این ایمیل برای یک حساب ثبت شده باشد، لینک بازیابی برای آن ارسال می‌شود. ایمیلت را بررسی کن.',true);
@@ -2996,6 +3020,7 @@ function friendlyAuthError(error){
 sbClient.auth.onAuthStateChange((event,session)=>{
   updateAccountHeader(session);
   if(event==='PASSWORD_RECOVERY'){
+    accountRecoveryFlow=true;
     const box=document.getElementById('accountRecoveryComplete'); if(box) box.hidden=false;
     const authBox=document.getElementById('accountAuthBox'),panel=document.getElementById('accountPanel'); if(authBox)authBox.hidden=true;if(panel)panel.hidden=true;
   } else if(parseLocation().path==='/account' && event!=='INITIAL_SESSION') renderAccountRoute();
