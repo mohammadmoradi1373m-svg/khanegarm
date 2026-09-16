@@ -2898,9 +2898,18 @@ async function prepareAuthCallback(){
 async function renderAccountRoute(){
   const {data:{session}}=await sbClient.auth.getSession();
   const authBox=document.getElementById('accountAuthBox'), panel=document.getElementById('accountPanel'), recovery=document.getElementById('accountRecoveryComplete');
-  const locationRecovery=/^\/account\/recovery\/?$/.test(location.pathname||'');
-  const recovering=accountRecoveryFlow || locationRecovery || location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('type')==='recovery' || new URLSearchParams(location.search).get('recovery')==='1' || !!new URLSearchParams(location.search).get('code');
-  if(recovering){ authBox.hidden=true; panel.hidden=true; recovery.hidden=false; return; }
+  const currentPath=String(location.pathname||'').replace(/\/$/,'') || '/';
+  const locationRecovery=currentPath==='/account/recovery';
+  const qs=new URLSearchParams(location.search||'');
+  const recovering=locationRecovery || accountRecoveryFlow || location.hash.includes('type=recovery') || qs.get('type')==='recovery' || qs.get('recovery')==='1' || !!qs.get('code');
+  // /account/recovery is a dedicated password-change route. Never fall back to login on this path.
+  if(recovering){
+    if(authBox) authBox.hidden=true;
+    if(panel) panel.hidden=true;
+    if(recovery) recovery.hidden=false;
+    updateAccountHeader(session);
+    return;
+  }
   recovery.hidden=true;
   if(session){ authBox.hidden=true; panel.hidden=false; await loadAccountProfileAndOrders(); }
   else { authBox.hidden=false; panel.hidden=true; switchAccountAuthTab(accountAuthTab); }
@@ -2971,7 +2980,7 @@ async function accountCompleteRecovery(){
   if(error){console.warn('[auth] password update failed',error);accountMessage(err,'تغییر رمز عبور انجام نشد؛ دوباره از لینک بازیابی وارد شو.');return;}
   accountRecoveryFlow=false;
   try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
-  history.replaceState({},'', '/account'); showToast('رمز عبور با موفقیت تغییر کرد ✅'); await renderAccountRoute();
+  history.replaceState({},'', '/account'); showToast('رمز عبور با موفقیت تغییر کرد ✅'); await render();
 }
 async function syncMyCustomerProfile(name,email,address,postal,username,phone){
   if(!username||!phone){
@@ -3039,8 +3048,8 @@ sbClient.auth.onAuthStateChange((event,session)=>{
     const authBox=document.getElementById('accountAuthBox'),panel=document.getElementById('accountPanel'); if(authBox)authBox.hidden=true;if(panel)panel.hidden=true;
     // Re-render after the recovery session is established so a late auth event
     // cannot leave the normal login form visible.
-    if(parseLocation().path==='/account') setTimeout(()=>renderAccountRoute(),0);
-  } else if(parseLocation().path==='/account' && event!=='INITIAL_SESSION') renderAccountRoute();
+    if(/^\/account(?:\/recovery)?$/.test(location.pathname||'')) setTimeout(()=>render(),0);
+  } else if(/^\/account(?:\/recovery)?$/.test(location.pathname||'') && event!=='INITIAL_SESSION') render();
 });
 
 /* ============ ADMIN ============ */
