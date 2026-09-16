@@ -529,30 +529,48 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 .favorites-modal{position:fixed;inset:0;background:rgba(4,40,35,.42);z-index:94;display:flex;justify-content:flex-start;align-items:flex-start;padding:86px 22px;opacity:0;pointer-events:none;transition:opacity .2s}.favorites-modal.open{opacity:1;pointer-events:auto}.favorites-box{width:min(380px,calc(100vw - 44px));background:#FFFCF6;border:1px solid #E1D5C2;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.22);overflow:hidden}.favorites-head{display:flex;justify-content:space-between;align-items:center;padding:17px 18px;border-bottom:1px solid #E8DDCB}.favorites-head span{font-size:10px;color:#B77D1F}.favorites-head h3{font-size:18px}.favorites-head button{width:32px;height:32px;border:0;border-radius:50%;background:#F1E9DB;cursor:pointer}.favorites-list{padding:10px;max-height:65vh;overflow:auto}.favorite-row{display:grid;grid-template-columns:58px 1fr 34px;gap:10px;align-items:center;padding:9px;border-radius:13px;cursor:pointer}.favorite-row:hover{background:#F7F1E6}.favorite-row img{width:58px;height:58px;border-radius:10px;object-fit:cover}.favorite-row b{display:block;font-size:13px}.favorite-row span{display:block;color:#0B5B4F;font:700 12px Vazirmatn;margin-top:3px}.favorite-row button{border:0;background:#FFF0E8;color:#B85A36;width:32px;height:32px;border-radius:50%;cursor:pointer}.favorite-empty{text-align:center;padding:30px 15px;color:#61716B;font-size:13px}
 @media(max-width:860px){.favorites-modal{padding:74px 12px;justify-content:center}.favorites-box{width:min(390px,100%)}}
 </style>
+<style id="v11-polish-and-account-flow">
+/* V11: cleaner two-row header, account checkout, customer segmentation, richer storefront */
+.header-row{background:rgba(11,91,79,.98)}.header-main-row .burger{display:none!important}
+.header-main-row{border-bottom:1px solid rgba(255,255,255,.08)}
+.header-main-row .nav{min-height:66px;display:grid;grid-template-columns:auto minmax(260px,1fr) auto;align-items:center;gap:28px;direction:rtl;padding-top:9px;padding-bottom:9px}
+.nav-brand{display:flex;align-items:center;gap:14px;order:1}.nav-brand .logo{color:#fff;font-size:23px}.nav-brand .logo span{color:#E8B94F}
+.nav-search{height:42px;background:#fff;border-radius:999px;display:flex;align-items:center;gap:8px;padding:4px 8px 4px 14px;min-width:0;box-shadow:0 8px 24px rgba(0,0,0,.10);order:2}.nav-search input{border:0;outline:0;background:transparent;flex:1;min-width:0;font:13px 'IBM Plex Sans Arabic';color:var(--ink)}.nav-search button{border:0;background:#EEF4EF;color:var(--teal);width:34px;height:34px;border-radius:50%;cursor:pointer}
+.nav-actions{display:flex;align-items:center;gap:9px;order:3}.header-menu-row{background:linear-gradient(180deg,#0B5B4F,#095448)}.header-menu-row .desktop-nav{min-height:40px;display:flex;align-items:center;justify-content:center;gap:28px;direction:rtl;overflow-x:auto;white-space:nowrap;scrollbar-width:none}.header-menu-row .desktop-nav::-webkit-scrollbar{display:none}.header-menu-row .desktop-nav a{color:#F8F3E9;font-size:12px;font-weight:700;opacity:.92;cursor:pointer;padding:7px 0;position:relative}.header-menu-row .desktop-nav a:hover{color:#F0C85A}.header-menu-row .desktop-nav a:first-child:after{content:'';position:absolute;left:0;right:0;bottom:1px;height:2px;border-radius:99px;background:#E7B83F;opacity:.8}
+.customer-segment-tabs{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;margin:14px 0 12px;padding-bottom:2px}.customer-segment-tabs::-webkit-scrollbar{display:none}.customer-segment-tabs button{white-space:nowrap;border:1px solid var(--line);background:#fffdf8;color:var(--ink-soft);padding:9px 14px;border-radius:999px;font:700 12px 'IBM Plex Sans Arabic';cursor:pointer}.customer-segment-tabs button.active{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 7px 18px rgba(11,91,79,.16)}.customer-account-badge.has-account{background:#E8F2ED!important;color:var(--teal)!important}.customer-account-badge.guest-account{background:#F5EBDD!important;color:#8A6944!important}
+.account-cart-card{padding:18px}.account-cart-list{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.account-cart-item{display:flex;align-items:center;gap:9px;border:1px solid #E7DCCB;background:#FFFCF7;border-radius:13px;padding:9px}.account-cart-item img{width:52px;height:52px;object-fit:cover;border-radius:10px;background:#F1E9DB}.account-cart-item b{display:block;font-size:11.5px;line-height:1.5}.account-cart-item span{display:block;font-size:10px;color:var(--ink-soft);margin-top:3px}.account-cart-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}.account-cart-foot strong{font-family:'Vazirmatn';color:var(--teal);font-size:16px}
+.checkout-profile-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.checkout-profile-fields>div{min-width:0}.checkout-profile-fields .full{grid-column:1/-1}.checkout-profile-fields select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:var(--card);font:inherit;font-size:13px;color:var(--ink)}.checkout-profile-fields select:disabled{background:#F4EEE4;color:var(--ink-soft)}.checkout-profile-notice{grid-column:1/-1;background:#FFF7DF;border:1px solid #E6CC83;border-radius:13px;padding:11px 13px;color:#765A26;font-size:11.5px;display:grid;gap:2px}.checkout-profile-notice strong{font-size:12px;color:#5D461B}.checkout-profile-fields label[hidden]{display:none!important}
+/* Product page polish */
+[data-route="/product"]{padding-top:26px}.pd-breadcrumb{display:flex;align-items:center;gap:7px;background:rgba(255,252,246,.72);border:1px solid #E5D9C7;width:max-content;max-width:100%;padding:7px 12px;border-radius:999px;box-shadow:0 8px 20px rgba(17,63,54,.04)}
+.pd-grid{gap:20px}.pd-gallery-card,.pd-info-card{border-color:#DED1BC;box-shadow:0 22px 55px rgba(17,63,54,.09)}.pd-gallery-card{padding:12px}.pd-gallery-main{background:radial-gradient(circle at 50% 35%,#fffdf8 0,#F0E7D8 78%);min-height:420px}.pd-gallery-main img{mix-blend-mode:multiply}.pd-thumbs .th{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}.pd-thumbs .th:hover{transform:translateY(-2px)}.pd-info-card{padding:28px}.pd-title{font-size:clamp(30px,3.7vw,44px);line-height:1.35;letter-spacing:-.035em}.pd-price{font-size:31px;color:#0B5B4F;background:#F0F5F0;border:1px solid #DCE8DF;border-radius:14px;padding:9px 13px;width:max-content;max-width:100%}.pd-desc{font-size:14px;line-height:2.15}.pd-feature-box{background:linear-gradient(135deg,#F4F8F4,#EEF4EE);border-color:#DCE8DF}.pd-buy-row{grid-template-columns:104px 1fr;margin-top:5px}.pd-buy-btn{height:52px!important;box-shadow:0 12px 26px rgba(11,91,79,.18)}.pd-benefits{gap:10px}.pd-benefit{padding:11px 8px;min-height:67px;display:flex;flex-direction:column;justify-content:center}.product-tabs{margin-top:26px;border:1px solid #E0D4C1;background:#EFE7DA;box-shadow:0 10px 24px rgba(17,63,54,.05)}.pd-description-card,.reviews-box{box-shadow:0 16px 40px rgba(17,63,54,.055)}.pd-description-card{border-color:#E0D4C1}.reviews-box{background:rgba(255,252,246,.58);border:1px solid #E0D4C1;border-radius:20px;padding:24px;margin-top:22px}.review-form{background:#FFFCF7;border:1px solid #E5D9C7;border-radius:16px;padding:15px}.review-list .review-item{border-color:#E3D8C7!important}
+/* Home polish */
+[data-route="/"] .hero{padding-top:14px}.hero-slider{border-radius:28px;box-shadow:0 26px 65px rgba(7,69,59,.18)}.hero-slide-content{padding-right:clamp(34px,6vw,82px)}.hero-quicklinks{margin-top:18px}.ql-card{position:relative;overflow:hidden}.ql-card:after{content:'';position:absolute;inset:auto 0 0;height:3px;background:linear-gradient(90deg,transparent,#E7B83F,transparent);transform:scaleX(.35);transition:transform .2s ease}.ql-card:hover:after{transform:scaleX(1)}[data-route="/"] .section-head{margin-bottom:22px}[data-route="/"] .section-head h2{font-size:30px}[data-route="/"] .promo-card{min-height:170px;box-shadow:0 18px 42px rgba(17,63,54,.09)}[data-route="/"] .promo-card strong{font-size:24px}.cat-card{box-shadow:0 10px 24px rgba(17,63,54,.045)}
+@media(max-width:860px){.header-main-row .nav{grid-template-columns:auto minmax(0,1fr) auto;gap:10px}.nav-brand .logo{font-size:20px}.nav-actions{gap:6px}.header-main-row .nav-search{height:38px}.header-main-row .nav-search button{width:30px;height:30px}.account-btn{height:38px;min-width:38px;padding:0 9px}.header-heart{width:38px;height:38px}.cart-btn{padding:8px 11px;font-size:11px}.header-menu-row .desktop-nav{justify-content:flex-start;gap:22px;padding-left:14px;padding-right:14px}.account-cart-list{grid-template-columns:1fr 1fr}.pd-gallery-main{min-height:330px}}
+@media(max-width:620px){.header-main-row .nav{padding:7px 12px;grid-template-columns:auto 1fr auto}.nav-brand{gap:6px}.nav-brand .logo{font-size:18px}.nav-brand .logo svg{width:21px;height:21px}.header-main-row .nav-search input{font-size:11px}.account-btn .account-label{display:none}.header-heart{display:flex}.cart-btn{font-size:0;width:40px;height:38px;justify-content:center;padding:0}.cart-btn:before{content:'🛍️';font-size:17px}.cart-count{font-size:10px}.header-menu-row .desktop-nav{min-height:38px;gap:19px}.header-menu-row .desktop-nav a{font-size:11px}.checkout-profile-fields{grid-template-columns:1fr}.checkout-profile-fields .full{grid-column:auto}.account-cart-list{grid-template-columns:1fr}.account-cart-foot{align-items:stretch;flex-direction:column}.account-cart-foot .btn-primary{width:100%}.pd-info-card{padding:19px}.pd-title{font-size:29px}.pd-price{font-size:25px}.pd-buy-row{grid-template-columns:88px 1fr}.pd-benefits{grid-template-columns:1fr 1fr 1fr}.reviews-box{padding:15px}.hero-slider{border-radius:20px}.hero-slide-content{padding:25px 20px 28px}.hero h1{font-size:29px}[data-route="/"] .section-head h2{font-size:25px}}
+</style>
+<style id="v12-recovery-error">.account-recovery-invalid{text-align:center;max-width:520px;margin:20px auto;padding:34px 26px}.recovery-error-icon{width:58px;height:58px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#F8EDE4;color:var(--rust);font-size:28px;font-weight:800}.account-recovery-invalid .eyebrow{margin-bottom:9px}.account-recovery-invalid h3{font-size:24px;margin-bottom:8px}.recovery-error-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:18px}.recovery-error-actions .btn-primary,.recovery-error-actions .btn-ghost{min-width:150px}@media(max-width:520px){.account-recovery-invalid{padding:28px 18px}.recovery-error-actions>*{width:100%}}</style>
+<style id="v13-account-orders">.account-order-group{display:grid;gap:9px}.account-order-group+.account-order-group{margin-top:8px;padding-top:10px;border-top:1px dashed var(--line)}.account-order-group h4{font-size:11.5px;color:var(--ink-soft);display:flex;justify-content:space-between}.account-order-group h4 span{background:#EEF4EF;color:var(--teal);border-radius:999px;padding:2px 7px;font-size:10px}</style>
 </head>
 <body>
 
 <header>
-  <div class="nav wrap">
-    <div class="nav-left">
-      <div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8B94F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="11" height="15" rx="2" transform="rotate(15 13.5 9.5)"></rect><rect x="5" y="6" width="11" height="15" rx="2"></rect><path d="M10.5 12.5c-.8-1-.5-2.3.5-2.3.6 0 1 .4 1 1 0-.6.4-1 1-1 1 0 1.3 1.3 2.3.5 2.3l-1.5 1.7z"></path></svg>خانه<span>گرم</span></div>
-      <button class="burger" onclick="toggleMenu()" aria-label="باز کردن منو"><span></span></button>
-    </div>
-    <div class="nav-search-wrap">
-      <nav class="desktop-nav" aria-label="منوی اصلی">
-        <a onclick="go('/')">خانه</a><a onclick="go('/products')">محصولات</a><a onclick="go('/products')">دسته‌بندی‌ها</a><a onclick="go('/guides')">راهنما</a><a onclick="go('/faq')">سوالات متداول</a><a onclick="go('/track')">پیگیری سفارش</a><a onclick="go('/contact')">تماس با ما</a>
-      </nav>
+  <div class="header-row header-main-row">
+    <div class="nav wrap">
+      <div class="nav-brand"><div class="logo"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E8B94F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="11" height="15" rx="2" transform="rotate(15 13.5 9.5)"></rect><rect x="5" y="6" width="11" height="15" rx="2"></rect><path d="M10.5 12.5c-.8-1-.5-2.3.5-2.3.6 0 1 .4 1 1 0-.6.4-1 1-1 1 0 1.3 1.3 2.3.5 2.3l-1.5 1.7z"></path></svg>خانه<span>گرم</span></div><button class="burger" onclick="toggleMenu()" aria-label="باز کردن منو"><span></span></button></div>
       <div class="nav-search">
         <input id="headerSearch" type="text" placeholder="جست‌وجوی محصول، برند یا دسته‌بندی..." onkeydown="if(event.key==='Enter') runHeaderSearch()">
         <button type="button" onclick="runHeaderSearch()" aria-label="جست‌وجو">⌕</button>
       </div>
-    </div>
-    <div class="nav-right">
-      <button class="account-btn" id="accountHeaderBtn" type="button" onclick="go('/account')" aria-label="حساب کاربری"><span class="account-icon">♙</span><span class="account-label">ورود / حساب من</span></button>
-      <button class="header-heart" type="button" onclick="openFavorites()" aria-label="علاقه‌مندی‌ها">♡<span class="fav-count" id="favCount">۰</span></button>
-      <button class="cart-btn" onclick="openCart()" aria-label="سبد خرید">🛍️ سبد خرید<span class="cart-count" id="cartCount" style="display:none;">۰</span></button>
+      <div class="nav-actions">
+        <button class="account-btn" id="accountHeaderBtn" type="button" onclick="go('/account')" aria-label="حساب کاربری"><span class="account-icon">♙</span><span class="account-label">ورود / حساب من</span></button>
+        <button class="header-heart" type="button" onclick="openFavorites()" aria-label="علاقه‌مندی‌ها">♡<span class="fav-count" id="favCount">۰</span></button>
+        <button class="cart-btn" onclick="openCart()" aria-label="سبد خرید">🛍️ سبد خرید<span class="cart-count" id="cartCount" style="display:none;">۰</span></button>
+      </div>
     </div>
   </div>
+  <div class="header-row header-menu-row"><nav class="desktop-nav wrap" aria-label="منوی اصلی">
+    <a onclick="go('/')">خانه</a><a onclick="go('/products')">محصولات</a><a onclick="go('/products')">دسته‌بندی‌ها</a><a onclick="go('/guides')">راهنما</a><a onclick="go('/faq')">سوالات متداول</a><a onclick="go('/track')">پیگیری سفارش</a><a onclick="go('/contact')">تماس با ما</a>
+  </nav></div>
   <div id="dataErrorBanner">
     <div style="display:flex;flex-direction:column;gap:3px;text-align:center;"><span>⚠️ دریافت اطلاعات فروشگاه با مشکل مواجه شد.</span><span id="dataErrorDetail" style="font-size:11px;font-weight:400;opacity:.9;direction:ltr;word-break:break-all;"></span></div>
     <button id="dataErrorRetryBtn" onclick="retryDataLoad()">تلاش دوباره</button>
@@ -604,30 +622,14 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
   <div class="modal-box">
     <h3>تکمیل سفارش</h3>
     <div class="form-grid">
-      <div>
-        <span class="field-label">نام و نام خانوادگی <span class="req">*</span></span>
-        <input type="text" id="ordName" placeholder="مثلاً علی محمدی">
-      </div>
-      <div>
-        <span class="field-label">شماره تلفن <span class="req">*</span></span>
-        <input type="tel" id="ordPhone" placeholder="۰۹xxxxxxxxx" maxlength="11">
-      </div>
-      <div class="full" style="position:relative;">
-        <span class="field-label">استان <span class="req">*</span></span>
-        <input type="text" id="ordProvince" placeholder="تایپ کنید" class="full" autocomplete="off" oninput="onProvinceInput()" onfocus="onProvinceInput()">
-        <div class="autocomplete-list" id="provinceDropdown"></div>
-      </div>
-      <div class="full">
-        <span class="field-label">شهر <span class="req">*</span></span>
-        <input type="text" id="ordCity" placeholder="اول استان رو انتخاب کنید" class="full" autocomplete="off" disabled>
-      </div>
-      <div class="full">
-        <span class="field-label">آدرس دقیق <span class="req">*</span></span>
-        <textarea id="ordAddress" placeholder="خیابان، کوچه، پلاک" class="full"></textarea>
-      </div>
-      <div class="full">
-        <span class="field-label">کد پستی <span class="req">*</span></span>
-        <input type="text" id="ordPostal" placeholder="۱۰ رقم" maxlength="10" inputmode="numeric" class="full">
+      <div class="full checkout-profile-notice" id="checkoutProfileNotice" hidden></div>
+      <div class="full checkout-profile-fields" id="checkoutCustomerFields">
+        <div data-profile-field="name" data-profile-label="نام و نام خانوادگی"><span class="field-label">نام و نام خانوادگی <span class="req">*</span></span><input type="text" id="ordName" placeholder="مثلاً علی محمدی"></div>
+        <div data-profile-field="phone" data-profile-label="شماره موبایل"><span class="field-label">شماره تلفن <span class="req">*</span></span><input type="tel" id="ordPhone" placeholder="۰۹xxxxxxxxx" maxlength="11"></div>
+        <div data-profile-field="province" data-profile-label="استان"><span class="field-label">استان <span class="req">*</span></span><input type="text" id="ordProvince" placeholder="تایپ کنید" autocomplete="off" oninput="onProvinceInput()" onfocus="onProvinceInput()"><div class="autocomplete-list" id="provinceDropdown"></div></div>
+        <div data-profile-field="city" data-profile-label="شهر / شهرستان"><span class="field-label">شهر / شهرستان <span class="req">*</span></span><input type="text" id="ordCity" placeholder="اول استان رو انتخاب کنید" autocomplete="off" disabled></div>
+        <div class="full" data-profile-field="address" data-profile-label="آدرس دقیق"><span class="field-label">آدرس دقیق <span class="req">*</span></span><textarea id="ordAddress" placeholder="خیابان، کوچه، پلاک"></textarea></div>
+        <div data-profile-field="postal" data-profile-label="کد پستی"><span class="field-label">کد پستی <span class="req">*</span></span><input type="text" id="ordPostal" placeholder="۱۰ رقم" maxlength="10" inputmode="numeric"></div>
       </div>
       <div class="full" style="font-size:13.5px; font-weight:700; margin-top:4px;">روش ارسال <span class="req">*</span></div>
       <div class="ship-options" id="shipOptions">
@@ -911,6 +913,10 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
         <label>نام کاربری<input id="accountRegUsername" type="text" autocomplete="username" maxlength="32" placeholder="مثلاً ali1373" required></label>
         <label>شماره موبایل<input id="accountRegPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="11" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required></label>
         <label>ایمیل بازیابی<input id="accountRegEmail" type="email" autocomplete="email" maxlength="254" placeholder="example@email.com" required></label>
+        <label>استان<select id="accountRegProvince" onchange="accountRegisterProvinceChanged()" required><option value="">انتخاب استان</option></select></label>
+        <label>شهر / شهرستان<select id="accountRegCity" required disabled><option value="">ابتدا استان را انتخاب کنید</option></select></label>
+        <label>کد پستی<input id="accountRegPostal" type="text" maxlength="10" inputmode="numeric" placeholder="۱۰ رقم" required></label>
+        <label class="full">آدرس دقیق<input id="accountRegAddress" type="text" maxlength="1000" placeholder="خیابان، کوچه، پلاک" required></label>
         <label>رمز عبور<input id="accountRegPassword" type="password" autocomplete="new-password" minlength="8" placeholder="حداقل ۸ کاراکتر" required></label>
         <label>تکرار رمز عبور<input id="accountRegPassword2" type="password" autocomplete="new-password" minlength="8" placeholder="تکرار رمز عبور" required></label>
       </div>
@@ -939,8 +945,10 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
           <label>نام و نام خانوادگی<input id="accountProfileName" type="text" maxlength="120" required></label>
           <label>شماره موبایل<input id="accountProfilePhone" type="tel" readonly></label>
           <label>ایمیل بازیابی<input id="accountProfileEmail" type="email" maxlength="254" required></label>
+          <label>استان<select id="accountProfileProvince" onchange="accountProvinceChanged()" required><option value="">انتخاب استان</option></select></label>
+          <label>شهر / شهرستان<select id="accountProfileCity" required disabled><option value="">ابتدا استان را انتخاب کنید</option></select></label>
           <label>کد پستی<input id="accountProfilePostal" type="text" maxlength="10" inputmode="numeric" placeholder="۱۰ رقم"></label>
-          <label class="full">آدرس<input id="accountProfileAddress" type="text" maxlength="1000" placeholder="آدرس پیش‌فرض شما"></label>
+          <label class="full">آدرس دقیق<input id="accountProfileAddress" type="text" maxlength="1000" placeholder="خیابان، کوچه، پلاک"></label>
           <button class="btn-primary" type="submit">ذخیره اطلاعات</button>
           <p id="accountProfileMsg" class="account-note" hidden></p><p id="accountProfileError" class="account-error" hidden></p>
         </form>
@@ -949,6 +957,11 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
         <div class="account-card-title"><h3>سفارش‌های من</h3><span id="accountOrdersCount">۰ سفارش</span></div>
         <div id="accountOrdersList" class="account-orders-list"><p class="account-note">در حال بارگذاری...</p></div>
       </div>
+    </div>
+    <div class="card account-cart-card">
+      <div class="account-card-title"><h3>🛒 سبد خرید من</h3><span>ذخیره‌شده روی حساب شما</span></div>
+      <div id="accountCartList" class="account-cart-list"></div>
+      <div class="account-cart-foot"><strong id="accountCartTotal">۰ تومان</strong><button class="btn-primary" type="button" onclick="openCart()">مشاهده سبد و ادامه خرید</button></div>
     </div>
   </div>
 
@@ -961,6 +974,13 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
       <button class="btn-primary" type="submit">تغییر رمز عبور</button>
       <p id="accountRecoveryCompleteError" class="account-error" hidden></p>
     </form>
+  </div>
+  <div id="accountRecoveryInvalid" class="card account-recovery-complete account-recovery-invalid" hidden>
+    <div class="recovery-error-icon">↻</div>
+    <div class="eyebrow">بازیابی رمز عبور</div>
+    <h3>لینک بازیابی معتبر نیست</h3>
+    <p class="account-note">این لینک قبلاً استفاده شده، منقضی شده یا دیگر قابل استفاده نیست. برای امنیت حساب، یک لینک بازیابی جدید درخواست کن.</p>
+    <div class="recovery-error-actions"><button class="btn-primary" type="button" onclick="retryAccountRecovery()">درخواست لینک جدید</button><button class="btn-ghost" type="button" onclick="go('/account')">بازگشت به حساب</button></div>
   </div>
 </section>
 
@@ -1085,6 +1105,11 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
     <div id="adminTab-customers" hidden>
       <div class="card" style="margin-bottom:14px;">
         <div class="hero-admin-title"><div><strong>👥 مدیریت مشتریان و حساب کاربران</strong><span>اطلاعات مشتری را اصلاح کن؛ ایمیل و رمز عبور حساب از مسیر امن سروری مدیریت می‌شود و شماره موبایل فعلاً ثابت است.</span></div></div>
+        <div class="customer-segment-tabs" role="tablist" aria-label="گروه مشتریان">
+          <button type="button" class="active" data-segment="all" onclick="setAdminCustomerSegment('all')">همه</button>
+          <button type="button" data-segment="users" onclick="setAdminCustomerSegment('users')">👤 کاربران دارای حساب</button>
+          <button type="button" data-segment="guests" onclick="setAdminCustomerSegment('guests')">👥 مهمان‌ها</button>
+        </div>
         <input type="search" id="adminCustomerSearch" placeholder="جست‌وجو با نام کاربری، نام، شماره یا ایمیل..." oninput="filterAdminCustomers()" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:inherit;background:var(--card);">
       </div>
       <div id="adminCustomers"></div>
@@ -1496,11 +1521,56 @@ function toggleBrandSub(btn){
   btn.classList.toggle('expanded', expanded);
 }
 
-/* ============ STORAGE HELPERS (cart stays local per-device) ============ */
+/* ============ STORAGE HELPERS + ACCOUNT CART ============ */
 function loadJSON(key, fallback){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } }
 function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
 
 let cart = loadJSON('kg_cart', []);
+let accountCartLoaded = false;
+let cartSaveTimer = null;
+let adminCustomerSegment = 'all';
+async function getCurrentSession(){ try{ const {data}=await sbClient.auth.getSession(); return data?.session||null; }catch(e){ return null; } }
+async function loadAccountCart(){
+  const session=await getCurrentSession();
+  if(!session){ accountCartLoaded=false; cart=loadJSON('kg_cart',[]); renderCart(); renderAccountCart(); return; }
+  try{
+    const {data,error}=await sbClient.from('customer_carts').select('items,updated_at').eq('user_id',session.user.id).maybeSingle();
+    if(error) throw error;
+    cart=Array.isArray(data?.items)?data.items:[];
+    accountCartLoaded=true;
+    pruneCartOfMissingProducts();
+    renderCart(); renderAccountCart();
+  }catch(e){
+    console.warn('[cart] account cart load failed',e);
+    accountCartLoaded=false;
+    cart=[];
+    renderCart(); renderAccountCart();
+  }
+}
+function scheduleAccountCartSave(){
+  clearTimeout(cartSaveTimer);
+  cartSaveTimer=setTimeout(async()=>{
+    const session=await getCurrentSession();
+    if(!session || !accountCartLoaded) return;
+    const {error}=await sbClient.from('customer_carts').upsert({user_id:session.user.id,items:cart,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+    if(error) console.warn('[cart] account cart save failed',error);
+    renderAccountCart();
+  },250);
+}
+function persistCart(){
+  if(accountCartLoaded) scheduleAccountCartSave();
+  else saveJSON('kg_cart',cart);
+  renderAccountCart();
+}
+function renderAccountCart(){
+  const box=document.getElementById('accountCartList'),totalEl=document.getElementById('accountCartTotal'); if(!box)return;
+  if(!accountCartLoaded){box.innerHTML='<div class="account-empty">سبد خرید این حساب بعد از ورود بارگذاری می‌شود.</div>'; if(totalEl)totalEl.textContent='۰ تومان'; return;}
+  const valid=cart.filter(i=>findProduct(i.id));
+  if(!valid.length){box.innerHTML='<div class="account-empty">سبد خریدت خالیه. محصولات مورد علاقه‌ات رو اینجا نگه دار.</div>'; if(totalEl)totalEl.textContent='۰ تومان'; return;}
+  let total=0;
+  box.innerHTML=valid.map(i=>{const p=findProduct(i.id);total+=p.price*i.qty;return `<div class="account-cart-item"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" alt="${escapeHtml(p.name)}" loading="lazy"><div><b>${escapeHtml(p.name)}</b><span>${toFa(i.qty)} عدد · ${formatToman(p.price*i.qty)}</span></div></div>`}).join('');
+  if(totalEl)totalEl.textContent=formatToman(total);
+}
 
 const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
 function toFa(n){ return String(n).replace(/\d/g, d=>faDigits[d]); }
@@ -1516,7 +1586,7 @@ function pruneCartOfMissingProducts(){
   // وگرنه یه قطعی موقت می‌تونست کل سبد خرید مشتری رو اشتباهی خالی کنه
   const before = cart.length;
   cart = cart.filter(item => !!findProduct(item.id));
-  if(cart.length !== before) saveJSON('kg_cart', cart);
+  if(cart.length !== before){ if(accountCartLoaded) scheduleAccountCartSave(); else saveJSON('kg_cart', cart); }
 }
 function compressImage(file,maxDim,quality){
   maxDim=maxDim||2500; quality=quality||0.86;
@@ -1897,6 +1967,7 @@ function parseLocation(){
   // Password recovery has a dedicated clean URL. Internally it reuses the account page
   // but remains distinguishable even when the auth callback arrives without a query marker.
   if(path === '/account/recovery'){ params.recovery = '1'; path = '/account'; }
+  if(/^\/error=/i.test(path)){ params.recoveryError = '1'; path = '/account'; }
   if(params.__spa_path){
     delete params.__spa_path;
   }
@@ -2496,7 +2567,7 @@ function addToCart(id, qty){
     return;
   }
   if(existing){ existing.qty += qty; } else { cart.push({id, qty}); }
-  saveJSON('kg_cart', cart);
+  persistCart();
   renderCart();
   bumpCartCount();
   showToast(`«${p.name}» به سبد اضافه شد ✅`, 'مشاهده سبد', ()=>openCart());
@@ -2511,7 +2582,7 @@ function changeCartQty(id, delta){
   }
   item.qty += delta;
   if(item.qty <= 0) cart = cart.filter(i=>i.id!==id);
-  saveJSON('kg_cart', cart);
+  persistCart();
   renderCart();
 }
 function renderCart(){
@@ -2599,11 +2670,33 @@ function onPackagingChange(){
   document.getElementById('packagingOptions').classList.remove('field-error');
   renderCheckoutTotals();
 }
-function openCheckout(){
+async function resetCheckoutCustomerFields(){
+  ['ordName','ordPhone','ordProvince','ordCity','ordAddress','ordPostal'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const c=document.getElementById('ordCity'); if(c){c.disabled=true;c.placeholder='اول استان رو انتخاب کنید';}
+  const wrap=document.getElementById('checkoutProfileNotice'); if(wrap)wrap.hidden=true;
+  const fields=document.getElementById('checkoutCustomerFields'); if(fields)fields.hidden=false;
+}
+async function prepareAccountCheckoutProfile(session){
+  let p=null;
+  try{const {data}=await sbClient.from('customers').select('name,phone,province,city,address,postal_code').eq('user_id',session.user.id).maybeSingle();p=data||null;}catch(e){}
+  const values={name:p?.name||session.user.user_metadata?.name||'',phone:p?.phone||'',province:p?.province||'',city:p?.city||'',address:p?.address||'',postal:p?.postal_code||''};
+  const ids={name:'ordName',phone:'ordPhone',province:'ordProvince',city:'ordCity',address:'ordAddress',postal:'ordPostal'};
+  Object.entries(ids).forEach(([k,id])=>{const e=document.getElementById(id);if(e)e.value=values[k];});
+  const ci=document.getElementById('ordCity'); if(values.province && PROVINCE_CITIES[values.province]) { ci.disabled=false; ci.placeholder='شهر (تایپ کنید)'; } else { ci.disabled=true; ci.placeholder='اول استان رو انتخاب کنید'; }
+  const missing=[]; if(!values.name)missing.push('نام و نام خانوادگی'); if(!values.phone||!isValidPhone(values.phone))missing.push('شماره موبایل'); if(!values.province||!PROVINCE_CITIES[values.province])missing.push('استان'); if(!values.city || !PROVINCE_CITIES[values.province]?.includes(values.city))missing.push('شهر / شهرستان'); if(!values.address||values.address.length<15)missing.push('آدرس دقیق'); if(!/^\d{10}$/.test(String(values.postal||'')))missing.push('کد پستی');
+  const notice=document.getElementById('checkoutProfileNotice'),fields=document.getElementById('checkoutCustomerFields');
+  if(notice){notice.hidden=false;notice.innerHTML=missing.length?`<strong>اطلاعات ارسال حساب کامل نیست.</strong><span>فقط موارد ناقص را تکمیل کن: ${missing.join('، ')}</span>`:`<strong>اطلاعات ارسال از حساب شما استفاده می‌شود.</strong><span>${escapeHtml(values.province)}، ${escapeHtml(values.city)} · ${escapeHtml(values.address)}</span>`;}
+  if(fields){fields.hidden=false; fields.querySelectorAll('[data-profile-field]').forEach(w=>{const key=w.getAttribute('data-profile-field');w.hidden=!missing.includes(w.getAttribute('data-profile-label'));});}
+  if(!missing.length){if(fields)fields.hidden=true;}
+}
+async function openCheckout(){
   if(cart.length===0){ showToast('سبد خرید خالیه'); return; }
   const hp = document.getElementById('ordHoneypot');
   if(hp) hp.value = '';
   closeCart();
+  const session=await getCurrentSession();
+  if(session) await prepareAccountCheckoutProfile(session);
+  else resetCheckoutCustomerFields();
   onPayMethodChange();
   updatePackagingVisibility();
   document.getElementById('checkoutModal').classList.add('open');
@@ -2758,7 +2851,7 @@ async function submitOrder(){
   }
 
   cart = [];
-  saveJSON('kg_cart', cart);
+  persistCart();
   renderCart();
   closeCheckout();
   document.getElementById('ordName').value='';
@@ -2876,11 +2969,8 @@ async function prepareAuthCallback(){
     try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
   }
   if(errorCode || errorDescription){
-    accountRecoveryFlow=true;
-    try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
-
-    const msg=document.getElementById('accountRecoveryCompleteError');
-    if(msg) accountMessage(msg,'لینک بازیابی معتبر نیست یا منقضی شده است. لطفاً یک لینک بازیابی جدید درخواست کن.');
+    accountRecoveryFlow=false;
+    try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
     return;
   }
   if(code){
@@ -2910,17 +3000,22 @@ async function prepareAuthCallback(){
 }
 async function renderAccountRoute(){
   const {data:{session}}=await sbClient.auth.getSession();
-  const authBox=document.getElementById('accountAuthBox'), panel=document.getElementById('accountPanel'), recovery=document.getElementById('accountRecoveryComplete');
+  const authBox=document.getElementById('accountAuthBox'), panel=document.getElementById('accountPanel'), recovery=document.getElementById('accountRecoveryComplete'), recoveryInvalid=document.getElementById('accountRecoveryInvalid');
   const parsedLocation=parseLocation();
   const currentPath=String(location.pathname||'').replace(/\/$/,'') || '/';
   const locationRecovery=currentPath==='/account/recovery' || (parsedLocation.path==='/account' && parsedLocation.params.recovery==='1');
   const qs=new URLSearchParams(location.search||'');
+  const recoveryError=parsedLocation.params.recoveryError==='1' || qs.get('error_code') || qs.get('error_description') || qs.get('error')==='access_denied' || /^\/error=/i.test(currentPath);
   const recovering=locationRecovery || accountRecoveryFlow || location.hash.includes('type=recovery') || qs.get('type')==='recovery' || qs.get('recovery')==='1' || !!qs.get('code') || !!qs.get('__spa_path');
+  // Recovery errors get a dedicated branded state instead of a blank/technical URL.
+  if(recoveryError){
+    if(authBox) authBox.hidden=true; if(panel) panel.hidden=true; if(recovery) recovery.hidden=true; if(recoveryInvalid) recoveryInvalid.hidden=false; updateAccountHeader(session); return;
+  }
   // /account/recovery is a dedicated password-change route. Never fall back to login on this path.
   if(recovering){
     if(authBox) authBox.hidden=true;
     if(panel) panel.hidden=true;
-    if(recovery) recovery.hidden=false;
+    if(recovery) recovery.hidden=false; if(recoveryInvalid) recoveryInvalid.hidden=true;
     updateAccountHeader(session);
     return;
   }
@@ -2929,6 +3024,7 @@ async function renderAccountRoute(){
   else { authBox.hidden=false; panel.hidden=true; switchAccountAuthTab(accountAuthTab); }
   updateAccountHeader(session);
 }
+function retryAccountRecovery(){ accountRecoveryFlow=false; try{sessionStorage.removeItem('__owli_password_recovery');}catch(e){} history.replaceState({},'', '/account'); switchAccountAuthTab('recovery'); render(); }
 function updateAccountHeader(session){
   const btn=document.getElementById('accountHeaderBtn'); if(!btn)return;
   btn.classList.toggle('signed',!!session);
@@ -2936,18 +3032,21 @@ function updateAccountHeader(session){
 }
 function validUsername(v){ return /^[a-zA-Z0-9_]{3,32}$/.test(String(v||'').trim()); }
 async function accountRegister(){
-  const name=document.getElementById('accountRegName').value.trim(), username=document.getElementById('accountRegUsername').value.trim().toLowerCase(), phone=normalizePhone(document.getElementById('accountRegPhone').value), email=document.getElementById('accountRegEmail').value.trim().toLowerCase(), pw=document.getElementById('accountRegPassword').value, pw2=document.getElementById('accountRegPassword2').value, err=document.getElementById('accountRegisterError');
+  const name=document.getElementById('accountRegName').value.trim(), username=document.getElementById('accountRegUsername').value.trim().toLowerCase(), phone=normalizePhone(document.getElementById('accountRegPhone').value), email=document.getElementById('accountRegEmail').value.trim().toLowerCase(), province=document.getElementById('accountRegProvince').value.trim(), city=document.getElementById('accountRegCity').value.trim(), address=document.getElementById('accountRegAddress').value.trim(), postal=toEnDigits(document.getElementById('accountRegPostal').value.trim()), pw=document.getElementById('accountRegPassword').value, pw2=document.getElementById('accountRegPassword2').value, err=document.getElementById('accountRegisterError');
   err.hidden=true;
   if(name.length<2||name.length>120){accountMessage(err,'نام و نام خانوادگی را درست وارد کن.');return;}
   if(!validUsername(username)){accountMessage(err,'نام کاربری باید ۳ تا ۳۲ کاراکتر و فقط شامل حروف انگلیسی، عدد یا _ باشد.');return;}
   if(!validIranPhone(phone)){accountMessage(err,'شماره موبایل معتبر نیست.');return;}
   if(!validEmail(email)){accountMessage(err,'ایمیل بازیابی معتبر نیست.');return;}
+  if(!PROVINCE_CITIES[province]||!city){accountMessage(err,'استان و شهر را انتخاب کن.');return;}
+  if(!/^[0-9]{10}$/.test(postal)){accountMessage(err,'کد پستی باید دقیقاً ۱۰ رقم باشد.');return;}
+  if(address.length<15){accountMessage(err,'آدرس را کامل‌تر وارد کن.');return;}
   if(pw.length<8){accountMessage(err,'رمز عبور باید حداقل ۸ کاراکتر باشد.');return;}
   if(pw!==pw2){accountMessage(err,'تکرار رمز عبور با رمز اصلی یکسان نیست.');return;}
   const {data,error}=await sbClient.auth.signUp({email,password:pw,options:{data:{name,username}}});
   if(error){accountMessage(err,friendlyAuthError(error));return;}
   if(!data.user||!data.session){accountMessage(err,'ساخت حساب انجام نشد. تنظیم «تأیید ایمیل» باید در Supabase خاموش باشد.');return;}
-  const sync=await syncMyCustomerProfile(name,email,'','',username,phone);
+  const sync=await syncMyCustomerProfile(name,email,address,postal,username,phone,province,city);
   if(sync.error){
     await sbClient.auth.signOut();
     accountMessage(err, friendlyProfileError(sync.error));
@@ -2996,7 +3095,7 @@ async function accountCompleteRecovery(){
   try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
   history.replaceState({},'', '/account'); showToast('رمز عبور با موفقیت تغییر کرد ✅'); await render();
 }
-async function syncMyCustomerProfile(name,email,address,postal,username,phone){
+async function syncMyCustomerProfile(name,email,address,postal,username,phone,province,city){
   if(!username||!phone){
     const {data:userRes}=await sbClient.auth.getUser();
     const uid=userRes?.user?.id;
@@ -3005,35 +3104,50 @@ async function syncMyCustomerProfile(name,email,address,postal,username,phone){
       if(profile){ username=username||profile.username; phone=phone||profile.phone; name=name||profile.name; email=email||profile.email; address=address||profile.address; postal=postal||profile.postal_code; }
     }
   }
-  const {data,error}=await sbClient.rpc('sync_my_customer_profile_v2',{p_username:username||null,p_phone:phone||null,p_name:name||null,p_email:email||null,p_address:address||null,p_postal_code:postal||null});
+  const {data,error}=await sbClient.rpc('sync_my_customer_profile_v2',{p_username:username||null,p_phone:phone||null,p_name:name||null,p_email:email||null,p_address:address||null,p_postal_code:postal||null,p_province:province||null,p_city:city||null});
   if(error) console.warn('sync_my_customer_profile_v2 failed',error); return {data,error};
 }
 async function loadAccountProfileAndOrders(){
   const {data:{user}}=await sbClient.auth.getUser(); if(!user)return;
   const phone=normalizePhone(user.phone||'');
-  const {data:profile}=await sbClient.from('customers').select('phone,username,name,address,postal_code,email').eq('user_id',user.id).maybeSingle();
+  const {data:profile}=await sbClient.from('customers').select('phone,username,name,address,postal_code,email,province,city').eq('user_id',user.id).maybeSingle();
   const p=profile||{phone,name:user.user_metadata?.name||'',address:'',postal_code:'',email:user.email||''};
   document.getElementById('accountWelcome').textContent='سلام '+(p.name||'دوست خانه‌گرم')+' 👋';
   document.getElementById('accountIdentity').textContent=(p.username?'@'+p.username+' · ':'')+(p.phone||'')+' · '+(p.email||user.email||'ایمیل ثبت نشده');
-  document.getElementById('accountProfileName').value=p.name||''; document.getElementById('accountProfilePhone').value=p.phone||''; document.getElementById('accountProfileEmail').value=p.email||user.email||''; document.getElementById('accountProfileAddress').value=p.address||''; document.getElementById('accountProfilePostal').value=p.postal_code||'';
+  document.getElementById('accountProfileName').value=p.name||''; document.getElementById('accountProfilePhone').value=p.phone||''; document.getElementById('accountProfileEmail').value=p.email||user.email||''; populateAccountProvinceCity(p.province||'',p.city||''); document.getElementById('accountProfileAddress').value=p.address||''; document.getElementById('accountProfilePostal').value=p.postal_code||'';
   const {data:orders,error}=await sbClient.from('orders').select('id,order_code,name,phone,address,shipping,items,subtotal,status,created_at,tracking_code,payment_status,province,city,postal_code,packaging_option,packaging_fee').eq('user_id',user.id).order('created_at',{ascending:false});
   if(error){accountOrdersCache=[];document.getElementById('accountOrdersList').innerHTML='<p class="account-note">فعلاً امکان دریافت سفارش‌ها وجود ندارد. لطفاً صفحه را تازه کن.</p>';return;}
   accountOrdersCache=orders||[]; renderAccountOrders();
 }
 function renderAccountOrders(){
-  const box=document.getElementById('accountOrdersList'),count=document.getElementById('accountOrdersCount'); count.textContent=toFa(accountOrdersCache.length)+' سفارش';
+  const box=document.getElementById('accountOrdersList'),count=document.getElementById('accountOrdersCount');
+  count.textContent=toFa(accountOrdersCache.length)+' سفارش';
   if(!accountOrdersCache.length){box.innerHTML='<div class="account-empty">هنوز سفارشی برای این حساب ثبت نشده.<br><button class="btn-primary" style="margin-top:12px;" type="button" onclick="go(\'/products\')">شروع خرید</button></div>';return;}
   const labels={"-1":'لغو شده',0:'در حال بسته‌بندی',1:'تحویل به پست/باربری',2:'در حال ارسال',3:'تحویل داده‌شده'};
-  box.innerHTML=accountOrdersCache.map(o=>`<div class="account-order"><div><b>${escapeHtml(o.order_code)}</b><span>${new Date(o.created_at).toLocaleDateString('fa-IR')}</span></div><strong>${formatToman((o.subtotal||0)+(o.packaging_fee||0))}</strong><div class="account-order-status ${o.status===-1?'cancelled':''}">${labels[String(o.status)]||'وضعیت نامشخص'}</div>${o.tracking_code?`<small>کد رهگیری: ${escapeHtml(o.tracking_code)}</small>`:''}</div>`).join('');
+  const active=accountOrdersCache.filter(o=>o.status>=0&&o.status<3),history=accountOrdersCache.filter(o=>o.status===3||o.status===-1);
+  const card=o=>`<div class="account-order"><div><b>${escapeHtml(o.order_code)}</b><span>${new Date(o.created_at).toLocaleDateString('fa-IR')}</span></div><strong>${formatToman((o.subtotal||0)+(o.packaging_fee||0))}</strong><div class="account-order-status ${o.status===-1?'cancelled':''}">${labels[String(o.status)]||'وضعیت نامشخص'}</div>${o.tracking_code?`<small>کد رهگیری: ${escapeHtml(o.tracking_code)}</small>`:''}</div>`;
+  let html='';
+  if(active.length) html+=`<div class="account-order-group"><h4>سفارش‌های در جریان <span>${toFa(active.length)}</span></h4>${active.map(card).join('')}</div>`;
+  if(history.length) html+=`<div class="account-order-group"><h4>سوابق سفارش <span>${toFa(history.length)}</span></h4>${history.map(card).join('')}</div>`;
+  box.innerHTML=html;
 }
+function populateProvinceSelect(select, selected){
+  if(!select)return; const current=selected||''; select.innerHTML='<option value="">انتخاب استان</option>'+Object.keys(PROVINCE_CITIES).map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join(''); select.value=current;
+}
+function populateCitySelect(select, province, selected){
+  if(!select)return; const cities=PROVINCE_CITIES[province]||[]; select.innerHTML=cities.length?'<option value="">انتخاب شهر / شهرستان</option>'+cities.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join(''):'<option value="">ابتدا استان را انتخاب کنید</option>'; select.disabled=!cities.length; if(selected)select.value=selected;
+}
+function populateAccountProvinceCity(province,city){const p=document.getElementById('accountProfileProvince'),c=document.getElementById('accountProfileCity');populateProvinceSelect(p,province);populateCitySelect(c,province,city);}
+function accountProvinceChanged(){const p=document.getElementById('accountProfileProvince'),c=document.getElementById('accountProfileCity');populateCitySelect(c,p?.value||'','');}
+function accountRegisterProvinceChanged(){const p=document.getElementById('accountRegProvince'),c=document.getElementById('accountRegCity');populateCitySelect(c,p?.value||'','');}
 async function accountSaveProfile(){
-  const name=document.getElementById('accountProfileName').value.trim(),email=document.getElementById('accountProfileEmail').value.trim().toLowerCase(),address=document.getElementById('accountProfileAddress').value.trim(),postal=document.getElementById('accountProfilePostal').value.trim(),msg=document.getElementById('accountProfileMsg'),err=document.getElementById('accountProfileError'); msg.hidden=true;err.hidden=true;
-  if(name.length<2){accountMessage(err,'نام معتبر وارد کن.');return;} if(!validEmail(email)){accountMessage(err,'ایمیل معتبر وارد کن.');return;} if(postal && !/^\d{10}$/.test(postal)){accountMessage(err,'کد پستی باید ۱۰ رقم باشد.');return;}
+  const name=document.getElementById('accountProfileName').value.trim(),email=document.getElementById('accountProfileEmail').value.trim().toLowerCase(),province=document.getElementById('accountProfileProvince').value.trim(),city=document.getElementById('accountProfileCity').value.trim(),address=document.getElementById('accountProfileAddress').value.trim(),postal=document.getElementById('accountProfilePostal').value.trim(),msg=document.getElementById('accountProfileMsg'),err=document.getElementById('accountProfileError'); msg.hidden=true;err.hidden=true;
+  if(name.length<2){accountMessage(err,'نام معتبر وارد کن.');return;} if(!PROVINCE_CITIES[province]||!city){accountMessage(err,'استان و شهر را انتخاب کن.');return;} if(!validEmail(email)){accountMessage(err,'ایمیل معتبر وارد کن.');return;} if(postal && !/^\d{10}$/.test(postal)){accountMessage(err,'کد پستی باید ۱۰ رقم باشد.');return;}
   const {data:{user}}=await sbClient.auth.getUser(); if(!user)return;
   if(email!==String(user.email||'').toLowerCase()){
     const {error}=await sbClient.auth.updateUser({email}); if(error){accountMessage(err,'تغییر ایمیل انجام نشد: '+friendlyAuthError(error));return;}
   }
-  const {error}=await syncMyCustomerProfile(name,email,address,postal); if(error){accountMessage(err,'ذخیره اطلاعات انجام نشد.');return;}
+  const {error}=await syncMyCustomerProfile(name,email,address,postal,undefined,undefined,province,city); if(error){accountMessage(err,'ذخیره اطلاعات انجام نشد.');return;}
   accountMessage(msg,'اطلاعات با موفقیت ذخیره شد.',true); await loadAccountProfileAndOrders();
 }
 async function accountLogout(){await sbClient.auth.signOut(); accountAuthTab='login'; showToast('از حساب خارج شدی'); await renderAccountRoute();}
@@ -3055,6 +3169,8 @@ function friendlyAuthError(error){
 }
 sbClient.auth.onAuthStateChange((event,session)=>{
   updateAccountHeader(session);
+  if(event==='SIGNED_IN') { accountCartLoaded=false; loadAccountCart(); }
+  if(event==='SIGNED_OUT') { accountCartLoaded=false; cart=loadJSON('kg_cart',[]); renderCart(); renderAccountCart(); }
   if(event==='PASSWORD_RECOVERY'){
     accountRecoveryFlow=true;
     try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
@@ -3076,30 +3192,36 @@ let adminCustomersCache=[];
 let adminFilteredCustomersCache=[];
 async function renderAdminCustomers(){
   const box=document.getElementById('adminCustomers'); if(!box)return; box.innerHTML='<p style="text-align:center;color:var(--ink-soft);">در حال بارگذاری مشتریان...</p>';
-  const {data,error}=await sbClient.from('customers').select('phone,username,name,address,created_at,postal_code,email,user_id').order('created_at',{ascending:false});
+  const {data,error}=await sbClient.from('customers').select('phone,username,name,address,created_at,postal_code,email,user_id,province,city').order('created_at',{ascending:false});
   if(error){box.innerHTML='<p style="color:var(--rust);">دریافت مشتریان ناموفق بود.</p>';return;}
   adminCustomersCache=data||[]; filterAdminCustomers();
 }
+function setAdminCustomerSegment(segment){
+  adminCustomerSegment=segment; document.querySelectorAll('.customer-segment-tabs button').forEach(b=>b.classList.toggle('active',b.dataset.segment===segment)); filterAdminCustomers();
+}
 function filterAdminCustomers(){
   const q=(document.getElementById('adminCustomerSearch')?.value||'').trim().toLowerCase();
-  adminFilteredCustomersCache=!q?adminCustomersCache:adminCustomersCache.filter(c=>[c.username,c.name,c.phone,c.email,c.address].some(v=>String(v||'').toLowerCase().includes(q)));
+  let base=adminCustomerSegment==='users'?adminCustomersCache.filter(c=>!!c.user_id):adminCustomerSegment==='guests'?adminCustomersCache.filter(c=>!c.user_id):adminCustomersCache;
+  adminFilteredCustomersCache=!q?base:base.filter(c=>[c.username,c.name,c.phone,c.email,c.address,c.province,c.city].some(v=>String(v||'').toLowerCase().includes(q)));
   const box=document.getElementById('adminCustomers'); if(!box)return;
-  box.innerHTML=adminFilteredCustomersCache.length?adminFilteredCustomersCache.map(c=>`<div class="card admin-customer-card"><div class="admin-customer-head"><div><strong>${escapeHtml(c.name||'بدون نام')}</strong><span>${escapeHtml(c.phone)} ${c.email?`· ${escapeHtml(c.email)}`:'· ایمیل ثبت نشده'}</span></div><span class="customer-account-badge">${c.user_id?'حساب فعال':'بدون حساب'}</span></div><div class="admin-customer-grid"><label>نام<input id="ac_name_${escapeHtml(c.phone)}" value="${escapeHtml(c.name||'')}" maxlength="120"></label><label>نام کاربری<input id="ac_username_${escapeHtml(c.phone)}" value="${escapeHtml(c.username||'')}" maxlength="32" pattern="[A-Za-z0-9_]{3,32}"></label><label>شماره موبایل<input id="ac_phone_${escapeHtml(c.phone)}" value="${escapeHtml(c.phone||'')}" maxlength="11" inputmode="tel" readonly title="شماره موبایل فعلاً قابل تغییر نیست."></label><label>ایمیل بازیابی<input id="ac_email_${escapeHtml(c.phone)}" value="${escapeHtml(c.email||'')}" maxlength="254" type="email"></label><label>کد پستی<input id="ac_postal_${escapeHtml(c.phone)}" value="${escapeHtml(c.postal_code||'')}" maxlength="10"></label><label class="full">آدرس<input id="ac_address_${escapeHtml(c.phone)}" value="${escapeHtml(c.address||'')}" maxlength="1000"></label></div><div class="admin-customer-actions"><button class="btn-primary" style="padding:9px 15px;font-size:12px;" onclick="saveAdminCustomer('${escapeHtml(c.phone)}')">ذخیره اطلاعات</button>${c.user_id?`<button class="btn-ghost" style="padding:9px 15px;font-size:12px;" onclick="resetAdminCustomerPassword('${escapeHtml(c.user_id)}')">تعیین رمز جدید</button>`:''}</div></div>`).join(''):'<div class="card"><p style="text-align:center;color:var(--ink-soft);">مشتری‌ای پیدا نشد.</p></div>';
+  box.innerHTML=adminFilteredCustomersCache.length?adminFilteredCustomersCache.map(c=>{const pid='ac_'+String(c.phone).replace(/[^a-zA-Z0-9_]/g,'_'); return `<div class="card admin-customer-card"><div class="admin-customer-head"><div><strong>${escapeHtml(c.name||'بدون نام')}</strong><span>${escapeHtml(c.phone)} ${c.email?`· ${escapeHtml(c.email)}`:'· ایمیل ثبت نشده'}</span></div><span class="customer-account-badge ${c.user_id?'has-account':'guest-account'}">${c.user_id?'حساب فعال':'مهمان'}</span></div><div class="admin-customer-grid"><label>نام<input id="${pid}_name" value="${escapeHtml(c.name||'')}" maxlength="120"></label><label>نام کاربری${c.user_id?`<input id="${pid}_username" value="${escapeHtml(c.username||'')}" maxlength="32" pattern="[A-Za-z0-9_]{3,32}">`:'<input value="—" disabled>'}</label><label>شماره موبایل<input id="${pid}_phone" value="${escapeHtml(c.phone||'')}" maxlength="11" readonly></label><label>ایمیل بازیابی${c.user_id?`<input id="${pid}_email" value="${escapeHtml(c.email||'')}" maxlength="254" type="email">`:'<input value="—" disabled>'}</label><label>استان<select id="${pid}_province" onchange="adminCustomerProvinceChanged('${pid}')"></select></label><label>شهر / شهرستان<select id="${pid}_city"></select></label><label>کد پستی<input id="${pid}_postal" value="${escapeHtml(c.postal_code||'')}" maxlength="10"></label><label class="full">آدرس دقیق<input id="${pid}_address" value="${escapeHtml(c.address||'')}" maxlength="1000"></label></div><div class="admin-customer-actions"><button class="btn-primary" style="padding:9px 15px;font-size:12px;" onclick="saveAdminCustomer('${escapeHtml(c.phone)}','${pid}')">ذخیره اطلاعات</button>${c.user_id?`<button class="btn-ghost" style="padding:9px 15px;font-size:12px;" onclick="resetAdminCustomerPassword('${escapeHtml(c.user_id)}')">تعیین رمز جدید</button>`:''}</div></div>`}).join(''):'<div class="card"><p style="text-align:center;color:var(--ink-soft);">مشتری‌ای در این گروه پیدا نشد.</p></div>';
+  adminFilteredCustomersCache.forEach(c=>{const pid='ac_'+String(c.phone).replace(/[^a-zA-Z0-9_]/g,'_');const ps=document.getElementById(pid+'_province');const cs=document.getElementById(pid+'_city');populateProvinceSelect(ps,c.province||'');populateCitySelect(cs,c.province||'',c.city||'');});
 }
+function adminCustomerProvinceChanged(pid){const p=document.getElementById(pid+'_province'),c=document.getElementById(pid+'_city');populateCitySelect(c,p?.value||'','');}
 async function adminCustomerAuthAction(payload){
   const {data:{session}}=await sbClient.auth.getSession(); if(!session)return {error:{message:'NO_SESSION'}};
   const res=await fetch('https://thovhvemaidbiekagome.functions.supabase.co/admin-customer-auth',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_ANON_KEY},body:JSON.stringify(payload)});
   let body=null;try{body=await res.json();}catch(e){} return {data:body,error:res.ok?null:{message:body?.error||'ADMIN_CUSTOMER_AUTH_FAILED'}};
 }
-async function saveAdminCustomer(oldPhone){
+async function saveAdminCustomer(oldPhone,pid){
   const row=adminCustomersCache.find(c=>c.phone===oldPhone)||{};
-  const name=document.getElementById('ac_name_'+CSS.escape(oldPhone))?.value.trim()||'', username=document.getElementById('ac_username_'+CSS.escape(oldPhone))?.value.trim().toLowerCase()||'', email=document.getElementById('ac_email_'+CSS.escape(oldPhone))?.value.trim().toLowerCase()||'', postal=document.getElementById('ac_postal_'+CSS.escape(oldPhone))?.value.trim()||'', address=document.getElementById('ac_address_'+CSS.escape(oldPhone))?.value.trim()||'';
-  if(name.length<2||!validUsername(username)||!validEmail(email)|| (postal && !/^\d{10}$/.test(postal))){showToast('اطلاعات مشتری را درست وارد کن');return;}
+  const name=document.getElementById(pid+'_name')?.value.trim()||'', username=document.getElementById(pid+'_username')?.value.trim().toLowerCase()||'', email=document.getElementById(pid+'_email')?.value.trim().toLowerCase()||'', province=document.getElementById(pid+'_province')?.value.trim()||'', city=document.getElementById(pid+'_city')?.value.trim()||'', postal=document.getElementById(pid+'_postal')?.value.trim()||'', address=document.getElementById(pid+'_address')?.value.trim()||'';
+  if(name.length<2|| (row.user_id && (!validUsername(username)||!validEmail(email)||!province||!city)) || (postal && !/^\d{10}$/.test(postal))){showToast('اطلاعات مشتری را درست وارد کن');return;}
   if(row.user_id && email!==String(row.email||'').toLowerCase()){
     const authRes=await adminCustomerAuthAction({user_id:row.user_id,email});
     if(authRes.error){showToast('تغییر ایمیل حساب انجام نشد');console.error(authRes.error);return;}
   }
-  const {error}=await sbClient.from('customers').update({name,username,email,address:address||null,postal_code:postal||null}).eq('phone',oldPhone);
+  const {error}=await sbClient.from('customers').update({name,username:row.user_id?username:null,email:row.user_id?email:null,province,city,address:address||'',postal_code:postal||null}).eq('phone',oldPhone);
   if(error){showToast('ذخیره اطلاعات مشتری انجام نشد');console.error(error);return;}
   showToast('اطلاعات مشتری ذخیره شد ✅'); await renderAdminCustomers();
 }
@@ -4092,10 +4214,10 @@ function isValidPhone(phone){
 }
 
 /* ============ INIT ============ */
-loadProductsFromDB().then(renderMenuCategories);
+loadProductsFromDB().then(async()=>{ renderMenuCategories(); const {data}=await sbClient.auth.getSession(); updateAccountHeader(data.session); if(data.session) await loadAccountCart(); else {accountCartLoaded=false; renderCart(); renderAccountCart();} });
 loadCategoriesFromDB();
 loadHeroSlides();
-sbClient.auth.getSession().then(({data})=>updateAccountHeader(data.session));
+populateProvinceSelect(document.getElementById('accountRegProvince'),''); populateProvinceSelect(document.getElementById('accountProfileProvince'),'');
 runWhenIdle(()=>sbClient.rpc('record_site_visit').then(()=>{}).catch(()=>{}), 2000);
 // Preserve Supabase Auth callback hashes (especially password-recovery tokens).
 // Rewriting these hashes before Supabase processes them destroys the recovery session.
