@@ -8,12 +8,11 @@
 <body>
 <script>
 (function () {
-  try {
-    // Preserve the original clean route AND Supabase's auth callback query/hash.
-    // Dropping the hash here would discard the recovery session before Supabase can process it.
-    sessionStorage.setItem('__khanegarm_spa_path', location.pathname + location.search + location.hash);
-  } catch (e) {}
-  location.replace('/' + location.search + location.hash);
+  // GitHub Pages has no server-side SPA fallback. Keep the exact clean route,
+  // query and Supabase auth hash in the URL so index.html can restore it.
+  var target = location.pathname + location.search;
+  var q = '?__spa_path=' + encodeURIComponent(target);
+  location.replace('/' + q + location.hash);
 })();
 </script>
 <noscript>برای ادامه، JavaScript را فعال کنید.</noscript>

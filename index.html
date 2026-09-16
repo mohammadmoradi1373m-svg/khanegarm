@@ -1870,6 +1870,10 @@ function parseLocation(){
   try { recovered = sessionStorage.getItem('__khanegarm_spa_path') || ''; if(recovered) sessionStorage.removeItem('__khanegarm_spa_path'); } catch(e) {}
   let path = location.pathname || '/';
   let search = location.search || '';
+  const spaPathParam = new URLSearchParams(location.search || '').get('__spa_path');
+  if(spaPathParam){
+    try { recovered = decodeURIComponent(spaPathParam); } catch(e) { recovered = spaPathParam; }
+  }
   if(recovered){
     try { const u = new URL(recovered, location.origin); path = u.pathname || '/'; search = u.search || ''; } catch(e) {}
   }
@@ -1893,6 +1897,9 @@ function parseLocation(){
   // Password recovery has a dedicated clean URL. Internally it reuses the account page
   // but remains distinguishable even when the auth callback arrives without a query marker.
   if(path === '/account/recovery'){ params.recovery = '1'; path = '/account'; }
+  if(params.__spa_path){
+    delete params.__spa_path;
+  }
   return {path: path || '/', params};
 }
 function cleanUrlFor(path, params){
@@ -2853,10 +2860,15 @@ async function prepareAuthCallback(){
   // Supabase recovery callbacks can arrive as an implicit-flow hash or a PKCE code.
   // Keep an explicit in-memory recovery flag so the code is not lost when the URL is cleaned.
   const hash=String(location.hash||'');
-  const qs=new URLSearchParams(location.search||'');
+  let callbackSearch=location.search||'';
+  const spaPathParam=new URLSearchParams(location.search||'').get('__spa_path');
+  if(spaPathParam){
+    try { callbackSearch=new URL(decodeURIComponent(spaPathParam),location.origin).search || callbackSearch; } catch(e) {}
+  }
+  const qs=new URLSearchParams(callbackSearch);
   const code=qs.get('code');
   const type=qs.get('type');
-  const recoveryMarker=qs.get('recovery')==='1';
+  const recoveryMarker=qs.get('recovery')==='1' || !!spaPathParam;
   const errorCode=qs.get('error_code') || new URLSearchParams(hash.replace(/^#/,'')).get('error_code');
   const errorDescription=qs.get('error_description') || new URLSearchParams(hash.replace(/^#/,'')).get('error_description');
   if(/type=recovery/i.test(hash) || type==='recovery' || recoveryMarker || code){
@@ -2881,6 +2893,7 @@ async function prepareAuthCallback(){
         return;
       }
       const next=new URL(location.href);
+      next.searchParams.delete('__spa_path');
       next.searchParams.delete('code');
       next.searchParams.delete('type');
       next.searchParams.delete('error');
@@ -2898,10 +2911,11 @@ async function prepareAuthCallback(){
 async function renderAccountRoute(){
   const {data:{session}}=await sbClient.auth.getSession();
   const authBox=document.getElementById('accountAuthBox'), panel=document.getElementById('accountPanel'), recovery=document.getElementById('accountRecoveryComplete');
+  const parsedLocation=parseLocation();
   const currentPath=String(location.pathname||'').replace(/\/$/,'') || '/';
-  const locationRecovery=currentPath==='/account/recovery';
+  const locationRecovery=currentPath==='/account/recovery' || (parsedLocation.path==='/account' && parsedLocation.params.recovery==='1');
   const qs=new URLSearchParams(location.search||'');
-  const recovering=locationRecovery || accountRecoveryFlow || location.hash.includes('type=recovery') || qs.get('type')==='recovery' || qs.get('recovery')==='1' || !!qs.get('code');
+  const recovering=locationRecovery || accountRecoveryFlow || location.hash.includes('type=recovery') || qs.get('type')==='recovery' || qs.get('recovery')==='1' || !!qs.get('code') || !!qs.get('__spa_path');
   // /account/recovery is a dedicated password-change route. Never fall back to login on this path.
   if(recovering){
     if(authBox) authBox.hidden=true;
