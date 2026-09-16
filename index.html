@@ -2844,12 +2844,30 @@ function switchAccountAuthTab(tab){
   const title=document.getElementById('accountPageTitle'), sub=document.getElementById('accountPageSubtitle');
   if(title&&sub){ const m={login:['ورود به حساب','با نام کاربری و رمز عبور وارد حساب شخصی خودت شو.'],register:['ساخت حساب','حساب شخصی خودت را بساز تا سفارش‌ها و اطلاعاتت همیشه همراهت باشد.'],recovery:['بازیابی رمز عبور','لینک بازیابی را به ایمیل ثبت‌شده حساب می‌فرستیم.']}; title.textContent=m[tab][0]; sub.textContent=m[tab][1]; }
 }
+async function prepareAuthCallback(){
+  // Supabase may return recovery callbacks as either an implicit-flow hash
+  // (#access_token=...&type=recovery) or a PKCE query (?code=...).
+  // For PKCE, exchange the one-time code before rendering the account page.
+  const qs=new URLSearchParams(location.search||'');
+  const code=qs.get('code');
+  if(code){
+    try{
+      const {error}=await sbClient.auth.exchangeCodeForSession(code);
+      if(error) console.warn('[auth] recovery code exchange failed',error);
+      else{
+        const next=new URL(location.href);
+        next.searchParams.delete('code');
+        history.replaceState({},'',next.pathname+(next.search?'?'+next.searchParams.toString():'')+(location.hash||''));
+      }
+    }catch(e){ console.warn('[auth] recovery callback failed',e); }
+  }
+}
 async function renderAccountRoute(){
   const {data:{session}}=await sbClient.auth.getSession();
   const authBox=document.getElementById('accountAuthBox'), panel=document.getElementById('accountPanel'), recovery=document.getElementById('accountRecoveryComplete');
-  const recovering=location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('type')==='recovery';
+  const recovering=location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('type')==='recovery' || !!new URLSearchParams(location.search).get('code');
   if(recovery){};
-  if(recovering){ authBox.hidden=true; panel.hidden=true; recovery.hidden=false; return; }
+  if(recovering || session && location.hash.includes('type=recovery')){ authBox.hidden=true; panel.hidden=true; recovery.hidden=false; return; }
   recovery.hidden=true;
   if(session){ authBox.hidden=true; panel.hidden=false; await loadAccountProfileAndOrders(); }
   else { authBox.hidden=false; panel.hidden=true; switchAccountAuthTab(accountAuthTab); }
@@ -4014,7 +4032,7 @@ if(location.hash && !/(?:access_token=|refresh_token=|type=recovery|type=signup)
   const parsed = parseLegacyHash(location.hash);
   history.replaceState({}, '', cleanUrlFor(parsed.path, parsed.params));
 }
-render();
+(async()=>{ await prepareAuthCallback(); await render(); })();
 </script>
 <style>
 .pd-gallery-main{cursor:zoom-in;position:relative;background:var(--card)}
