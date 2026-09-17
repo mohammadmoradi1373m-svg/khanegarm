@@ -204,6 +204,29 @@
   .promo-card span{font-size:13px;color:#fff;}
   .promo-card strong{font-size:22px;color:#F0B743;font-family:'Vazirmatn';}
   .promo-card button{margin-top:8px;background:#F0B743;color:#17382F;border:0;border-radius:999px;padding:9px 18px;font-family:inherit;font-weight:800;cursor:pointer;font-size:12px;}
+  .offer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px;}
+  .offer-card{min-height:160px;border-radius:20px;overflow:hidden;position:relative;color:#fff;background:#075246;display:flex;align-items:center;background-size:cover;background-position:center;box-shadow:0 18px 42px rgba(17,63,54,.10);}
+  .offer-card::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(2,38,31,.10),rgba(2,38,31,.90));}
+  .offer-card>div{position:relative;z-index:1;padding:22px 26px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;margin-right:auto;width:72%;}
+  .offer-card span{font-size:12px;color:#fff;} .offer-card strong{font-size:21px;color:#F0B743;}
+  .offer-card button{margin-top:8px;background:#F0B743;color:#17382F;border:0;border-radius:999px;padding:9px 16px;font-family:inherit;font-weight:800;cursor:pointer;font-size:12px;}
+  .offer-card.single{grid-column:1/-1;}
+  .offer-modal-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .offer-mini{display:grid;grid-template-columns:72px 1fr;gap:10px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:9px;background:var(--card);}
+  .offer-mini img{width:72px;height:72px;object-fit:cover;border-radius:10px;}
+  .offer-mini h4{margin:0 0 5px;font-size:13px;} .offer-mini p{margin:0;color:var(--ink-soft);font-size:11px;}
+  .offer-old{color:var(--ink-soft);text-decoration:line-through;font-size:11px;margin-left:6px;}
+  .offer-admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .offer-admin-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--card);}
+  .offer-admin-card h4{margin:0 0 10px;font-size:14px;}
+  .offer-admin-list{display:grid;gap:9px;margin-top:12px;}
+  .offer-admin-row{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg-alt);}
+  .offer-admin-row-head{display:flex;justify-content:space-between;gap:10px;align-items:center;}
+  .offer-product-pick{display:grid;grid-template-columns:auto 1fr 82px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line);}
+  .offer-product-pick:last-child{border-bottom:0;}
+  .offer-product-pick small{color:var(--ink-soft);font-size:10.5px;}
+  .offer-admin-note{font-size:11.5px;color:var(--ink-soft);line-height:1.8;margin:7px 0 0;}
+  @media (max-width:700px){.offer-grid{grid-template-columns:1fr;}.offer-card{min-height:128px;border-radius:16px}.offer-card>div{width:84%;padding:15px 18px}.offer-card strong{font-size:17px}.offer-card span{font-size:10.5px}.offer-card button{padding:7px 12px;font-size:10.5px}.offer-modal-list,.offer-admin-grid{grid-template-columns:1fr}.offer-product-pick{grid-template-columns:auto 1fr 68px}}
   @media (max-width:620px){.promo-grid{grid-template-columns:1fr;}.promo-card{min-height:130px}.promo-card>div{width:78%;padding:20px}.promo-card strong{font-size:18px}.carousel-arrow{width:31px;height:31px;font-size:16px}.carousel-shell{gap:3px}}
   /* categories home */
   .cat-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
@@ -675,7 +698,6 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
 /* V15 — requested mobile hierarchy + spacing + carousel/category polish */
 [data-route="/"] #featuredSection{margin-top:24px;}
 [data-route="/"] .promo-grid{margin-top:22px;}
-[data-route="/"] #homeNeedsSection{margin-top:26px;}
 [data-route="/"] #newestSection{margin-top:30px;}
 
 /* Keep the section rhythm compact and intentional on mobile. */
@@ -685,7 +707,6 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
   [data-route="/"] .section-head p{margin-bottom:0;}
   [data-route="/"] #featuredSection{margin-top:22px;}
   [data-route="/"] .promo-grid{margin-top:18px;}
-  [data-route="/"] #homeNeedsSection{margin-top:22px;}
   [data-route="/"] #newestSection{margin-top:26px;}
 }
 
@@ -872,6 +893,13 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
   </div>
 </div>
 
+<div class="modal-overlay" id="homeOffersModal">
+  <div class="modal-box" style="max-width:760px;max-height:86vh;overflow:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;"><div><div class="eyebrow" id="homeOffersModalEyebrow">پیشنهادهای ویژه</div><h3 id="homeOffersModalTitle" style="margin:2px 0 0;">پیشنهادهای خانه‌گرم</h3></div><button class="btn-ghost" type="button" onclick="closeHomeOffersModal()">بستن</button></div>
+    <div id="homeOffersModalBody"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <main id="app" class="wrap">
@@ -890,7 +918,7 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
     </div>
   </div>
 
-  <!-- Home content order: quick access → popular → promos → categories → newest -->
+  <!-- Home content order: quick access → popular → active offers → newest -->
   <div id="featuredSection">
     <div class="section-head"><div class="eyebrow">🔥 انتخاب محبوب مشتری‌ها</div><h2>محبوب‌ترین محصولات</h2><p>محصولاتی که بیشتر دیده و انتخاب شده‌اند.</p></div>
     <div class="carousel-shell">
@@ -901,15 +929,10 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
     <div class="carousel-dots" id="homeFeaturedDots"></div>
   </div>
 
-  <div class="promo-grid">
-    <div class="promo-card promo-discount" style="background-image:url('hero-home-3.webp');"><div><span>🔥 تخفیف‌های شگفت‌انگیز</span><strong>تا ۳۰٪ تخفیف</strong><button onclick="go('/products')">مشاهده همه ←</button></div></div>
-    <div class="promo-card promo-packs" style="background-image:url('hero-home-4.webp');"><div><span>🎁 پک‌های ویژه</span><strong>برای دورهمی‌های خاص</strong><button onclick="go('/products')">مشاهده پک‌ها ←</button></div></div>
+  <div id="homeOffersSection" hidden>
+    <div id="homeOfferGrid" class="offer-grid"></div>
   </div>
 
-  <div id="homeNeedsSection">
-    <div class="section-head"><div class="eyebrow">انتخاب بر اساس سلیقه</div><h2>چی نیاز داری؟</h2><p>از بین دسته‌های خانه‌گرم، سریع به چیزی که می‌خوای برس.</p></div>
-    <div class="cat-grid" id="homeCatGrid"></div>
-  </div>
 
   <div id="newestSection">
     <div class="section-head"><div class="eyebrow">✨ تازه از راه رسیده</div><h2>جدیدترین محصولات</h2><p>جدیدترین انتخاب‌ها را قبل از بقیه ببین.</p></div>
@@ -1191,6 +1214,7 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
       <button class="chip" id="tabBtn-categories" onclick="switchAdminTab('categories')">🗂️ دسته‌بندی‌ها</button>
       <button class="chip" id="tabBtn-customers" onclick="switchAdminTab('customers')">👥 مشتریان</button>
       <button class="chip" id="tabBtn-media" onclick="switchAdminTab('media')">🖼️ رسانه و بنرها</button>
+      <button class="chip" id="tabBtn-offers" onclick="switchAdminTab('offers')">🏷️ تخفیف و پک‌ها</button>
       <button class="chip" id="tabBtn-reviews" onclick="switchAdminTab('reviews')">نظرات</button>
       <button class="chip" id="tabBtn-guides" onclick="switchAdminTab('guides')">مطالب پیشنهادی</button>
       <button class="chip" id="tabBtn-todos" onclick="switchAdminTab('todos')">📝 وظایف</button>
@@ -1296,6 +1320,46 @@ footer{background:#064C43;color:#fff;padding:0 0 18px;margin-top:18px}.trust-bar
         <input type="search" id="adminCustomerSearch" placeholder="جست‌وجو با نام کاربری، نام، شماره یا ایمیل..." oninput="filterAdminCustomers()" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:inherit;background:var(--card);">
       </div>
       <div id="adminCustomers"></div>
+    </div>
+
+    <div id="adminTab-offers" hidden>
+      <div class="section-head" style="margin-bottom:14px;"><div class="eyebrow">مدیریت پیشنهاد فروش</div><h3>تخفیف‌ها و پک‌ها</h3><p>تخفیف برای یک پاسور یا پک‌های ۲ تا ۱۰ محصول متفاوت را از همین‌جا مدیریت کن.</p></div>
+      <div class="offer-admin-grid">
+        <div class="offer-admin-card">
+          <h4>🏷️ تخفیف یک محصول</h4>
+          <div class="form-grid">
+            <select id="discountProduct" class="full"></select>
+            <select id="discountType"><option value="percent">درصدی</option><option value="fixed">مبلغی</option></select>
+            <input id="discountValue" type="number" min="1" placeholder="مقدار تخفیف">
+            <input id="discountTitle" class="full" placeholder="عنوان، مثال: تخفیف ویژه امروز" maxlength="120">
+            <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input id="discountActive" type="checkbox" checked> فعال باشد</label>
+            <input id="discountStarts" type="datetime-local" title="شروع">
+            <input id="discountEnds" type="datetime-local" title="پایان">
+          </div>
+          <p class="offer-admin-note">هر پاسور فقط یک تخفیف فعال/تعریف‌شده دارد. مبلغ نهایی سمت سرور محاسبه می‌شود.</p>
+          <div style="display:flex;gap:8px;margin-top:12px;"><button class="btn-primary" onclick="adminSaveDiscount()">ذخیره تخفیف</button><button class="btn-ghost" onclick="adminClearDiscountForm()">پاک کردن</button></div>
+          <div id="adminDiscountList" class="offer-admin-list"></div>
+        </div>
+        <div class="offer-admin-card">
+          <h4>🎁 ساخت / ویرایش پک</h4>
+          <input type="hidden" id="packEditId">
+          <div class="form-grid">
+            <input id="packName" class="full" placeholder="نام پک" maxlength="160">
+            <input id="packSlug" class="full" placeholder="اسلاگ انگلیسی، مثال: dorhami" maxlength="80">
+            <textarea id="packDescription" class="full" rows="3" placeholder="توضیحات اختیاری"></textarea>
+            <select id="packPricingType"><option value="percent">تخفیف درصدی روی مجموع</option><option value="fixed">تخفیف مبلغی از مجموع</option></select>
+            <input id="packDiscountValue" type="number" min="0" placeholder="مقدار تخفیف">
+            <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;"><input id="packActive" type="checkbox" checked> فعال باشد</label>
+            <input id="packStarts" type="datetime-local" title="شروع">
+            <input id="packEnds" type="datetime-local" title="پایان">
+            <input id="packImage" type="file" accept="image/*" class="full">
+          </div>
+          <p class="offer-admin-note">هر پک باید حداقل ۲ و حداکثر ۱۰ پاسور متفاوت داشته باشد. تعداد هر پاسور هم جداگانه قابل تعیین است.</p>
+          <div id="packProductPicker" style="margin-top:10px;max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:8px;"></div>
+          <div style="display:flex;gap:8px;margin-top:12px;"><button class="btn-primary" onclick="adminSavePack()">ذخیره پک</button><button class="btn-ghost" onclick="adminClearPackForm()">پک جدید</button></div>
+          <div id="adminPackList" class="offer-admin-list"></div>
+        </div>
+      </div>
     </div>
 
     <div id="adminTab-reviews" hidden>
@@ -1748,10 +1812,10 @@ function persistCart(){
 function renderAccountCart(){
   const box=document.getElementById('accountCartList'),totalEl=document.getElementById('accountCartTotal'); if(!box)return;
   if(!accountCartLoaded){box.innerHTML='<div class="account-empty">سبد خرید این حساب بعد از ورود بارگذاری می‌شود.</div>'; if(totalEl)totalEl.textContent='۰ تومان'; return;}
-  const valid=cart.filter(i=>findProduct(i.id));
+  const valid=cart.filter(i=>i.type==='pack'?!!findPack(i.id):!!findProduct(i.id));
   if(!valid.length){box.innerHTML='<div class="account-empty">سبد خریدت خالیه. محصولات مورد علاقه‌ات رو اینجا نگه دار.</div>'; if(totalEl)totalEl.textContent='۰ تومان'; return;}
   let total=0;
-  box.innerHTML=valid.map(i=>{const p=findProduct(i.id);total+=p.price*i.qty;return `<div class="account-cart-item"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" alt="${escapeHtml(p.name)}" loading="lazy"><div><b>${escapeHtml(p.name)}</b><span>${toFa(i.qty)} عدد · ${formatToman(p.price*i.qty)}</span></div></div>`}).join('');
+  box.innerHTML=valid.map(i=>{if(i.type==='pack'){const x=findPack(i.id);const line=Number(x.price||0)*i.qty;total+=line;return `<div class="account-cart-item"><img src="${escapeHtml(x.image_url||x.items?.[0]?.img_url||'')}" alt="${escapeHtml(x.name)}" loading="lazy"><div><b>${escapeHtml(x.name)}</b><span>${toFa(i.qty)} پک · ${formatToman(line)}</span></div></div>`;}const p=findProduct(i.id);const price=effectiveProductPrice(p),line=price*i.qty;total+=line;return `<div class="account-cart-item"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" alt="${escapeHtml(p.name)}" loading="lazy"><div><b>${escapeHtml(p.name)}</b><span>${toFa(i.qty)} عدد · ${formatToman(line)}</span></div></div>`}).join('');
   if(totalEl)totalEl.textContent=formatToman(total);
 }
 
@@ -1768,7 +1832,7 @@ function pruneCartOfMissingProducts(){
   // فقط وقتی لود محصولات موفق بوده صدا زده می‌شه (نه موقع خطای شبکه/فیلترینگ)،
   // وگرنه یه قطعی موقت می‌تونست کل سبد خرید مشتری رو اشتباهی خالی کنه
   const before = cart.length;
-  cart = cart.filter(item => !!findProduct(item.id));
+  cart = cart.filter(item => item.type==='pack' ? !!findPack(item.id) : !!findProduct(item.id));
   if(cart.length !== before){ if(accountCartLoaded) scheduleAccountCartSave(); else saveJSON('kg_cart', cart); }
 }
 function compressImage(file,maxDim,quality){
@@ -2197,6 +2261,7 @@ async function render(){
   });
   if(path === '/' || path === '/products' || path === '/product'){
     await ensureCatalogLoaded();
+    await loadHomeOffers();
   }
   if(path === '/'){ renderHome(); runWhenIdle(()=>renderDeliveredCount(), 1800); } else { stopHomeCarousels(); }
   if(path === '/products'){ renderProductList(params.cat, params.q, params.brand); }
@@ -2287,12 +2352,13 @@ function runHeaderSearch(){ const q=document.getElementById('headerSearch').valu
 function scrollToProductPart(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); document.querySelectorAll('#productTabs button').forEach(b=>b.classList.remove('active')); const buttons=document.querySelectorAll('#productTabs button'); const map={pdDescription:0,reviewSection:1,relatedProductsBox:2}; if(buttons[map[id]]) buttons[map[id]].classList.add('active'); }
 function productCardHTML(p){
   const low=p.stock<=5&&p.stock>0,out=p.stock<=0,isNew=NEWEST_PRODUCT_IDS.has(p.id),fav=isFavorite(p.id);
+  const offer=effectiveProductOffer(p.id), displayPrice=effectiveProductPrice(p);
   return `<div class="p-card" style="${out?'opacity:.58;':''}" onclick="go('/product?id=${encodeURIComponent(p.id)}')">
-    ${isNew?`<span class="new-badge">جدید</span>`:''}
+    ${isNew?`<span class="new-badge">جدید</span>`:''}${offer?`<span class="new-badge" style="left:42px;background:var(--rust);">${discountLabel(offer)}</span>`:''}
     <button type="button" class="fav-btn ${fav?'active':''}" data-id="${escapeHtml(p.id)}" onclick="toggleFavorite('${escapeHtml(p.id)}',event)" aria-label="${fav?'حذف از علاقه‌مندی‌ها':'افزودن به علاقه‌مندی‌ها'}">${fav?'♥':'♡'}</button>
     <div class="p-thumb" style="padding:0;overflow:hidden;"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" onerror="this.onerror=null;this.src='${escapeHtml(p.img)}';" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;border-radius:12px;${out?'filter:grayscale(.6);':''}"></div>
     <span class="p-tag">${escapeHtml(p.tag)}</span><h3>${escapeHtml(p.name)}</h3><p class="desc">${escapeHtml(p.desc)}</p>
-    <div class="p-foot"><div class="price">${toFa(p.price.toLocaleString('en-US'))}<small> تومان</small></div><button class="add-btn" onclick="event.stopPropagation();addToCart('${escapeHtml(p.id)}')" aria-label="افزودن به سبد" ${out?'disabled style="opacity:.4;cursor:not-allowed;"':''}>+</button></div>
+    <div class="p-foot"><div class="price">${toFa(displayPrice.toLocaleString('en-US'))}<small> تومان</small>${offer?`<span class="offer-old">${toFa(p.price.toLocaleString('en-US'))}</span>`:''}</div><button class="add-btn" onclick="event.stopPropagation();addToCart('${escapeHtml(p.id)}')" aria-label="افزودن به سبد" ${out?'disabled style="opacity:.4;cursor:not-allowed;"':''}>+</button></div>
     <div class="stock-note ${low?'low':''}" style="${out?'color:var(--rust);font-weight:700;':''}">${p.stock>0?(low?'تنها '+toFa(p.stock)+' عدد باقی مانده':'موجود در انبار'):'ناموجود — به‌زودی شارژ می‌شه'}</div>
   </div>`;
 }
@@ -2302,7 +2368,9 @@ function sortByStock(list){
 function carouselCardHTML(p){
   return `<div class="carousel-item">${productCardHTML(p)}</div>`;
 }
-function renderHome(){
+async function renderHome(){
+  await loadHomeOffers();
+  renderHomeOffers();
   const featured = sortByStock(PRODUCTS).slice(0,6);
   const featuredSection = document.getElementById('featuredSection');
   featuredSection.style.display = featured.length ? '' : 'none';
@@ -2319,12 +2387,6 @@ function renderHome(){
     initAutoCarousel('homeNewest', 'homeNewestDots');
   }
 
-  document.getElementById('homeCatGrid').innerHTML = CATEGORIES.map(c=>`
-    <div class="cat-card" onclick="go('/products?cat=${c.id}')">
-      <div class="cat-ic-wrap">${c.image_url ? `<img src="${escapeHtml(c.image_url)}" loading="lazy" decoding="async" alt="${escapeHtml(c.name)}">` : `<span>${escapeHtml(c.emoji)||'📦'}</span>`}</div>
-      <h3>${escapeHtml(c.name)}</h3><p>${toFa(PRODUCTS.filter(p=>p.cat===c.id).length)} محصول</p>
-    </div>`).join('');
-
   renderHeroSlider();
 }
 const DEFAULT_HERO_SLIDES = [
@@ -2335,6 +2397,41 @@ const DEFAULT_HERO_SLIDES = [
 ];
 let HERO_SLIDES = DEFAULT_HERO_SLIDES.map(x=>({...x}));
 let HERO_INDEX = 0, HERO_TIMER = null;
+let HOME_OFFERS = {discounts:[], packs:[]};
+let homeOffersLoadedAt = 0;
+const HOME_OFFERS_TTL = 60000;
+function effectiveProductOffer(productId){ return (HOME_OFFERS.discounts||[]).find(x=>x.product_id===productId) || null; }
+function effectiveProductPrice(p){ const d=effectiveProductOffer(p.id); return d ? Number(d.discounted_price) : Number(p.price||0); }
+function discountLabel(d){ return d.discount_type==='percent' ? toFa(d.discount_value)+'٪ تخفیف' : toFa(Number(d.price||0)-Number(d.discounted_price||0))+' تومان تخفیف'; }
+async function loadHomeOffers(force=false){
+  if(!force && homeOffersLoadedAt && Date.now()-homeOffersLoadedAt<HOME_OFFERS_TTL) return;
+  try{
+    const {data,error}=await withTimeout(sbClient.rpc('get_home_offers'),10000,'OFFERS_TIMEOUT');
+    if(error) throw error;
+    const parsed=typeof data==='string'?JSON.parse(data):data;
+    HOME_OFFERS={discounts:Array.isArray(parsed?.discounts)?parsed.discounts:[],packs:Array.isArray(parsed?.packs)?parsed.packs:[]};
+    homeOffersLoadedAt=Date.now();
+  }catch(e){ console.warn('[offers] load failed',e); HOME_OFFERS={discounts:[],packs:[]}; }
+}
+function renderHomeOffers(){
+  const section=document.getElementById('homeOffersSection'),grid=document.getElementById('homeOfferGrid'); if(!section||!grid)return;
+  const discounts=HOME_OFFERS.discounts||[],packs=HOME_OFFERS.packs||[];
+  const cards=[];
+  if(discounts.length) cards.push(`<div class="offer-card" style="background-image:url('hero-home-3.webp')"><div><span>🔥 تخفیف‌های فعال</span><strong>${discounts.length===1?escapeHtml(discounts[0].name):toFa(discounts.length)+' پیشنهاد تخفیفی'}</strong><button type="button" onclick="openHomeOffersModal('discounts')">مشاهده تخفیف‌ها ←</button></div></div>`);
+  if(packs.length) cards.push(`<div class="offer-card" style="background-image:url('hero-home-4.webp')"><div><span>🎁 پک‌های ویژه</span><strong>${packs.length===1?escapeHtml(packs[0].name):toFa(packs.length)+' پک آماده'}</strong><button type="button" onclick="openHomeOffersModal('packs')">مشاهده پک‌ها ←</button></div></div>`);
+  grid.innerHTML=cards.join(''); section.hidden=!cards.length; if(cards.length===1)grid.firstElementChild?.classList.add('single');
+}
+function openHomeOffersModal(type){
+  const box=document.getElementById('homeOffersModal'),body=document.getElementById('homeOffersModalBody'); if(!box||!body)return;
+  const list=type==='packs'?HOME_OFFERS.packs:HOME_OFFERS.discounts;
+  document.getElementById('homeOffersModalEyebrow').textContent=type==='packs'?'🎁 پک‌های ویژه':'🔥 تخفیف‌های فعال';
+  document.getElementById('homeOffersModalTitle').textContent=type==='packs'?'پک‌های آماده خانه‌گرم':'محصولات تخفیف‌خورده';
+  if(!list.length){body.innerHTML='<div class="account-empty">در حال حاضر پیشنهادی فعال نیست.</div>';}
+  else if(type==='packs'){body.innerHTML='<div class="offer-modal-list">'+list.map(x=>{const img=x.image_url||x.items?.[0]?.img_url||'';const items=(x.items||[]).map(i=>escapeHtml(i.name)+' × '+toFa(i.quantity)).join('، ');return `<div class="offer-mini"><img src="${escapeHtml(img)}" alt="" loading="lazy"><div><h4>${escapeHtml(x.name)}</h4><p>${items}</p><strong style="display:block;margin-top:5px;">${formatToman(Number(x.price||0))}</strong><button class="btn-primary" style="padding:7px 11px;font-size:11px;margin-top:7px;" onclick="addPackToCart('${escapeHtml(x.id)}')">افزودن پک به سبد</button></div></div>`}).join('')+'</div>';}
+  else {body.innerHTML='<div class="offer-modal-list">'+list.map(x=>`<div class="offer-mini"><img src="${escapeHtml(x.img_url||'')}" alt="" loading="lazy"><div><h4>${escapeHtml(x.name)}</h4><p>${escapeHtml(x.title||'تخفیف ویژه')} · ${discountLabel(x)}</p><strong style="display:block;margin-top:5px;">${formatToman(Number(x.discounted_price||0))}<span class="offer-old">${formatToman(Number(x.price||0))}</span></strong><button class="btn-primary" style="padding:7px 11px;font-size:11px;margin-top:7px;" onclick="addToCart('${escapeHtml(x.product_id)}')">افزودن به سبد</button></div></div>`).join('')+'</div>';}
+  box.classList.add('open');
+}
+function closeHomeOffersModal(){document.getElementById('homeOffersModal')?.classList.remove('open');}
 function normalizeHeroSlides(list){
   return (Array.isArray(list)?list:[]).map((x,i)=>({
     id:String(x.id||('hero'+Date.now()+i)), eyebrow:String(x.eyebrow||'پیشنهاد ویژه خانه‌گرم').slice(0,120),
@@ -2568,7 +2665,7 @@ function renderProductDetail(id){
       <div class="pd-topline"><span class="pd-tag">${escapeHtml(p.tag)||'کارت بازی'}${p.views>20?` · 👁️ ${toFa(p.views)} بازدید`:''}</span><button type="button" class="fav-btn ${favorite?'active':''}" data-id="${escapeHtml(p.id)}" onclick="toggleFavorite('${escapeHtml(p.id)}',event)" style="position:static;width:38px;height:38px;">${favorite?'♥':'♡'}</button></div>
       <h1 class="pd-title">${escapeHtml(p.name)}</h1>
       <div class="pd-rating" id="pdRating">☆ هنوز امتیازی ثبت نشده</div>
-      <div class="pd-price">${toFa(p.price.toLocaleString('en-US'))} <small style="font-size:12px;font-weight:600;color:var(--ink-soft);">تومان</small></div>
+      <div class="pd-price">${toFa(effectiveProductPrice(p).toLocaleString('en-US'))} <small style="font-size:12px;font-weight:600;color:var(--ink-soft);">تومان</small>${effectiveProductOffer(p.id)?`<span class="offer-old">${toFa(p.price.toLocaleString('en-US'))} تومان</span>`:''}</div>
       <p class="pd-desc">${escapeHtml(p.desc)}</p>
       ${p.features&&p.features.length?`<div class="pd-feature-box"><h4>ویژگی‌های کلیدی</h4><ul class="pd-features">${p.features.slice(0,5).map(f=>`<li>${escapeHtml(f)}</li>`).join('')}</ul></div>`:''}
       <div class="stock-note ${p.stock<=5?'low':''}" style="font-size:12px;margin-bottom:11px;">${p.stock>0?(p.stock<=5?'تنها '+toFa(p.stock)+' عدد باقی مانده':'✓ موجود در انبار'):'ناموجود'}</div>
@@ -2739,63 +2836,37 @@ function renderFaq(){
 }
 
 /* ============ CART ============ */
-function addToCart(id, qty){
-  qty = qty || 1;
-  const p = findProduct(id);
-  if(!p || p.stock <= 0){ showToast('این محصول در حال حاضر ناموجود است'); return; }
-  const existing = cart.find(i=>i.id===id);
-  const currentQty = existing ? existing.qty : 0;
-  if(currentQty + qty > p.stock){
-    showToast(`فقط ${toFa(p.stock)} عدد از «${p.name}» موجوده و ${currentQty>0?'همین مقدار توی سبدتونه':'نمی‌شه بیشتر اضافه کرد'}`);
-    return;
-  }
-  if(existing){ existing.qty += qty; } else { cart.push({id, qty}); }
-  persistCart();
-  renderCart();
-  bumpCartCount();
-  showToast(`«${p.name}» به سبد اضافه شد ✅`, 'مشاهده سبد', ()=>openCart());
+function findPack(id){ return (HOME_OFFERS.packs||[]).find(x=>String(x.id)===String(id)); }
+function packMaxQty(pack){ if(!pack||!Array.isArray(pack.items)||!pack.items.length)return 0; return Math.min(...pack.items.map(i=>Math.floor(Number(i.stock||0)/Math.max(1,Number(i.quantity||1))))); }
+function addPackToCart(id, qty){
+  const pack=findPack(id); qty=qty||1; if(!pack){showToast('این پک دیگر فعال نیست');return;}
+  const max=packMaxQty(pack); if(max<1){showToast('موجودی این پک کافی نیست');return;}
+  const existing=cart.find(i=>i.type==='pack'&&i.id===id), current=existing?existing.qty:0; if(current+qty>max){showToast(`حداکثر ${toFa(max)} پک قابل خرید است`);return;}
+  if(existing)existing.qty+=qty;else cart.push({id,type:'pack',qty}); persistCart(); renderCart(); bumpCartCount(); showToast(`«${pack.name}» به سبد اضافه شد ✅`,'مشاهده سبد',()=>openCart());
 }
-function changeCartQty(id, delta){
-  const item = cart.find(i=>i.id===id);
-  if(!item) return;
-  const p = findProduct(id);
-  if(delta > 0 && p && item.qty + delta > p.stock){
-    showToast(`فقط ${toFa(p.stock)} عدد از «${p.name}» موجوده — امکان افزایش بیشتر نیست`);
-    return;
-  }
-  item.qty += delta;
-  if(item.qty <= 0) cart = cart.filter(i=>i.id!==id);
-  persistCart();
-  renderCart();
+function addToCart(id, qty){
+  qty = qty || 1; const p = findProduct(id);
+  if(!p || p.stock <= 0){ showToast('این محصول در حال حاضر ناموجود است'); return; }
+  const existing = cart.find(i=>i.type!=='pack' && i.id===id); const currentQty = existing ? existing.qty : 0;
+  if(currentQty + qty > p.stock){ showToast(`فقط ${toFa(p.stock)} عدد از «${p.name}» موجوده و ${currentQty>0?'همین مقدار توی سبدتونه':'نمی‌شه بیشتر اضافه کرد'}`); return; }
+  if(existing){ existing.qty += qty; } else { cart.push({id, qty, type:'product'}); }
+  persistCart(); renderCart(); bumpCartCount(); showToast(`«${p.name}» به سبد اضافه شد ✅`, 'مشاهده سبد', ()=>openCart());
+}
+function changeCartQty(id, delta, type='product'){
+  const item=cart.find(i=>i.id===id && (i.type||'product')===type); if(!item)return;
+  if(type==='pack'){ const pack=findPack(id); const max=packMaxQty(pack); if(delta>0 && item.qty+delta>max){showToast(`حداکثر ${toFa(max)} پک قابل خرید است`);return;} }
+  else { const p=findProduct(id); if(delta>0&&p&&item.qty+delta>p.stock){showToast(`فقط ${toFa(p.stock)} عدد از «${p.name}» موجوده`);return;} }
+  item.qty+=delta; if(item.qty<=0)cart=cart.filter(i=>!(i.id===id&&(i.type||'product')===type)); persistCart(); renderCart();
 }
 function renderCart(){
-  const body = document.getElementById('cartBody');
-  const foot = document.getElementById('cartFoot');
-  const countEl = document.getElementById('cartCount');
-  const totalQty = cart.reduce((s,i)=>s+i.qty,0);
-  countEl.style.display = totalQty>0 ? 'flex' : 'none';
-  countEl.textContent = toFa(totalQty);
-  if(cart.length===0){
-    body.innerHTML = `<div class="cart-empty"><div style="font-size:44px;">🛍️</div><p>سبد خریدتون خالیه.</p><button class="btn-ghost" onclick="closeCart(); go('/products')">مشاهده محصولات</button></div>`;
-    foot.style.display='none';
-    return;
-  }
-  foot.style.display='block';
-  body.innerHTML = `<div class="cart-items">` + cart.map(item=>{
-    const p = findProduct(item.id);
-    if(!p) return '';
-    return `<div class="cart-item">
-      <div class="ci-thumb" style="padding:0; overflow:hidden;"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" onerror="this.onerror=null; this.src='${escapeHtml(p.img)}';" alt="" loading="lazy" decoding="async" style="width:100%; height:100%; object-fit:cover; border-radius:10px;"></div>
-      <div class="ci-info"><h4>${escapeHtml(p.name)}</h4><div class="ci-price">${formatToman(p.price)}</div></div>
-      <div class="ci-controls">
-        <button class="qty-btn" onclick="changeCartQty('${p.id}',-1)">−</button>
-        <span style="font-family:'Vazirmatn'; font-weight:700; font-size:13px;">${toFa(item.qty)}</span>
-        <button class="qty-btn" onclick="changeCartQty('${p.id}',1)">+</button>
-      </div>
-    </div>`;
-  }).join('') + `</div>`;
-  const subtotal = cart.reduce((s,i)=>{ const p=findProduct(i.id); return s + (p?p.price*i.qty:0); },0);
-  document.getElementById('cartSubtotal').textContent = formatToman(subtotal);
+  const body=document.getElementById('cartBody'),foot=document.getElementById('cartFoot'),countEl=document.getElementById('cartCount'); const totalQty=cart.reduce((s,i)=>s+i.qty,0);
+  countEl.style.display=totalQty>0?'flex':'none'; countEl.textContent=toFa(totalQty);
+  if(!cart.length){body.innerHTML=`<div class="cart-empty"><div style="font-size:44px;">🛍️</div><p>سبد خریدتون خالیه.</p><button class="btn-ghost" onclick="closeCart(); go('/products')">مشاهده محصولات</button></div>`;foot.style.display='none';return;}
+  foot.style.display='block'; let subtotal=0;
+  body.innerHTML='<div class="cart-items">'+cart.map(item=>{
+    if(item.type==='pack'){const pack=findPack(item.id);if(!pack)return '';const unit=Number(pack.price||0);subtotal+=unit*item.qty;const img=pack.image_url||pack.items?.[0]?.img_url||'';return `<div class="cart-item"><div class="ci-thumb" style="padding:0;overflow:hidden;"><img src="${escapeHtml(img)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></div><div class="ci-info"><h4>${escapeHtml(pack.name)}</h4><div class="ci-price">${formatToman(unit)}</div><small>پک شامل ${(pack.items||[]).map(x=>escapeHtml(x.name)+' × '+toFa(x.quantity)).join('، ')}</small></div><div class="ci-controls"><button class="qty-btn" onclick="changeCartQty('${escapeHtml(pack.id)}',-1,'pack')">−</button><span style="font-family:'Vazirmatn';font-weight:700;font-size:13px;">${toFa(item.qty)}</span><button class="qty-btn" onclick="changeCartQty('${escapeHtml(pack.id)}',1,'pack')">+</button></div></div>`;}
+    const p=findProduct(item.id); if(!p)return '';const unit=effectiveProductPrice(p);subtotal+=unit*item.qty;const offer=effectiveProductOffer(p.id);return `<div class="cart-item"><div class="ci-thumb" style="padding:0;overflow:hidden;"><img src="${escapeHtml(productImageUrl(p.img,'thumb'))}" onerror="this.onerror=null;this.src='${escapeHtml(p.img)}';" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></div><div class="ci-info"><h4>${escapeHtml(p.name)}</h4><div class="ci-price">${formatToman(unit)} ${offer?`<span class="offer-old">${formatToman(p.price)}</span>`:''}</div></div><div class="ci-controls"><button class="qty-btn" onclick="changeCartQty('${escapeHtml(p.id)}',-1,'product')">−</button><span style="font-family:'Vazirmatn';font-weight:700;font-size:13px;">${toFa(item.qty)}</span><button class="qty-btn" onclick="changeCartQty('${escapeHtml(p.id)}',1,'product')">+</button></div></div>`;
+  }).join('')+'</div>'; document.getElementById('cartSubtotal').textContent=formatToman(subtotal);
 }
 function bumpCartCount(){
   const el = document.getElementById('cartCount');
@@ -2982,7 +3053,7 @@ async function submitOrder(){
     return;
   }
 
-  const items = cart.map(i=>{ const p=findProduct(i.id); return {id:i.id, code:p?(p.code||p.id):i.id, name:p?p.name:i.id, qty:i.qty, price:p?p.price:0}; });
+  const items = cart.map(i=>{ if(i.type==='pack'){const x=findPack(i.id);return {id:i.id,type:'pack',code:i.id,name:x?.name||i.id,qty:i.qty,price:Number(x?.price||0)};} const p=findProduct(i.id);return {id:i.id,type:'product',code:p?(p.code||p.id):i.id,name:p?p.name:i.id,qty:i.qty,price:p?effectiveProductPrice(p):0}; });
   const subtotal = items.reduce((s,i)=>s + i.price*i.qty, 0);
   const packagingOption = isPickup ? 'postpay' : packagingEl.value;
   const packagingFee = packagingOption === 'prepaid' ? PACKAGING_FEE : 0;
@@ -3414,12 +3485,30 @@ async function resetAdminCustomerPassword(userId){
   const {error}=await adminCustomerAuthAction({user_id:userId,password:pw}); if(error){showToast('تغییر رمز انجام نشد');return;} showToast('رمز جدید مشتری ثبت شد ✅');
 }
 
+let adminDiscountsCache=[]; let adminPacksCache=[];
+function localDateTimeValue(v){ if(!v)return ''; const d=new Date(v); if(Number.isNaN(d.getTime()))return ''; const pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function parseLocalDateTime(id){ const v=document.getElementById(id)?.value; return v?new Date(v).toISOString():null; }
+function renderAdminOfferProductPicker(selected=[]){ const box=document.getElementById('packProductPicker'); if(!box)return; const set=new Set(selected.map(String)); box.innerHTML=adminProductsCache.map(p=>`<label class="offer-product-pick"><input type="checkbox" class="pack-product-check" value="${escapeHtml(p.id)}" ${set.has(String(p.id))?'checked':''} onchange="updatePackSelectionCount()"><span><b>${escapeHtml(p.name)}</b><small> · موجودی: ${toFa(p.stock)} · ${formatToman(p.price)}</small></span><input type="number" class="pack-qty" data-product-id="${escapeHtml(p.id)}" min="1" max="100" value="1" aria-label="تعداد"></label>`).join('')||'<p class="offer-admin-note">محصولی برای انتخاب وجود ندارد.</p>'; updatePackSelectionCount(); }
+function updatePackSelectionCount(){ const n=document.querySelectorAll('.pack-product-check:checked').length; const box=document.getElementById('packProductPicker'); if(box)box.dataset.count=n; }
+function adminClearDiscountForm(){ document.getElementById('discountProduct').value='';document.getElementById('discountType').value='percent';document.getElementById('discountValue').value='';document.getElementById('discountTitle').value='';document.getElementById('discountActive').checked=true;document.getElementById('discountStarts').value='';document.getElementById('discountEnds').value=''; }
+function adminClearPackForm(){ document.getElementById('packEditId').value='';document.getElementById('packName').value='';document.getElementById('packSlug').value='';document.getElementById('packDescription').value='';document.getElementById('packPricingType').value='percent';document.getElementById('packDiscountValue').value='';document.getElementById('packActive').checked=true;document.getElementById('packStarts').value='';document.getElementById('packEnds').value='';document.getElementById('packImage').value='';renderAdminOfferProductPicker([]); }
+function renderAdminOffers(){ renderAdminDiscounts(); renderAdminPacks(); }
+function renderAdminDiscounts(){ const box=document.getElementById('adminDiscountList');if(!box)return; const products=adminProductsCache; document.getElementById('discountProduct').innerHTML='<option value="">انتخاب پاسور...</option>'+products.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} · ${formatToman(p.price)}</option>`).join(''); box.innerHTML=adminDiscountsCache.length?adminDiscountsCache.map(d=>{const p=products.find(x=>x.id===d.product_id);return `<div class="offer-admin-row"><div class="offer-admin-row-head"><div><b>${escapeHtml(p?.name||d.product_id)}</b><div class="offer-admin-note">${escapeHtml(d.title||'تخفیف ویژه')} · ${d.discount_type==='percent'?toFa(d.discount_value)+'٪':formatToman(d.discount_value)}</div></div><span>${d.active?'فعال':'غیرفعال'}</span></div><div style="display:flex;gap:7px;margin-top:8px;"><button class="btn-ghost" style="padding:6px 10px;font-size:11px;" onclick="adminEditDiscount('${d.id}')">ویرایش</button><button class="btn-ghost" style="padding:6px 10px;font-size:11px;color:var(--rust);" onclick="adminDeleteDiscount('${d.id}')">حذف</button></div></div>`}).join(''):'<div class="offer-admin-note">هنوز تخفیفی تعریف نشده.</div>'; }
+function adminEditDiscount(id){const d=adminDiscountsCache.find(x=>x.id===id);if(!d)return;document.getElementById('discountProduct').value=d.product_id;document.getElementById('discountType').value=d.discount_type;document.getElementById('discountValue').value=d.discount_value;document.getElementById('discountTitle').value=d.title||'';document.getElementById('discountActive').checked=!!d.active;document.getElementById('discountStarts').value=localDateTimeValue(d.starts_at);document.getElementById('discountEnds').value=localDateTimeValue(d.ends_at);document.getElementById('discountProduct').dataset.editId=d.id;document.getElementById('discountProduct').scrollIntoView({behavior:'smooth',block:'center'}); }
+async function adminSaveDiscount(){ const productId=document.getElementById('discountProduct').value,type=document.getElementById('discountType').value,value=parseInt(document.getElementById('discountValue').value,10),title=document.getElementById('discountTitle').value.trim(),active=document.getElementById('discountActive').checked; if(!productId||!Number.isFinite(value)||value<1||(type==='percent'&&value>100)){showToast('اطلاعات تخفیف را درست وارد کن');return;} const {data,error}=await sbClient.rpc('admin_save_product_discount',{p_id:document.getElementById('discountProduct').dataset.editId||null,p_product_id:productId,p_title:title,p_discount_type:type,p_discount_value:value,p_active:active,p_starts_at:parseLocalDateTime('discountStarts'),p_ends_at:parseLocalDateTime('discountEnds')});if(error){showToast('ذخیره تخفیف انجام نشد');console.error(error);return;}showToast('تخفیف ذخیره شد ✅');adminClearDiscountForm();await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers(); }
+async function adminDeleteDiscount(id){if(!confirm('این تخفیف حذف شود؟'))return;const {error}=await sbClient.rpc('admin_delete_product_discount',{p_id:id});if(error){showToast('حذف تخفیف انجام نشد');return;}showToast('تخفیف حذف شد');await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers();}
+function renderAdminPacks(){ const box=document.getElementById('adminPackList');if(!box)return;box.innerHTML=adminPacksCache.length?adminPacksCache.map(x=>`<div class="offer-admin-row"><div class="offer-admin-row-head"><div><b>${escapeHtml(x.name)}</b><div class="offer-admin-note">${toFa((x.items||[]).length)} محصول متفاوت · ${formatToman(x.price||0)} · ${x.active?'فعال':'غیرفعال'}</div></div><span>${x.slug}</span></div><div style="display:flex;gap:7px;margin-top:8px;"><button class="btn-ghost" style="padding:6px 10px;font-size:11px;" onclick="adminEditPack('${x.id}')">ویرایش</button><button class="btn-ghost" style="padding:6px 10px;font-size:11px;color:var(--rust);" onclick="adminDeletePack('${x.id}')">حذف</button></div></div>`).join(''):'<div class="offer-admin-note">هنوز پکی تعریف نشده.</div>'; }
+async function renderAdminOffersData(){ const [d,p,pi]=await Promise.all([sbClient.from('product_discounts').select('*').order('created_at',{ascending:false}),sbClient.from('packs').select('*').order('created_at',{ascending:false}),sbClient.from('pack_items').select('pack_id,product_id,quantity')]); adminDiscountsCache=d.data||[]; const rows=pi.data||[]; const packIds=[...new Set(rows.map(x=>x.pack_id))]; const map={};rows.forEach(r=>(map[r.pack_id]??=[]).push(r)); adminPacksCache=(p.data||[]).map(x=>({...x,items:(map[x.id]||[]).map(r=>{const pr=adminProductsCache.find(pp=>pp.id===r.product_id);return {...r,name:pr?.name||r.product_id,price:pr?.price||0,stock:pr?.stock||0,img_url:pr?.img_url||''};})})); renderAdminDiscounts();renderAdminPacks();renderAdminOfferProductPicker([]); }
+function adminEditPack(id){const x=adminPacksCache.find(p=>p.id===id);if(!x)return;document.getElementById('packEditId').value=x.id;document.getElementById('packName').value=x.name;document.getElementById('packSlug').value=x.slug;document.getElementById('packDescription').value=x.description||'';document.getElementById('packPricingType').value=x.pricing_type;document.getElementById('packDiscountValue').value=x.discount_value;document.getElementById('packActive').checked=!!x.active;document.getElementById('packStarts').value=localDateTimeValue(x.starts_at);document.getElementById('packEnds').value=localDateTimeValue(x.ends_at);renderAdminOfferProductPicker((x.items||[]).map(i=>i.product_id));(x.items||[]).forEach(i=>{const q=document.querySelector(`.pack-qty[data-product-id="${CSS.escape(i.product_id)}"]`);if(q)q.value=i.quantity;});document.getElementById('packName').scrollIntoView({behavior:'smooth',block:'center'});}
+async function adminSavePack(){ const name=document.getElementById('packName').value.trim(),slug=document.getElementById('packSlug').value.trim().toLowerCase(),desc=document.getElementById('packDescription').value.trim(),pricing=document.getElementById('packPricingType').value,value=parseInt(document.getElementById('packDiscountValue').value,10)||0,active=document.getElementById('packActive').checked; const checks=[...document.querySelectorAll('.pack-product-check:checked')]; if(checks.length<2||checks.length>10){showToast('هر پک باید بین ۲ تا ۱۰ پاسور متفاوت داشته باشد');return;} if(!name||!slug){showToast('نام و اسلاگ پک را کامل کن');return;} const items=checks.map(c=>({product_id:c.value,quantity:Math.max(1,parseInt(document.querySelector(`.pack-qty[data-product-id="${CSS.escape(c.value)}"]`)?.value||'1',10))})); let imageUrl=adminPacksCache.find(x=>x.id===document.getElementById('packEditId').value)?.image_url||null; const file=document.getElementById('packImage').files?.[0]; if(file){const [main]=await imageUploadVariants(file);if(!main){showToast('تصویر پک قابل پردازش نیست');return;}const path=`packs/${Date.now()}_${Math.floor(Math.random()*10000)}.${main.type==='image/webp'?'webp':'jpg'}`;const up=await sbClient.storage.from('product-images').upload(path,main,{upsert:true,cacheControl:'31536000',contentType:main.type});if(up.error){showToast('آپلود تصویر پک انجام نشد');return;}imageUrl=sbClient.storage.from('product-images').getPublicUrl(path).data.publicUrl;} const {error}=await sbClient.rpc('admin_save_pack',{p_id:document.getElementById('packEditId').value||null,p_name:name,p_slug:slug,p_description:desc,p_pricing_type:pricing,p_discount_value:value,p_image_url:imageUrl,p_active:active,p_starts_at:parseLocalDateTime('packStarts'),p_ends_at:parseLocalDateTime('packEnds'),p_items:items});if(error){showToast('ذخیره پک انجام نشد');console.error(error);return;}showToast('پک ذخیره شد ✅');adminClearPackForm();await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers();}
+async function adminDeletePack(id){if(!confirm('این پک حذف شود؟'))return;const {error}=await sbClient.rpc('admin_delete_pack',{p_id:id});if(error){showToast('حذف پک انجام نشد');return;}showToast('پک حذف شد');await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers();}
+
 async function renderAdminRoute(){
   const { data: sessionData } = await sbClient.auth.getSession();
   const loggedIn = !!(sessionData && sessionData.session);
   document.getElementById('adminLoginBox').hidden = loggedIn;
   document.getElementById('adminPanelBox').hidden = !loggedIn;
-  if(loggedIn){ if(['products','categories'].includes(adminCurrentTab)) await loadCategoriesFromDB(); switchAdminTab(adminCurrentTab); }
+  if(loggedIn){ if(['products','categories','offers'].includes(adminCurrentTab)) { await loadCategoriesFromDB(); await loadProductsFromDB(); } switchAdminTab(adminCurrentTab); }
 }
 async function adminLogin(){
   const email = document.getElementById('adminEmail').value.trim();
@@ -3437,7 +3526,7 @@ async function adminLogout(){
 
 function switchAdminTab(tab){
   adminCurrentTab = tab;
-  ['dashboard','orders','products','categories','customers','media','reviews','guides','todos'].forEach(t=>{
+  ['dashboard','orders','products','categories','customers','media','offers','reviews','guides','todos'].forEach(t=>{
     document.getElementById('tabBtn-'+t).classList.toggle('active', t===tab);
     document.getElementById('adminTab-'+t).hidden = t!==tab;
   });
@@ -3447,6 +3536,7 @@ function switchAdminTab(tab){
   if(tab==='categories') renderAdminCategories();
   if(tab==='customers') renderAdminCustomers();
   if(tab==='media') renderHeroSlidesAdmin();
+  if(tab==='offers'){ renderAdminOffers(); renderAdminOffersData(); }
   if(tab==='reviews') renderAdminReviews();
   if(tab==='guides') renderAdminGuideSubmissions();
   if(tab==='todos') renderAdminTodos();
