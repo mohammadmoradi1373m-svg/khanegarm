@@ -1168,6 +1168,66 @@ main.wrap:has(.page[data-route="/"]){padding-top:0!important;}
 }
 </style>
 
+
+<style id="v23-mobile-finish">
+/* V23 — last homepage mobile polish: larger product cards, tighter section rhythm, shorter footer. */
+@media (max-width:620px){
+  [data-route="/"] #featuredSection{margin-top:8px;}
+  [data-route="/"] #newestSection{margin-top:8px;}
+  [data-route="/"] #featuredSection .section-head,
+  [data-route="/"] #newestSection .section-head{margin-bottom:9px!important;}
+
+  /* Give the two-card mobile carousel a little more usable width. */
+  [data-route="/"] .carousel-shell{
+    margin-inline:-6px;
+  }
+  [data-route="/"] .carousel-shell .carousel-track{
+    padding-left:3px!important;
+    padding-right:3px!important;
+    gap:8px!important;
+  }
+  [data-route="/"] .carousel-track.carousel-centered .carousel-item{
+    flex-basis:178px;
+  }
+  [data-route="/"] .premium-product-card{
+    padding:10px 10px 12px;
+    border-radius:16px;
+  }
+  [data-route="/"] .premium-product-card .p-thumb{
+    aspect-ratio:1/.86;
+    border-radius:12px;
+    margin-bottom:9px;
+  }
+  [data-route="/"] .premium-product-card h3{font-size:13px;}
+  [data-route="/"] .premium-product-card .desc{font-size:10.3px;line-height:1.65;}
+  [data-route="/"] .premium-product-card .price{font-size:14px;}
+  [data-route="/"] .premium-product-card .add-btn{width:32px;height:32px;}
+
+  /* Compact the footer without removing any content. */
+  footer{padding-bottom:11px;margin-top:14px;}
+  footer .trust-bar{
+    gap:8px;
+    padding:16px 0;
+    margin-bottom:17px;
+  }
+  footer .trust-item{gap:8px;}
+  footer .trust-ic{width:34px;height:34px;font-size:17px;}
+  footer .trust-item h5{font-size:10.5px;}
+  footer .trust-item span{font-size:8.8px;line-height:1.55;}
+  footer .foot-grid{gap:15px;margin-bottom:17px;}
+  footer .foot-grid h5{margin-bottom:8px;}
+  footer .foot-grid ul{gap:6px;font-size:12px;}
+  footer .foot-grid p{font-size:11.5px!important;line-height:1.7;}
+  footer .wrap > div[style*="justify-content:center"]{margin-bottom:10px!important;}
+  footer .foot-bottom{padding-top:11px;font-size:10.5px;}
+}
+@media (max-width:380px){
+  [data-route="/"] .carousel-track.carousel-centered .carousel-item{flex-basis:166px;}
+  [data-route="/"] .premium-product-card h3{font-size:12.7px;}
+  [data-route="/"] .premium-product-card .desc{font-size:10px;}
+}
+</style>
+
 </head>
 <body>
 
