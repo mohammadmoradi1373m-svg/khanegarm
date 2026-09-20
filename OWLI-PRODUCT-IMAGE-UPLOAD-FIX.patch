@@ -1,0 +1,52 @@
+/* Replace the existing compressImageVariants(file) function with this version. */
+function compressImageVariants(file){
+  return new Promise(resolve=>{
+    if(!file||!file.type||!file.type.startsWith('image/')){resolve([null,null]);return;}
+    const finish=(main,thumb)=>{
+      if(!main||!thumb||main.size>4.7*1024*1024){resolve([null,null]);return;}
+      const base=(file.name||'product-image').replace(/\.[^.]+$/,'');
+      resolve([
+        new File([main],base+'.webp',{type:'image/webp',lastModified:Date.now()}),
+        new File([thumb],base+'_thumb.webp',{type:'image/webp',lastModified:Date.now()})
+      ]);
+    };
+    const draw=(img,revoke)=>{
+      try{
+        const ow=img.naturalWidth||img.width,oh=img.naturalHeight||img.height;
+        if(!ow||!oh){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
+        const maxDim=1800,maxPixels=5.5e6;
+        let s=Math.min(1,maxDim/Math.max(ow,oh),Math.sqrt(maxPixels/(ow*oh)));
+        if(!Number.isFinite(s)||s<=0)s=.1;
+        let w=Math.max(1,Math.round(ow*s)),h=Math.max(1,Math.round(oh*s));
+        const ts=Math.min(1,420/Math.max(ow,oh)),tw=Math.max(1,Math.round(ow*ts)),th=Math.max(1,Math.round(oh*ts));
+        const c=document.createElement('canvas'),t=document.createElement('canvas');
+        const cx=c.getContext('2d',{alpha:true}),tx=t.getContext('2d',{alpha:true});
+        if(!cx||!tx){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
+        const encode=(can,ctx,W,H,q,type)=>new Promise(r=>{
+          try{can.width=W;can.height=H;ctx.clearRect(0,0,W,H);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,W,H);can.toBlob(r,type,q);}catch(e){r(null);}
+        });
+        (async()=>{
+          let main=null;
+          for(const q of [.82,.76,.70,.64]){
+            main=await encode(c,cx,w,h,q,'image/webp');
+            if(main&&main.size<=4.7*1024*1024)break;
+          }
+          while((!main||main.size>4.7*1024*1024)&&Math.max(w,h)>1000){
+            w=Math.max(1,Math.round(w*.82));h=Math.max(1,Math.round(h*.82));
+            main=await encode(c,cx,w,h,.72,'image/webp');
+          }
+          if(!main)main=await encode(c,cx,w,h,.78,'image/jpeg');
+          const thumb=await encode(t,tx,tw,th,.76,'image/webp');
+          if(revoke)URL.revokeObjectURL(revoke);finish(main,thumb);
+        })().catch(()=>{if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);});
+      }catch(e){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);}
+    };
+    const url=URL.createObjectURL(file);
+    const fallback=()=>{const img=new Image();img.onload=()=>draw(img,url);img.onerror=()=>{URL.revokeObjectURL(url);resolve([null,null]);};img.src=url;};
+    if(typeof createImageBitmap==='function'){
+      createImageBitmap(file,{imageOrientation:'from-image'}).then(bitmap=>{
+        draw(bitmap,null);setTimeout(()=>{try{bitmap.close()}catch(e){}},0);
+      }).catch(fallback);
+    }else fallback();
+  });
+}
