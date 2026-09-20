@@ -1,0 +1,112 @@
+/* OWLI / خانه‌گرم — V24 FINAL MOBILE PATCH
+   Apply immediately before </body> in index.html.
+*/
+
+<style id="owli-v24-final-mobile">
+@media (max-width:720px){
+  [data-route="/"] .hero-slide{min-height:clamp(320px,82vw,390px);}
+  [data-route="/"] .hero-slide-media{object-position:center center;}
+  [data-route="/"] .hero-slide::after{
+    background:linear-gradient(270deg,rgba(2,45,39,.96) 0%,rgba(2,55,47,.84) 32%,rgba(2,55,47,.34) 64%,rgba(2,55,47,.04) 100%);
+  }
+  [data-route="/"] .hero-slide-content{
+    width:78%;min-height:inherit;padding:24px 16px 32px;justify-content:center;
+  }
+  [data-route="/"] .hero-slide h1{
+    max-width:100%;margin-bottom:10px;font-size:clamp(25px,7.2vw,32px);line-height:1.42;
+  }
+  [data-route="/"] .hero-slide p{margin-bottom:16px;font-size:11.5px;line-height:1.85;}
+  [data-route="/"] .hero-slide .eyebrow{font-size:10.5px;padding:5px 10px;margin-bottom:10px;}
+  [data-route="/"] .hero-slide .btn-primary{padding:10px 18px;font-size:12px;}
+  [data-route="/"] .hero-trust{margin-top:10px;font-size:9.5px;gap:5px 9px;}
+  [data-route="/"] .hero-nav{padding:0 7px;}
+  [data-route="/"] .hero-arrow{width:34px;height:34px;font-size:17px;}
+
+  /* One dominant product card per mobile view + small peek of next card */
+  [data-route="/"] .carousel-shell{display:block;width:100%;}
+  [data-route="/"] .carousel-shell .carousel-arrow{display:none!important;}
+  [data-route="/"] .carousel-track{
+    width:100%;
+    justify-content:flex-start!important;
+    overflow-x:auto!important;
+    gap:12px!important;
+    padding:3px 8vw 12px!important;
+    scroll-snap-type:x mandatory;
+    scroll-padding-inline:8vw;
+    overscroll-behavior-x:contain;
+  }
+  [data-route="/"] .carousel-item{
+    flex:0 0 min(84vw,380px)!important;
+    scroll-snap-align:center;
+  }
+  [data-route="/"] .p-card{
+    width:100%;box-sizing:border-box;border-radius:18px;padding:11px 11px 13px;
+  }
+  [data-route="/"] .p-thumb{
+    aspect-ratio:1/.82;margin-bottom:10px;border-radius:13px;
+  }
+  [data-route="/"] .p-card h3{font-size:14.5px;line-height:1.55;}
+  [data-route="/"] .p-card .desc{font-size:11.5px;line-height:1.7;}
+  [data-route="/"] .p-card .price{font-size:15px;}
+  [data-route="/"] .carousel-dots{margin-top:5px;}
+
+  /* Keep the existing 3 x 2 category layout */
+  [data-route="/"] .cat-grid{grid-template-columns:repeat(3,1fr);gap:10px;}
+  [data-route="/"] .cat-card{min-height:128px;padding:14px 8px;}
+
+  .trust-bar{
+    grid-template-columns:1fr 1fr;gap:13px 10px;padding:20px 0;margin-bottom:18px;
+  }
+  .trust-item{gap:8px;align-items:flex-start;}
+  .trust-ic{width:38px;height:38px;font-size:17px;}
+  .trust-item h5{font-size:12px;margin-bottom:1px;}
+  .trust-item span{font-size:10px;line-height:1.55;}
+  footer{padding:26px 0 16px;}
+  .foot-grid{grid-template-columns:1fr;gap:16px;margin-bottom:16px;}
+  .foot-grid h5{margin-bottom:6px;}
+  .foot-grid ul{gap:5px;font-size:12.5px;}
+  .foot-bottom{font-size:10.5px;padding-top:12px;}
+
+  /* Chat button never covers a product card */
+  .chat-fab{
+    width:50px;height:50px;left:14px;bottom:16px;font-size:21px;z-index:1000;
+    transition:transform .18s ease,opacity .18s ease;
+  }
+  .chat-fab.owli-fab-obscured{
+    transform:translateY(76px);opacity:0;pointer-events:none;
+  }
+}
+@media (max-width:380px){
+  [data-route="/"] .carousel-track{
+    padding-inline:7vw!important;scroll-padding-inline:7vw;
+  }
+  [data-route="/"] .carousel-item{flex-basis:84vw!important;}
+  [data-route="/"] .hero-slide-content{width:80%;padding-inline:14px;}
+}
+</style>
+
+<script id="owli-v24-chat-guard">
+(function(){
+  function updateFab(){
+    const fab=document.querySelector('.chat-fab');
+    if(!fab || window.innerWidth>720) return;
+    const fr=fab.getBoundingClientRect();
+    const cards=[...document.querySelectorAll('[data-route="/"] .carousel-item .p-card')];
+    const overlap=cards.some(function(el){
+      const r=el.getBoundingClientRect();
+      return r.bottom>fr.top&&r.top<fr.bottom&&r.right>fr.left&&r.left<fr.right;
+    });
+    fab.classList.toggle('owli-fab-obscured',overlap);
+  }
+  let raf=0;
+  function schedule(){
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(updateFab);
+  }
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule,{passive:true});
+  document.addEventListener('DOMContentLoaded',schedule);
+  window.addEventListener('load',schedule);
+  setTimeout(schedule,500);
+})();
+</script>
