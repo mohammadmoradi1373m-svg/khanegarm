@@ -2305,45 +2305,193 @@ function compressImage(file,maxDim,quality){
   maxDim=maxDim||2500; quality=quality||0.86;
   const TARGET_BYTES=4.7*1024*1024;
   return new Promise(resolve=>{
-    if(!file||!file.type||!file.type.startsWith('image/')){resolve(null);return;}
-    const finish=(blob)=>{if(blob&&blob.size<=4.9*1024*1024)resolve(new File([blob],(file.name||'image').replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp',lastModified:Date.now()}));else resolve(null)};
+    let openBitmap=null;const done=v=>{try{if(openBitmap)openBitmap.close()}catch(e){}resolve(v)};
+    if(!file||!file.type||!file.type.startsWith('image/')){done(null);return;}
+    const finish=(blob)=>{if(blob&&blob.size<=4.9*1024*1024)done(new File([blob],(file.name||'image').replace(/\.[^.]+$/,'')+'.webp',{type:'image/webp',lastModified:Date.now()}));else done(null)};
     const draw=(img,revoke)=>{
       try{
         let w=img.width||img.naturalWidth,h=img.height||img.naturalHeight;
-        if(!w||!h){if(revoke)URL.revokeObjectURL(revoke);resolve(null);return;}
+        if(!w||!h){if(revoke)URL.revokeObjectURL(revoke);done(null);return;}
         if(Math.max(w,h)>maxDim){if(w>=h){h=Math.round(h*maxDim/w);w=maxDim}else{w=Math.round(w*maxDim/h);h=maxDim}}
         const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:true});
-        if(!ctx){if(revoke)URL.revokeObjectURL(revoke);resolve(null);return;}
+        if(!ctx){if(revoke)URL.revokeObjectURL(revoke);done(null);return;}
         const tryEncode=q=>{canvas.width=w;canvas.height=h;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,w,h);canvas.toBlob(blob=>{
           if(blob&&blob.size<=TARGET_BYTES){if(revoke)URL.revokeObjectURL(revoke);finish(blob);return;}
           if(q>0.70){tryEncode(Math.max(0.70,+(q-0.06).toFixed(2)));return;}
           if(w>1200||h>1200){w=Math.max(1,Math.round(w*.85));h=Math.max(1,Math.round(h*.85));tryEncode(.78);return;}
-          if(revoke)URL.revokeObjectURL(revoke);resolve(null);
+          if(revoke)URL.revokeObjectURL(revoke);done(null);
         },'image/webp',q)};
         tryEncode(quality);
-      }catch(e){if(revoke)URL.revokeObjectURL(revoke);resolve(null)}
+      }catch(e){if(revoke)URL.revokeObjectURL(revoke);done(null)}
     };
-    const fallback=()=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>draw(img,url);img.onerror=()=>{URL.revokeObjectURL(url);resolve(null)};img.src=url};
-    if('createImageBitmap' in window){createImageBitmap(file,{imageOrientation:'from-image'}).then(bitmap=>{draw(bitmap,null);setTimeout(()=>{try{bitmap.close()}catch(e){}},0)}).catch(fallback)}else fallback();
+    const fallback=()=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>draw(img,url);img.onerror=()=>{URL.revokeObjectURL(url);done(null)};img.src=url};
+    if('createImageBitmap' in window){createImageBitmap(file,{imageOrientation:'from-image'}).then(bitmap=>{openBitmap=bitmap;draw(bitmap,null)}).catch(fallback)}else fallback();
   });
 }
 function compressImageVariants(file){
   return new Promise(resolve=>{
-    if(!file||!file.type||!file.type.startsWith('image/')){resolve([null,null]);return;}
-    const finish=(mainBlob,thumbBlob)=>{if(!mainBlob||mainBlob.size>4.9*1024*1024||!thumbBlob){resolve([null,null]);return;}const base=(file.name||'product-image').replace(/\.[^.]+$/,'');resolve([new File([mainBlob],base+'.webp',{type:'image/webp',lastModified:Date.now()}),new File([thumbBlob],base+'_thumb.webp',{type:'image/webp',lastModified:Date.now()})])};
-    const draw=(img,revoke)=>{
-      try{
-        const ow=img.width||img.naturalWidth,oh=img.height||img.naturalHeight;if(!ow||!oh){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
-        let mw=ow,mh=oh;const scale=Math.min(1,2500/Math.max(mw,mh));mw=Math.max(1,Math.round(mw*scale));mh=Math.max(1,Math.round(mh*scale));
-        const tw=Math.max(1,Math.round(ow*Math.min(1,480/Math.max(ow,oh)))),th=Math.max(1,Math.round(oh*Math.min(1,480/Math.max(ow,oh))));
-        const mc=document.createElement('canvas'),tc=document.createElement('canvas'),mx=mc.getContext('2d',{alpha:true}),tx=tc.getContext('2d',{alpha:true});if(!mx||!tx){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
-        const makeMain=q=>new Promise(r=>{mc.width=mw;mc.height=mh;mx.imageSmoothingEnabled=true;mx.imageSmoothingQuality='high';mx.drawImage(img,0,0,mw,mh);mc.toBlob(r,'image/webp',q)});
-        const makeThumb=()=>new Promise(r=>{tc.width=tw;tc.height=th;tx.imageSmoothingEnabled=true;tx.imageSmoothingQuality='high';tx.drawImage(img,0,0,tw,th);tc.toBlob(r,'image/webp',.78)});
-        (async()=>{let q=.86,blob=null;while(q>=.70){blob=await makeMain(q);if(blob&&blob.size<=4.7*1024*1024)break;q=+(q-.06).toFixed(2)}while((!blob||blob.size>4.7*1024*1024)&&Math.max(mw,mh)>1200){mw=Math.max(1,Math.round(mw*.85));mh=Math.max(1,Math.round(mh*.85));blob=await makeMain(.78)}const thumb=await makeThumb();if(revoke)URL.revokeObjectURL(revoke);finish(blob,thumb)})().catch(()=>{if(revoke)URL.revokeObjectURL(revoke);resolve([null,null])});
-      }catch(e){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null])}
+    if(!file||!file.type||!file.type.startsWith('image/')){
+      resolve([null,null]);
+      return;
+    }
+
+    const base=(file.name||'product-image').replace(/\.[^.]+$/,'');
+
+    const finish=(mainBlob,thumbBlob,mainType)=>{
+      if(!mainBlob || mainBlob.size>4.9*1024*1024 || !thumbBlob){
+        resolve([null,null]);
+        return;
+      }
+      const mainExt=mainType==='image/jpeg'?'jpg':'webp';
+      const thumbExt=thumbBlob.type==='image/jpeg'?'jpg':'webp';
+
+      resolve([
+        new File([mainBlob],base+'.'+mainExt,{
+          type:mainType,
+          lastModified:Date.now()
+        }),
+        new File([thumbBlob],base+'_thumb.'+thumbExt,{
+          type:thumbBlob.type,
+          lastModified:Date.now()
+        })
+      ]);
     };
-    const fallback=()=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>draw(img,url);img.onerror=()=>{URL.revokeObjectURL(url);resolve([null,null])};img.src=url};
-    if('createImageBitmap' in window){createImageBitmap(file,{imageOrientation:'from-image'}).then(bitmap=>{draw(bitmap,null);setTimeout(()=>{try{bitmap.close()}catch(e){}},0)}).catch(fallback)}else fallback();
+
+    /* مهم: draw تا پایان encode صبر می‌کند؛ بنابراین ImageBitmap
+       قبل از پایان toBlob() بسته نمی‌شود. این همان ایراد اصلی نسخه قبلی است. */
+    const draw=async(img,revoke)=>{
+      try{
+        const ow=img.width||img.naturalWidth;
+        const oh=img.height||img.naturalHeight;
+
+        if(!ow||!oh){
+          if(revoke)URL.revokeObjectURL(revoke);
+          resolve([null,null]);
+          return;
+        }
+
+        const maxDim=1800;
+        const maxPixels=5.5e6;
+
+        let scale=Math.min(
+          1,
+          maxDim/Math.max(ow,oh),
+          Math.sqrt(maxPixels/(ow*oh))
+        );
+
+        if(!Number.isFinite(scale)||scale<=0)scale=.1;
+
+        let w=Math.max(1,Math.round(ow*scale));
+        let h=Math.max(1,Math.round(oh*scale));
+
+        const thumbScale=Math.min(1,420/Math.max(ow,oh));
+        const tw=Math.max(1,Math.round(ow*thumbScale));
+        const th=Math.max(1,Math.round(oh*thumbScale));
+
+        const mainCanvas=document.createElement('canvas');
+        const thumbCanvas=document.createElement('canvas');
+
+        const mainCtx=mainCanvas.getContext('2d',{alpha:true});
+        const thumbCtx=thumbCanvas.getContext('2d',{alpha:true});
+
+        if(!mainCtx||!thumbCtx){
+          if(revoke)URL.revokeObjectURL(revoke);
+          resolve([null,null]);
+          return;
+        }
+
+        const encode=(canvas,ctx,W,H,type,q)=>new Promise(r=>{
+          try{
+            canvas.width=W;
+            canvas.height=H;
+            ctx.clearRect(0,0,W,H);
+            ctx.imageSmoothingEnabled=true;
+            ctx.imageSmoothingQuality='high';
+            ctx.drawImage(img,0,0,W,H);
+            canvas.toBlob(r,type,q);
+          }catch(e){
+            r(null);
+          }
+        });
+
+        let main=null;
+
+        /* WebP را با چند کیفیت امتحان می‌کنیم. */
+        for(const q of [.82,.76,.70,.64]){
+          main=await encode(mainCanvas,mainCtx,w,h,'image/webp',q);
+          if(main&&main.size<=4.7*1024*1024)break;
+        }
+
+        /* اگر هنوز بزرگ بود، ابعاد را هم مرحله‌ای کم می‌کنیم. */
+        while(
+          (!main||main.size>4.7*1024*1024) &&
+          Math.max(w,h)>1000
+        ){
+          w=Math.max(1,Math.round(w*.82));
+          h=Math.max(1,Math.round(h*.82));
+          main=await encode(
+            mainCanvas,mainCtx,w,h,'image/webp',.72
+          );
+        }
+
+        let mainType='image/webp';
+
+        /* fallback واقعی برای مرورگرهایی که WebP را encode نمی‌کنند. */
+        if(!main||main.size>4.7*1024*1024){
+          main=await encode(
+            mainCanvas,mainCtx,w,h,'image/jpeg',.78
+          );
+          mainType='image/jpeg';
+        }
+
+        let thumb=await encode(
+          thumbCanvas,thumbCtx,tw,th,'image/webp',.76
+        );
+
+        if(!thumb){
+          thumb=await encode(
+            thumbCanvas,thumbCtx,tw,th,'image/jpeg',.78
+          );
+        }
+
+        if(revoke)URL.revokeObjectURL(revoke);
+        finish(main,thumb,mainType);
+
+      }catch(e){
+        if(revoke)URL.revokeObjectURL(revoke);
+        resolve([null,null]);
+      }
+    };
+
+    /* مسیر fallback برای موبایل‌هایی که createImageBitmap مشکل دارد. */
+    const fallback=()=>{
+      const url=URL.createObjectURL(file);
+      const img=new Image();
+
+      img.onload=()=>draw(img,url);
+
+      img.onerror=()=>{
+        URL.revokeObjectURL(url);
+        resolve([null,null]);
+      };
+
+      img.src=url;
+    };
+
+    if(typeof createImageBitmap==='function'){
+      createImageBitmap(file,{imageOrientation:'from-image'})
+        .then(async bitmap=>{
+          try{
+            /* حتماً تا پایان draw/encode صبر می‌کنیم. */
+            await draw(bitmap,null);
+          }finally{
+            try{bitmap.close()}catch(e){}
+          }
+        })
+        .catch(fallback);
+    }else{
+      fallback();
+    }
   });
 }
 function getStorageSiblingUrl(url,suffix){
@@ -2947,7 +3095,7 @@ function renderHeroSlider(){
   if(!slides.length){box.innerHTML='';return;}
   if(HERO_INDEX>=slides.length) HERO_INDEX=0;
   const active=slides[HERO_INDEX];
-  box.innerHTML=`<div class="hero-slide active">
+  box.innerHTML=`<div class="hero-slide hero-slide-${HERO_INDEX+1} active">
     <img class="hero-slide-media" src="${escapeHtml(active.image)}" alt="${escapeHtml(active.title)}" onerror="this.style.display='none'" ${HERO_INDEX===0?'fetchpriority="high" loading="eager"':'loading="lazy"'} decoding="async">
     <div class="hero-slide-content">
       <div class="eyebrow">${escapeHtml(active.eyebrow)}</div>
@@ -5030,5 +5178,99 @@ function zoomBy(factor){imageZoomScale=Math.max(1,Math.min(4,imageZoomScale*fact
 <style>
 .hero-admin-title{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}.hero-admin-title strong{display:block;font-size:14px}.hero-admin-title span{display:block;color:var(--ink-soft);font-size:11.5px;margin-top:3px;line-height:1.7}.hero-admin-slide{border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px;background:rgba(255,255,255,.45)}.hero-admin-slide-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.hero-admin-slide-head b{font-size:13px}.hero-admin-slide-head span{font-size:11px;color:var(--ink-soft);margin-right:7px}.hero-admin-actions{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.hero-admin-actions button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 9px;cursor:pointer;font-family:inherit}.hero-admin-actions .danger{color:var(--rust)}.hero-active{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ink-soft)}.hero-admin-grid{display:grid;grid-template-columns:180px 1fr;gap:13px}.hero-admin-preview{aspect-ratio:16/9;border-radius:11px;overflow:hidden;background:var(--bg-alt);border:1px solid var(--line)}.hero-admin-preview img{width:100%;height:100%;object-fit:cover;display:block}.hero-admin-fields{display:grid;gap:7px}.hero-admin-fields input,.hero-admin-fields textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font:inherit;font-size:12.5px;background:var(--card)}.hero-admin-fields textarea{min-height:70px;resize:vertical}.hero-admin-fields small{font-size:10.5px;color:var(--ink-soft)}.hero-two{display:grid;grid-template-columns:1fr 1fr;gap:7px}.hero-admin-box{padding:15px}.hero-admin-box .full{grid-column:1/-1}@media(max-width:700px){.hero-admin-title{flex-direction:column}.hero-admin-grid{grid-template-columns:1fr}.hero-admin-preview{max-width:360px}.hero-two{grid-template-columns:1fr}.hero-admin-slide-head{align-items:flex-start;flex-direction:column}.hero-admin-actions{width:100%}}
 </style>
+<style id="v24-1-mobile-ux-final">
+@media (max-width:720px){
+  [data-route="/"] .hero-slide{min-height:clamp(310px,82vw,380px);}
+  [data-route="/"] .hero-slide-media{object-position:center center;}
+  [data-route="/"] .hero-slide::after{
+    background:linear-gradient(270deg,rgba(2,45,39,.95) 0%,rgba(2,55,47,.80) 31%,rgba(2,55,47,.30) 63%,rgba(2,55,47,.03) 100%);
+  }
+  [data-route="/"] .hero-slide-content{
+    width:76%;min-height:inherit;padding:24px 16px 30px;justify-content:center;
+  }
+  [data-route="/"] .hero-slide h1{
+    max-width:100%;margin-bottom:10px;font-size:clamp(24px,7vw,31px);line-height:1.4;
+  }
+  [data-route="/"] .hero-slide p{margin-bottom:17px;font-size:11.5px;line-height:1.8;}
+  [data-route="/"] .hero-slide .eyebrow{font-size:10.5px;padding:5px 10px;margin-bottom:10px;}
+  [data-route="/"] .hero-slide .btn-primary{padding:10px 18px;font-size:12px;}
+  [data-route="/"] .hero-trust{margin-top:11px;font-size:9.5px;gap:5px 9px;}
+  [data-route="/"] .hero-nav{padding:0 7px;}
+  [data-route="/"] .hero-arrow{width:34px;height:34px;font-size:17px;}
+
+  [data-route="/"] .carousel-shell{display:block;width:100%;}
+  [data-route="/"] .carousel-shell .carousel-arrow{display:none!important;}
+  [data-route="/"] .carousel-track,
+  [data-route="/"] .carousel-track.carousel-centered{
+    width:100%;justify-content:flex-start!important;overflow-x:auto!important;
+    gap:12px!important;padding:2px 12px 10px!important;
+    scroll-snap-type:x mandatory;
+  }
+  [data-route="/"] .carousel-track .carousel-item,
+  [data-route="/"] .carousel-track.carousel-centered .carousel-item{
+    flex:0 0 min(82vw,310px)!important;
+    scroll-snap-align:center;
+  }
+  [data-route="/"] .premium-product-card{
+    padding:11px 11px 13px;border-radius:17px;
+  }
+  [data-route="/"] .premium-product-card .p-thumb{
+    aspect-ratio:1/.82;margin-bottom:10px;
+  }
+  [data-route="/"] .premium-product-card h3{font-size:14px;line-height:1.55;}
+  [data-route="/"] .premium-product-card .p-tag{font-size:10px;}
+  [data-route="/"] .premium-product-card .desc{font-size:11px;line-height:1.7;}
+  [data-route="/"] .premium-product-card .price{font-size:15px;}
+  [data-route="/"] .premium-product-card .add-btn{width:35px;height:35px;}
+  [data-route="/"] .carousel-dots{margin-top:5px;}
+
+  .chat-fab{
+    width:50px;height:50px;left:14px;bottom:16px;font-size:21px;z-index:1000;
+  }
+  .chat-fab.chat-fab-obscured{
+    transform:translateY(72px);opacity:.05;pointer-events:none;
+  }
+
+  footer{padding:26px 0 16px;}
+  .trust-bar{grid-template-columns:1fr 1fr;gap:12px 10px;padding:18px 0;margin-bottom:18px;}
+  .trust-item{gap:8px;align-items:flex-start;}
+  .trust-ic{width:38px;height:38px;font-size:17px;}
+  .trust-item h5{font-size:12px;margin-bottom:1px;}
+  .trust-item span{font-size:10px;line-height:1.55;}
+  .foot-grid{grid-template-columns:1fr;gap:16px;margin-bottom:16px;}
+  .foot-grid h5{margin-bottom:6px;}
+  .foot-grid ul{gap:5px;font-size:12.5px;}
+  .foot-bottom{font-size:10.5px;padding-top:12px;}
+}
+@media (max-width:380px){
+  [data-route="/"] .carousel-track .carousel-item,
+  [data-route="/"] .carousel-track.carousel-centered .carousel-item{flex-basis:78vw!important;}
+  [data-route="/"] .hero-slide-content{width:80%;padding-inline:14px;}
+}
+</style>
+<script>
+(function(){
+  function avoidChatFabOverlap(){
+    const fab=document.querySelector('.chat-fab');
+    if(!fab || window.innerWidth>720) return;
+    const fr=fab.getBoundingClientRect();
+    const cards=[...document.querySelectorAll('[data-route="/"] .premium-product-card')];
+    const hit=cards.some(el=>{
+      const r=el.getBoundingClientRect();
+      return r.bottom>fr.top&&r.top<fr.bottom&&r.right>fr.left&&r.left<fr.right;
+    });
+    fab.classList.toggle('chat-fab-obscured',hit);
+  }
+  let raf=0;
+  function schedule(){
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(avoidChatFabOverlap);
+  }
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule,{passive:true});
+  document.addEventListener('DOMContentLoaded',schedule);
+  setTimeout(schedule,500);
+})();
+</script>
 </body>
 </html>
