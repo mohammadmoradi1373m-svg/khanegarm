@@ -2091,6 +2091,34 @@ function describeSaveError(e){
   else reason=msg.slice(0,70)||'نامشخص';
   return reason+(code?' ['+code+']':'');
 }
+const ADMIN_EMAIL = 'mohammadmoradi.1373m@gmail.com';
+function isAdminUser(user){ return !!user && String(user.email||'').toLowerCase() === ADMIN_EMAIL; }
+const ADMIN_ERROR_MESSAGES = {
+  NOT_AUTHORIZED:'این حساب ادمین نیست؛ خارج شو و با ایمیل ادمین وارد شو',
+  INVALID_DATES:'تاریخ و ساعت پایان باید بعد از شروع باشه',
+  PRODUCT_NOT_FOUND:'محصول انتخاب‌شده پیدا نشد',
+  INVALID_DISCOUNT_TYPE:'نوع تخفیف نامعتبره',
+  INVALID_DISCOUNT_VALUE:'مقدار تخفیف نامعتبره (درصد باید ۱ تا ۱۰۰ باشه)',
+  DISCOUNT_EXCEEDS_PRICE:'مبلغ تخفیف از قیمت محصول بیشتره',
+  INVALID_PACK_NAME:'نام پک خالیه یا خیلی بلنده',
+  INVALID_PACK_SLUG:'اسلاگ فقط حروف کوچک انگلیسی، عدد و - باشه (۲ تا ۸۰ کاراکتر)',
+  INVALID_PACK_PRICING:'نوع قیمت‌گذاری پک نامعتبره',
+  INVALID_PACK_DISCOUNT:'مقدار تخفیف پک نامعتبره (درصد باید ۰ تا ۱۰۰ باشه)',
+  INVALID_PACK_ITEMS:'لیست محصولات پک نامعتبره',
+  INVALID_PACK_ITEM:'تعداد یکی از محصولات پک نامعتبره (۱ تا ۱۰۰)',
+  PACK_MUST_HAVE_2_TO_10_PRODUCTS:'هر پک باید ۲ تا ۱۰ محصول متفاوت داشته باشه',
+  PACK_PRODUCT_NOT_FOUND:'یکی از محصولات پک پیدا نشد',
+  PACK_PRICE_TOO_HIGH:'قیمت ثابت پک از جمع قیمت محصولاتش بیشتره',
+  AUTH_UPDATE_FAILED:'تغییر روی حساب مشتری انجام نشد (ایمیل تکراری یا نامعتبر؟)',
+  NO_SESSION:'نشست ورود پیدا نشد؛ دوباره وارد شو'
+};
+function describeAdminError(e){
+  if(!e) return 'نامشخص';
+  const msg = String(e.message||'') + ' ' + String(e.details||'');
+  for(const k in ADMIN_ERROR_MESSAGES){ if(msg.indexOf(k) !== -1) return ADMIN_ERROR_MESSAGES[k]; }
+  if(String(e.code||'')==='23505' && /slug/i.test(msg)) return 'این اسلاگ قبلاً برای پک دیگه‌ای استفاده شده';
+  return describeSaveError(e);
+}
 function updateDataErrorBanner(){
   const banner = document.getElementById('dataErrorBanner');
   const detail = document.getElementById('dataErrorDetail');
@@ -4114,7 +4142,7 @@ function filterAdminCustomers(){
 function adminCustomerProvinceChanged(pid){const p=document.getElementById(pid+'_province'),c=document.getElementById(pid+'_city');populateCitySelect(c,p?.value||'','');}
 async function adminCustomerAuthAction(payload){
   const {data:{session}}=await sbClient.auth.getSession(); if(!session)return {error:{message:'NO_SESSION'}};
-  const res=await fetch('https://thovhvemaidbiekagome.functions.supabase.co/admin-customer-auth',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_ANON_KEY},body:JSON.stringify(payload)});
+  const res=await fetch('https://api.owli.ir/functions/v1/admin-customer-auth',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token,'apikey':SUPABASE_ANON_KEY},body:JSON.stringify(payload)});
   let body=null;try{body=await res.json();}catch(e){} return {data:body,error:res.ok?null:{message:body?.error||'ADMIN_CUSTOMER_AUTH_FAILED'}};
 }
 async function saveAdminCustomer(oldPhone,pid){
@@ -4123,16 +4151,16 @@ async function saveAdminCustomer(oldPhone,pid){
   if(name.length<2|| (row.user_id && (!validUsername(username)||!validEmail(email)||!province||!city)) || (postal && !/^\d{10}$/.test(postal))){showToast('اطلاعات مشتری را درست وارد کن');return;}
   if(row.user_id && email!==String(row.email||'').toLowerCase()){
     const authRes=await adminCustomerAuthAction({user_id:row.user_id,email});
-    if(authRes.error){showToast('تغییر ایمیل حساب انجام نشد');console.error(authRes.error);return;}
+    if(authRes.error){showToast('تغییر ایمیل حساب انجام نشد: '+describeAdminError(authRes.error));console.error(authRes.error);return;}
   }
   const {error}=await sbClient.from('customers').update({name,username:row.user_id?username:null,email:row.user_id?email:null,province,city,address:address||'',postal_code:postal||null}).eq('phone',oldPhone);
-  if(error){showToast('ذخیره اطلاعات مشتری انجام نشد');console.error(error);return;}
+  if(error){showToast('ذخیره اطلاعات مشتری انجام نشد: '+describeAdminError(error));console.error(error);return;}
   showToast('اطلاعات مشتری ذخیره شد ✅'); await renderAdminCustomers();
 }
 
 async function resetAdminCustomerPassword(userId){
   const pw=prompt('رمز جدید مشتری را وارد کنید (حداقل ۸ کاراکتر):',''); if(pw===null)return; if(pw.length<8){showToast('رمز باید حداقل ۸ کاراکتر باشد');return;}
-  const {error}=await adminCustomerAuthAction({user_id:userId,password:pw}); if(error){showToast('تغییر رمز انجام نشد');return;} showToast('رمز جدید مشتری ثبت شد ✅');
+  const {error}=await adminCustomerAuthAction({user_id:userId,password:pw}); if(error){showToast('تغییر رمز انجام نشد: '+describeAdminError(error));return;} showToast('رمز جدید مشتری ثبت شد ✅');
 }
 
 let adminDiscountsCache=[]; let adminPacksCache=[];
@@ -4164,21 +4192,32 @@ function adminClearPackForm(){ document.getElementById('packEditId').value='';do
 function renderAdminOffers(){ renderAdminDiscounts(); renderAdminPacks(); }
 function renderAdminDiscounts(){ const box=document.getElementById('adminDiscountList');if(!box)return; const products=adminProductsCache; document.getElementById('discountProduct').innerHTML='<option value="">انتخاب پاسور...</option>'+products.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} · ${formatToman(p.price)}</option>`).join(''); box.innerHTML=adminDiscountsCache.length?adminDiscountsCache.map(d=>{const p=products.find(x=>x.id===d.product_id);const dateMeta=[d.starts_at?`شروع: ${formatJalaliDateText(d.starts_at)}`:'شروع: فوری',d.ends_at?`پایان: ${formatJalaliDateText(d.ends_at)}`:'بدون پایان'];return `<div class="offer-admin-row"><div class="offer-admin-row-head"><div><b>${escapeHtml(p?.name||d.product_id)}</b><div class="offer-admin-note">${escapeHtml(d.title||'تخفیف ویژه')} · ${d.discount_type==='percent'?toFa(d.discount_value)+'٪':formatToman(d.discount_value)}</div><div class="offer-list-meta">${dateMeta.map(x=>`<span>${escapeHtml(x)}</span>`).join('')}</div></div><span class="offer-status ${d.active?'active':'inactive'}">${d.active?'فعال':'غیرفعال'}</span></div><div class="offer-admin-actions"><button class="btn-ghost" style="padding:6px 10px;font-size:11px;" onclick="adminEditDiscount('${d.id}')">ویرایش</button><button class="btn-ghost" style="padding:6px 10px;font-size:11px;color:var(--rust);" onclick="adminDeleteDiscount('${d.id}')">حذف</button></div></div>`}).join(''):'<div class="offer-admin-note">هنوز تخفیفی تعریف نشده.</div>'; }
 function adminEditDiscount(id){const d=adminDiscountsCache.find(x=>x.id===id);if(!d)return;document.getElementById('discountProduct').value=d.product_id;document.getElementById('discountType').value=d.discount_type;document.getElementById('discountValue').value=d.discount_value;document.getElementById('discountTitle').value=d.title||'';document.getElementById('discountActive').checked=!!d.active;setOfferDateFromIso('discountStarts',d.starts_at);setOfferDateFromIso('discountEnds',d.ends_at);document.getElementById('discountProduct').dataset.editId=d.id;document.getElementById('discountProduct').scrollIntoView({behavior:'smooth',block:'center'}); }
-async function adminSaveDiscount(){ const productId=document.getElementById('discountProduct').value,type=document.getElementById('discountType').value,value=parseInt(document.getElementById('discountValue').value,10),title=document.getElementById('discountTitle').value.trim(),active=document.getElementById('discountActive').checked; if(!productId||!Number.isFinite(value)||value<1||(type==='percent'&&value>100)){showToast('اطلاعات تخفیف را درست وارد کن');return;} const starts=parseLocalDateTime('discountStarts'),ends=parseLocalDateTime('discountEnds');if((document.getElementById('discountStarts').value&&!starts)||(document.getElementById('discountEnds').value&&!ends))return; const {data,error}=await sbClient.rpc('admin_save_product_discount',{p_id:document.getElementById('discountProduct').dataset.editId||null,p_product_id:productId,p_title:title,p_discount_type:type,p_discount_value:value,p_active:active,p_starts_at:starts,p_ends_at:ends});if(error){showToast('ذخیره تخفیف انجام نشد');console.error(error);return;}showToast('تخفیف ذخیره شد ✅');adminClearDiscountForm();await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers(); }
-async function adminDeleteDiscount(id){if(!confirm('این تخفیف حذف شود؟'))return;const {error}=await sbClient.rpc('admin_delete_product_discount',{p_id:id});if(error){showToast('حذف تخفیف انجام نشد');return;}showToast('تخفیف حذف شد');await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers();}
+async function adminSaveDiscount(){ const productId=document.getElementById('discountProduct').value,type=document.getElementById('discountType').value,value=parseInt(document.getElementById('discountValue').value,10),title=document.getElementById('discountTitle').value.trim(),active=document.getElementById('discountActive').checked; if(!productId||!Number.isFinite(value)||value<1||(type==='percent'&&value>100)){showToast('اطلاعات تخفیف را درست وارد کن');return;} const starts=parseLocalDateTime('discountStarts'),ends=parseLocalDateTime('discountEnds');if((document.getElementById('discountStarts').value&&!starts)||(document.getElementById('discountEnds').value&&!ends))return; if(starts&&ends&&new Date(ends)<=new Date(starts)){showToast('تاریخ و ساعت پایان باید بعد از شروع باشه');return;} const {data,error}=await sbClient.rpc('admin_save_product_discount',{p_id:document.getElementById('discountProduct').dataset.editId||null,p_product_id:productId,p_title:title,p_discount_type:type,p_discount_value:value,p_active:active,p_starts_at:starts,p_ends_at:ends});if(error){showToast('ذخیره تخفیف انجام نشد: '+describeAdminError(error));console.error(error);return;}showToast('تخفیف ذخیره شد ✅');adminClearDiscountForm();await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers(); }
+async function adminDeleteDiscount(id){if(!confirm('این تخفیف حذف شود؟'))return;const {error}=await sbClient.rpc('admin_delete_product_discount',{p_id:id});if(error){showToast('حذف تخفیف انجام نشد: '+describeAdminError(error));return;}showToast('تخفیف حذف شد');await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers();}
 function renderAdminPacks(){ const box=document.getElementById('adminPackList');if(!box)return;box.innerHTML=adminPacksCache.length?adminPacksCache.map(x=>{const dateMeta=[x.starts_at?`شروع: ${formatJalaliDateText(x.starts_at)}`:'شروع: فوری',x.ends_at?`پایان: ${formatJalaliDateText(x.ends_at)}`:'بدون پایان'];return `<div class="offer-admin-row"><div class="offer-admin-row-head"><div><b>${escapeHtml(x.name)}</b><div class="offer-admin-note">${toFa((x.items||[]).length)} محصول متفاوت · ${formatToman(x.price||0)}</div><div class="offer-list-meta">${dateMeta.map(v=>`<span>${escapeHtml(v)}</span>`).join('')}</div></div><span class="offer-status ${x.active?'active':'inactive'}">${x.active?'فعال':'غیرفعال'}</span></div><div class="offer-admin-actions"><span class="offer-list-meta"><span>/${escapeHtml(x.slug||'بدون اسلاگ')}</span></span><button class="btn-ghost" style="padding:6px 10px;font-size:11px;" onclick="adminEditPack('${x.id}')">ویرایش</button><button class="btn-ghost" style="padding:6px 10px;font-size:11px;color:var(--rust);" onclick="adminDeletePack('${x.id}')">حذف</button></div></div>`}).join(''):'<div class="offer-admin-note">هنوز پکی تعریف نشده.</div>'; }
 async function ensureAdminOfferProducts(){if((adminProductsCache||[]).length)return true;const {data,error}=await sbClient.from('products').select('id,cat,tag,name,price,stock,description,features,img_url,code,brand,views,images').order('name');if(error||!data){console.error('[admin offers] products load failed',error);return false;}adminProductsCache=data;return true;}
 async function renderAdminOffersData(){ if(!adminProductsCache.length){const ok=await ensureAdminOfferProducts();if(!ok){const b=document.getElementById('packProductPicker');if(b)b.innerHTML='<div class="offer-picker-empty">دریافت محصولات ناموفق بود؛ دوباره تب تخفیف و پک‌ها را باز کن.</div>';return;}} const [d,p,pi]=await Promise.all([sbClient.from('product_discounts').select('*').order('created_at',{ascending:false}),sbClient.from('packs').select('*').order('created_at',{ascending:false}),sbClient.from('pack_items').select('pack_id,product_id,quantity')]); adminDiscountsCache=d.data||[]; const rows=pi.data||[]; const packIds=[...new Set(rows.map(x=>x.pack_id))]; const map={};rows.forEach(r=>(map[r.pack_id]??=[]).push(r)); adminPacksCache=(p.data||[]).map(x=>({...x,items:(map[x.id]||[]).map(r=>{const pr=adminProductsCache.find(pp=>pp.id===r.product_id);return {...r,name:pr?.name||r.product_id,price:pr?.price||0,stock:pr?.stock||0,img_url:pr?.img_url||''};})})); renderAdminDiscounts();renderAdminPacks();renderAdminOfferProductPicker(); }
 function adminEditPack(id){const x=adminPacksCache.find(p=>p.id===id);if(!x)return;document.getElementById('packEditId').value=x.id;document.getElementById('packName').value=x.name;document.getElementById('packSlug').value=x.slug;document.getElementById('packDescription').value=x.description||'';document.getElementById('packPricingType').value=x.pricing_type;document.getElementById('packDiscountValue').value=x.discount_value;document.getElementById('packActive').checked=!!x.active;setOfferDateFromIso('packStarts',x.starts_at);setOfferDateFromIso('packEnds',x.ends_at);adminPackSelection={};(x.items||[]).forEach(i=>adminPackSelection[String(i.product_id)]={quantity:i.quantity});renderAdminOfferProductPicker();document.getElementById('packName').scrollIntoView({behavior:'smooth',block:'center'});}
-async function adminSavePack(){ const name=document.getElementById('packName').value.trim(),slug=document.getElementById('packSlug').value.trim().toLowerCase(),desc=document.getElementById('packDescription').value.trim(),pricing=document.getElementById('packPricingType').value,value=parseInt(document.getElementById('packDiscountValue').value,10)||0,active=document.getElementById('packActive').checked; const checks=Object.keys(adminPackSelection); if(checks.length<2||checks.length>10){showToast('هر پک باید بین ۲ تا ۱۰ پاسور متفاوت داشته باشد');return;} if(!name||!slug){showToast('نام و اسلاگ پک را کامل کن');return;} const starts=parseLocalDateTime('packStarts'),ends=parseLocalDateTime('packEnds');if((document.getElementById('packStarts').value&&!starts)||(document.getElementById('packEnds').value&&!ends))return; const items=Object.entries(adminPackSelection).map(([product_id,state])=>({product_id,quantity:Math.max(1,Math.min(100,parseInt(state.quantity,10)||1))})); let imageUrl=adminPacksCache.find(x=>x.id===document.getElementById('packEditId').value)?.image_url||null; const file=document.getElementById('packImage').files?.[0]; if(file){const [main]=await imageUploadVariants(file);if(!main){showToast('تصویر پک قابل پردازش نیست');return;}const path=`packs/${Date.now()}_${Math.floor(Math.random()*10000)}.${main.type==='image/webp'?'webp':'jpg'}`;const up=await sbClient.storage.from('product-images').upload(path,main,{upsert:true,cacheControl:'31536000',contentType:main.type});if(up.error){showToast('آپلود تصویر پک انجام نشد');return;}imageUrl=sbClient.storage.from('product-images').getPublicUrl(path).data.publicUrl;} const {error}=await sbClient.rpc('admin_save_pack',{p_id:document.getElementById('packEditId').value||null,p_name:name,p_slug:slug,p_description:desc,p_pricing_type:pricing,p_discount_value:value,p_image_url:imageUrl,p_active:active,p_starts_at:starts,p_ends_at:ends,p_items:items});if(error){showToast('ذخیره پک انجام نشد');console.error(error);return;}showToast('پک ذخیره شد ✅');adminClearPackForm();await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers();}
-async function adminDeletePack(id){if(!confirm('این پک حذف شود؟'))return;const {error}=await sbClient.rpc('admin_delete_pack',{p_id:id});if(error){showToast('حذف پک انجام نشد');return;}showToast('پک حذف شد');await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers();}
+async function adminSavePack(){ const name=document.getElementById('packName').value.trim(),slug=document.getElementById('packSlug').value.trim().toLowerCase(),desc=document.getElementById('packDescription').value.trim(),pricing=document.getElementById('packPricingType').value,value=parseInt(document.getElementById('packDiscountValue').value,10)||0,active=document.getElementById('packActive').checked; const checks=Object.keys(adminPackSelection); if(checks.length<2||checks.length>10){showToast('هر پک باید بین ۲ تا ۱۰ پاسور متفاوت داشته باشد');return;} if(!name||!slug){showToast('نام و اسلاگ پک را کامل کن');return;} const starts=parseLocalDateTime('packStarts'),ends=parseLocalDateTime('packEnds');if((document.getElementById('packStarts').value&&!starts)||(document.getElementById('packEnds').value&&!ends))return; if(starts&&ends&&new Date(ends)<=new Date(starts)){showToast('تاریخ و ساعت پایان باید بعد از شروع باشه');return;} const items=Object.entries(adminPackSelection).map(([product_id,state])=>({product_id,quantity:Math.max(1,Math.min(100,parseInt(state.quantity,10)||1))})); let imageUrl=adminPacksCache.find(x=>x.id===document.getElementById('packEditId').value)?.image_url||null; const file=document.getElementById('packImage').files?.[0]; if(file){const [main]=await imageUploadVariants(file);if(!main){showToast('تصویر پک قابل پردازش نیست');return;}const path=`packs/${Date.now()}_${Math.floor(Math.random()*10000)}.${main.type==='image/webp'?'webp':'jpg'}`;const up=await sbClient.storage.from('product-images').upload(path,main,{upsert:true,cacheControl:'31536000',contentType:main.type});if(up.error){showToast('آپلود تصویر پک انجام نشد: '+describeAdminError(up.error));return;}imageUrl=sbClient.storage.from('product-images').getPublicUrl(path).data.publicUrl;} const {error}=await sbClient.rpc('admin_save_pack',{p_id:document.getElementById('packEditId').value||null,p_name:name,p_slug:slug,p_description:desc,p_pricing_type:pricing,p_discount_value:value,p_image_url:imageUrl,p_active:active,p_starts_at:starts,p_ends_at:ends,p_items:items});if(error){showToast('ذخیره پک انجام نشد: '+describeAdminError(error));console.error(error);return;}showToast('پک ذخیره شد ✅');adminClearPackForm();await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers();}
+async function adminDeletePack(id){if(!confirm('این پک حذف شود؟'))return;const {error}=await sbClient.rpc('admin_delete_pack',{p_id:id});if(error){showToast('حذف پک انجام نشد: '+describeAdminError(error));return;}showToast('پک حذف شد');await renderAdminOffersData();await loadHomeOffers(true);renderHomeOffers();}
 
 async function renderAdminRoute(){
   const { data: sessionData } = await sbClient.auth.getSession();
-  const loggedIn = !!(sessionData && sessionData.session);
-  document.getElementById('adminLoginBox').hidden = loggedIn;
-  document.getElementById('adminPanelBox').hidden = !loggedIn;
-  if(loggedIn){ if(['products','categories','offers'].includes(adminCurrentTab)) { await loadCategoriesFromDB(); await loadProductsFromDB(); } switchAdminTab(adminCurrentTab); }
+  const session = sessionData && sessionData.session;
+  const loggedIn = !!session;
+  const isAdmin = loggedIn && isAdminUser(session.user);
+  document.getElementById('adminLoginBox').hidden = isAdmin;
+  document.getElementById('adminPanelBox').hidden = !isAdmin;
+  const errEl = document.getElementById('adminLoginError');
+  if(errEl){
+    if(loggedIn && !isAdmin){
+      errEl.innerHTML = 'الان با حساب مشتری (' + escapeHtml(session.user.email||'') + ') وارد شدی و این حساب دسترسی مدیریت نداره. <a href="#" onclick="adminLogout();return false;" style="text-decoration:underline; font-weight:700;">خروج از این حساب</a> و بعد با ایمیل ادمین وارد شو.';
+      errEl.style.display = 'block';
+    } else if(!loggedIn){
+      errEl.style.display = 'none';
+    }
+  }
+  if(isAdmin){ if(['products','categories','offers'].includes(adminCurrentTab)) { await loadCategoriesFromDB(); await loadProductsFromDB(); } switchAdminTab(adminCurrentTab); }
 }
 async function adminLogin(){
   const email = document.getElementById('adminEmail').value.trim();
@@ -4744,7 +4783,8 @@ async function addCategory(){
     const path = `cat_${id}_${Date.now()}.webp`;
     try{
       const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}), 20000, 'UPLOAD_TIMEOUT');
-      if(!upErr){ const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); image_url = pub.publicUrl; }
+      if(upErr){ showToast('آپلود عکس دسته‌بندی ناموفق بود: ' + describeAdminError(upErr)); return; }
+      const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); image_url = pub.publicUrl;
     }catch(e){
       showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
       return;
@@ -4758,7 +4798,7 @@ async function addCategory(){
     showToast('ذخیره‌سازی خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
     return;
   }
-  if(error){ showToast('خطا در افزودن دسته‌بندی'); return; }
+  if(error){ console.error('addCategory', error); showToast('خطا در افزودن دسته‌بندی: ' + describeAdminError(error)); return; }
   document.getElementById('cfName').value = '';
   document.getElementById('cfEmoji').value = '';
   fileInput.value = '';
@@ -4789,7 +4829,8 @@ async function saveCategoryEdit(){
     const path = `cat_${categoryEditId}_${Date.now()}.webp`;
     try{
       const { error: upErr } = await withTimeout(sbClient.storage.from('product-images').upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}), 20000, 'UPLOAD_TIMEOUT');
-      if(!upErr){ const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); updates.image_url = pub.publicUrl; }
+      if(upErr){ showToast('آپلود عکس دسته‌بندی ناموفق بود: ' + describeAdminError(upErr)); return; }
+      const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path); updates.image_url = pub.publicUrl;
     }catch(e){
       showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
       return;
@@ -4803,7 +4844,7 @@ async function saveCategoryEdit(){
     showToast('ذخیره‌سازی خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
     return;
   }
-  if(error){ showToast('خطا در ذخیره تغییرات'); return; }
+  if(error){ console.error('saveCategoryEdit', error); showToast('خطا در ذخیره تغییرات: ' + describeAdminError(error)); return; }
   document.getElementById('categoryEditModal').classList.remove('open');
   showToast('دسته‌بندی ویرایش شد ✅');
   await loadCategoriesFromDB();
@@ -4816,7 +4857,7 @@ async function deleteCategory(id, productCount){
   }
   if(!confirm('این دسته‌بندی حذف بشه؟')) return;
   const { error } = await sbClient.from('categories').delete().eq('id', id);
-  if(error){ showToast('خطا در حذف دسته‌بندی'); return; }
+  if(error){ showToast('خطا در حذف دسته‌بندی: ' + describeAdminError(error)); return; }
   showToast('دسته‌بندی حذف شد');
   await loadCategoriesFromDB();
   renderAdminCategories();
@@ -4977,7 +5018,7 @@ async function saveProduct(){
 async function deleteProduct(id){
   if(!confirm('مطمئنی می‌خوای این محصول رو حذف کنی؟')) return;
   const { error } = await sbClient.from('products').delete().eq('id', id);
-  if(error){ showToast('خطا در حذف محصول'); return; }
+  if(error){ showToast('خطا در حذف محصول: ' + describeAdminError(error)); return; }
   showToast('محصول حذف شد');
   await loadProductsFromDB();
   renderAdminProducts();
