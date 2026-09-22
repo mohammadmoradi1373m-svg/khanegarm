@@ -2372,168 +2372,86 @@ function compressImage(file,maxDim,quality){
 }
 function compressImageVariants(file){
   return new Promise(resolve=>{
-    if(!file||!file.type||!file.type.startsWith('image/')){
-      resolve([null,null]);
+    const MAX_BYTES=4.8*1024*1024;
+    if(!file||!file.type||!file.type.startsWith('image/')){resolve([null,null]);return;}
+    const base=(file.name||'product-image').replace(/\.[^.]+$/,'');
+    const directTypes=new Set(['image/png','image/jpeg','image/webp']);
+
+    const finish=(mainFile,thumbBlob)=>{
+      if(!mainFile||mainFile.size>MAX_BYTES){resolve([null,null]);return;}
+      const thumbFile=thumbBlob?new File([thumbBlob],base+'_thumb.webp',{type:'image/webp',lastModified:Date.now()}):null;
+      resolve([mainFile,thumbFile]);
+    };
+
+    const makeThumb=img=>new Promise(done=>{
+      try{
+        const ow=img.width||img.naturalWidth,oh=img.height||img.naturalHeight;
+        if(!ow||!oh){done(null);return;}
+        const scale=Math.min(1,480/Math.max(ow,oh));
+        const w=Math.max(1,Math.round(ow*scale)),h=Math.max(1,Math.round(oh*scale));
+        const c=document.createElement('canvas'),ctx=c.getContext('2d',{alpha:true});
+        if(!ctx){done(null);return;}
+        c.width=w;c.height=h;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,w,h);
+        c.toBlob(blob=>done(blob&&blob.size<=900*1024?blob:null),'image/webp',.76);
+      }catch(e){done(null)}
+    });
+
+    if(file.size<=MAX_BYTES&&directTypes.has(file.type)){
+      let p=Promise.resolve(null);
+      if(typeof createImageBitmap==='function'){
+        p=createImageBitmap(file,{imageOrientation:'from-image'}).then(async bitmap=>{
+          try{return await makeThumb(bitmap)}finally{try{bitmap.close()}catch(e){}}
+        }).catch(()=>null);
+      }else{
+        const url=URL.createObjectURL(file),img=new Image();
+        p=new Promise(done=>{
+          img.onload=async()=>{try{done(await makeThumb(img))}finally{URL.revokeObjectURL(url)}};
+          img.onerror=()=>{URL.revokeObjectURL(url);done(null)};
+          img.src=url;
+        });
+      }
+      p.then(t=>finish(file,t)).catch(()=>finish(file,null));
       return;
     }
 
-    const base=(file.name||'product-image').replace(/\.[^.]+$/,'');
-
-    const finish=(mainBlob,thumbBlob,mainType)=>{
-      if(!mainBlob || mainBlob.size>4.9*1024*1024 || !thumbBlob){
-        resolve([null,null]);
-        return;
-      }
-      const mainExt=mainType==='image/jpeg'?'jpg':'webp';
-      const thumbExt=thumbBlob.type==='image/jpeg'?'jpg':'webp';
-
-      resolve([
-        new File([mainBlob],base+'.'+mainExt,{
-          type:mainType,
-          lastModified:Date.now()
-        }),
-        new File([thumbBlob],base+'_thumb.'+thumbExt,{
-          type:thumbBlob.type,
-          lastModified:Date.now()
-        })
-      ]);
-    };
-
-    /* مهم: draw تا پایان encode صبر می‌کند؛ بنابراین ImageBitmap
-       قبل از پایان toBlob() بسته نمی‌شود. این همان ایراد اصلی نسخه قبلی است. */
     const draw=async(img,revoke)=>{
       try{
-        const ow=img.width||img.naturalWidth;
-        const oh=img.height||img.naturalHeight;
-
-        if(!ow||!oh){
-          if(revoke)URL.revokeObjectURL(revoke);
-          resolve([null,null]);
-          return;
-        }
-
-        const maxDim=1800;
-        const maxPixels=5.5e6;
-
-        let scale=Math.min(
-          1,
-          maxDim/Math.max(ow,oh),
-          Math.sqrt(maxPixels/(ow*oh))
-        );
-
+        const ow=img.width||img.naturalWidth,oh=img.height||img.naturalHeight;
+        if(!ow||!oh){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
+        let scale=Math.min(1,2500/Math.max(ow,oh),Math.sqrt(5.5e6/(ow*oh)));
         if(!Number.isFinite(scale)||scale<=0)scale=.1;
-
-        let w=Math.max(1,Math.round(ow*scale));
-        let h=Math.max(1,Math.round(oh*scale));
-
-        const thumbScale=Math.min(1,420/Math.max(ow,oh));
-        const tw=Math.max(1,Math.round(ow*thumbScale));
-        const th=Math.max(1,Math.round(oh*thumbScale));
-
-        const mainCanvas=document.createElement('canvas');
-        const thumbCanvas=document.createElement('canvas');
-
-        const mainCtx=mainCanvas.getContext('2d',{alpha:true});
-        const thumbCtx=thumbCanvas.getContext('2d',{alpha:true});
-
-        if(!mainCtx||!thumbCtx){
-          if(revoke)URL.revokeObjectURL(revoke);
-          resolve([null,null]);
-          return;
-        }
-
-        const encode=(canvas,ctx,W,H,type,q)=>new Promise(r=>{
-          try{
-            canvas.width=W;
-            canvas.height=H;
-            ctx.clearRect(0,0,W,H);
-            ctx.imageSmoothingEnabled=true;
-            ctx.imageSmoothingQuality='high';
-            ctx.drawImage(img,0,0,W,H);
-            canvas.toBlob(r,type,q);
-          }catch(e){
-            r(null);
-          }
+        let w=Math.max(1,Math.round(ow*scale)),h=Math.max(1,Math.round(oh*scale));
+        const c=document.createElement('canvas'),ctx=c.getContext('2d',{alpha:true});
+        if(!ctx){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);return;}
+        const encode=(type,q)=>new Promise(done=>{
+          try{c.width=w;c.height=h;ctx.clearRect(0,0,w,h);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,w,h);c.toBlob(done,type,q)}
+          catch(e){done(null)}
         });
-
-        let main=null;
-
-        /* WebP را با چند کیفیت امتحان می‌کنیم. */
-        for(const q of [.82,.76,.70,.64]){
-          main=await encode(mainCanvas,mainCtx,w,h,'image/webp',q);
-          if(main&&main.size<=4.7*1024*1024)break;
+        let main=null,mainType='image/webp';
+        for(const q of [.86,.80,.74,.70]){main=await encode('image/webp',q);if(main&&main.size<=MAX_BYTES)break;}
+        while((!main||main.size>MAX_BYTES)&&Math.max(w,h)>1000){
+          w=Math.max(1,Math.round(w*.82));h=Math.max(1,Math.round(h*.82));main=await encode('image/webp',.72);
         }
-
-        /* اگر هنوز بزرگ بود، ابعاد را هم مرحله‌ای کم می‌کنیم. */
-        while(
-          (!main||main.size>4.7*1024*1024) &&
-          Math.max(w,h)>1000
-        ){
-          w=Math.max(1,Math.round(w*.82));
-          h=Math.max(1,Math.round(h*.82));
-          main=await encode(
-            mainCanvas,mainCtx,w,h,'image/webp',.72
-          );
-        }
-
-        let mainType='image/webp';
-
-        /* fallback واقعی برای مرورگرهایی که WebP را encode نمی‌کنند. */
-        if(!main||main.size>4.7*1024*1024){
-          main=await encode(
-            mainCanvas,mainCtx,w,h,'image/jpeg',.78
-          );
-          mainType='image/jpeg';
-        }
-
-        let thumb=await encode(
-          thumbCanvas,thumbCtx,tw,th,'image/webp',.76
-        );
-
-        if(!thumb){
-          thumb=await encode(
-            thumbCanvas,thumbCtx,tw,th,'image/jpeg',.78
-          );
-        }
-
+        if(!main||main.size>MAX_BYTES){main=await encode('image/jpeg',.80);mainType='image/jpeg';}
+        const thumb=await makeThumb(img);
         if(revoke)URL.revokeObjectURL(revoke);
-        finish(main,thumb,mainType);
-
-      }catch(e){
-        if(revoke)URL.revokeObjectURL(revoke);
-        resolve([null,null]);
-      }
+        if(!main||main.size>MAX_BYTES){resolve([null,null]);return;}
+        finish(new File([main],base+(mainType==='image/jpeg'?'.jpg':'.webp'),{type:mainType,lastModified:Date.now()}),thumb);
+      }catch(e){if(revoke)URL.revokeObjectURL(revoke);resolve([null,null]);}
     };
 
-    /* مسیر fallback برای موبایل‌هایی که createImageBitmap مشکل دارد. */
     const fallback=()=>{
-      const url=URL.createObjectURL(file);
-      const img=new Image();
-
+      const url=URL.createObjectURL(file),img=new Image();
       img.onload=()=>draw(img,url);
-
-      img.onerror=()=>{
-        URL.revokeObjectURL(url);
-        resolve([null,null]);
-      };
-
+      img.onerror=()=>{URL.revokeObjectURL(url);resolve([null,null])};
       img.src=url;
     };
 
     if(typeof createImageBitmap==='function'){
       createImageBitmap(file,{imageOrientation:'from-image'})
-        .then(async bitmap=>{
-          try{
-            /* حتماً تا پایان draw/encode صبر می‌کنیم. */
-            await draw(bitmap,null);
-          }finally{
-            try{bitmap.close()}catch(e){}
-          }
-        })
+        .then(async bitmap=>{try{await draw(bitmap,null)}finally{try{bitmap.close()}catch(e){}}})
         .catch(fallback);
-    }else{
-      fallback();
-    }
+    }else fallback();
   });
 }
 function getStorageSiblingUrl(url,suffix){
@@ -4970,24 +4888,42 @@ async function saveProduct(){
   const uploadedUrls = [];
   for(const rawFile of pfNewFiles){
     const [file, thumbFile] = await imageUploadVariants(rawFile);
-    if(!file || !thumbFile){ showToast('این تصویر در مرورگر قابل تبدیل نیست یا حجم نهایی آن بیش از حد مجاز است'); btn.disabled=false; btn.textContent='ذخیره'; return; }
-    const basePath = `${id}_${Date.now()}_${Math.floor(Math.random()*10000)}`;
-    const path = `${basePath}.${file.type==='image/webp'?'webp':'jpg'}`;
-    const thumbPath = `${basePath}_thumb.${thumbFile.type==='image/webp'?'webp':'jpg'}`;
+    if(!file){
+      showToast('این تصویر قابل آماده‌سازی نیست یا حجم آن بیش از حد مجاز است');
+      btn.disabled=false; btn.textContent='ذخیره'; return;
+    }
+
+    const basePath = id + '_' + Date.now() + '_' + Math.floor(Math.random()*10000);
+    const ext = file.type==='image/png' ? 'png' : (file.type==='image/jpeg' ? 'jpg' : 'webp');
+    const path = basePath + '.' + ext;
     let upErr;
+
     try{
       const bucket = sbClient.storage.from('product-images');
-      const mainRes = await withTimeout(bucket.upload(path, file, {upsert:true, cacheControl:'31536000', contentType:file.type}),20000,'UPLOAD_TIMEOUT');
+      const mainRes = await withTimeout(
+        bucket.upload(path,file,{upsert:true,cacheControl:'31536000',contentType:file.type}),
+        20000,'UPLOAD_TIMEOUT'
+      );
       upErr = mainRes.error;
-      if(!upErr){
-        const thumbRes = await withTimeout(bucket.upload(thumbPath, thumbFile, {upsert:true, cacheControl:'31536000', contentType:thumbFile.type}),20000,'UPLOAD_TIMEOUT');
-        upErr = thumbRes.error;
+
+      if(!upErr && thumbFile){
+        const thumbPath = basePath + '_thumb.webp';
+        const thumbRes = await withTimeout(
+          bucket.upload(thumbPath,thumbFile,{upsert:true,cacheControl:'31536000',contentType:thumbFile.type}),
+          20000,'UPLOAD_TIMEOUT'
+        );
+        if(thumbRes.error) console.warn('thumbnail upload skipped',thumbRes.error);
       }
     }catch(e){
       showToast('آپلود عکس خیلی طول کشید (احتمالاً مشکل اتصال یا فیلترینگ)، دوباره امتحان کن');
       btn.disabled=false; btn.textContent='ذخیره'; return;
     }
-    if(upErr){ showToast('خطا در آپلود عکس: ' + describeLoadError(upErr)); btn.disabled=false; btn.textContent='ذخیره'; return; }
+
+    if(upErr){
+      showToast('خطا در آپلود عکس: ' + describeLoadError(upErr));
+      btn.disabled=false; btn.textContent='ذخیره'; return;
+    }
+
     const { data: pub } = sbClient.storage.from('product-images').getPublicUrl(path);
     uploadedUrls.push(pub.publicUrl);
   }
