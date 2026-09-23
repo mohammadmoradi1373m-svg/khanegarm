@@ -3488,7 +3488,7 @@ function updatePackagingVisibility(){
   renderCheckoutTotals();
 }
 function computeCheckoutTotals(){
-  const productsTotal = cart.reduce((s,i)=>{ const p=findProduct(i.id); return s + (p?p.price*i.qty:0); },0);
+  const productsTotal = cart.reduce((s,i)=>{ const p=findProduct(i.id); return s + (p?effectiveProductPrice(p)*i.qty:0); },0);
   const pickup = isPickupShipping();
   if(pickup){
     return { productsTotal, packagingChoice:'pickup', packagingFee:0, grandTotal: productsTotal };
