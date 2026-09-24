@@ -2329,6 +2329,11 @@ function renderAccountCart(){
 
 const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
 function toFa(n){ return String(n).replace(/\d/g, d=>faDigits[d]); }
+function formatAdminDateTime(value){
+  const d = new Date(value);
+  if(Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('fa-IR') + '، ' + d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
+}
 function tehranDateStr(d){
   // تاریخ رو همیشه بر اساس تایم‌زون تهران به فرمت YYYY-MM-DD برمی‌گردونه —
   // مستقل از تایم‌زون دستگاه ادمین، تا با record_site_visit() سمت دیتابیس (که Asia/Tehran استفاده می‌کنه) هماهنگ بمونه
@@ -4378,7 +4383,7 @@ async function downloadSalesReport(){
 async function renderAdmin(){
   const box = document.getElementById('adminOrders');
   box.innerHTML = '<p style="text-align:center; color:var(--ink-soft);">در حال بارگذاری...</p>';
-  const { data, error } = await sbClient.from('orders').select('id,order_code,name,phone,address,province,city,postal_code,shipping,packaging_option,packaging_fee,status,payment_status,payment_ref,tracking_code,subtotal,items,created_at,via_fallback').order('created_at', {ascending:false});
+  const { data, error } = await sbClient.from('orders').select('id,order_code,name,phone,address,province,city,postal_code,shipping,packaging_option,packaging_fee,status,payment_status,payment_ref,tracking_code,subtotal,items,created_at,updated_at,via_fallback').order('created_at', {ascending:false});
   if(error){ box.innerHTML = '<p style="text-align:center; color:var(--rust);">خطا در دریافت سفارش‌ها.</p>'; return; }
   adminOrdersCache = data || [];
   filterAdminOrders();
@@ -4409,7 +4414,8 @@ function filterAdminOrders(){
     <div class="admin-order">
       <div class="row"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" class="order-check" value="${o.id}" ${selectedOrderIds.has(o.id)?'checked':''} onchange="toggleOrderSelect('${o.id}', this.checked)"><b>${escapeHtml(o.name)}</b></label><span class="status-badge">${escapeHtml(ORDER_STATUS_LABELS[String(o.status)] || 'وضعیت نامشخص')}</span></div>
       ${o.via_fallback ? `<div class="row" style="font-size:11.5px; color:var(--rust);"><span>⚠️ این سفارش بدون تایید امنیتی Turnstile ثبت شده (حالت جایگزین)</span></div>` : ''}
-      <div class="row" style="font-size:12px; color:var(--ink-soft);"><span>🗓️ ${new Date(o.created_at).toLocaleDateString('fa-IR')}</span></div>
+      <div class="row" style="font-size:12px; color:var(--ink-soft);"><span>🗓️ ثبت سفارش: ${formatAdminDateTime(o.created_at)}</span></div>
+      <div class="row" style="font-size:12px; color:var(--ink-soft);"><span>🔄 آخرین تغییر: ${formatAdminDateTime(o.updated_at || o.created_at)}</span></div>
       <div class="row"><span>📞 ${escapeHtml(o.phone)}</span><span>🚚 ${escapeHtml(o.shipping)}</span></div>
       <div class="row"><span>📍 ${o.province?escapeHtml(o.province)+'، ':''}${o.city?escapeHtml(o.city)+' — ':''}${escapeHtml(o.address)}</span></div>
       ${o.postal_code ? `<div class="row" style="font-size:12px; color:var(--ink-soft);"><span>📮 کد پستی: ${escapeHtml(o.postal_code)}</span></div>` : ''}
