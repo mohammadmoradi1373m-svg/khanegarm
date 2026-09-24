@@ -2475,7 +2475,7 @@ async function verifyTurnstile(token){
 /* هانی‌پات همیشه چک می‌شه (چه Turnstile فعال باشه چه نه) — لایه‌ی اضافه‌ی رایگان.
    Turnstile فقط وقتی که واقعاً بلاک (فیلتر) تشخیص داده بشه دور زده می‌شه.
    برمی‌گردونه: {ok:true, viaFallback} یا {ok:false, reason} (بدون افشای دلیل دقیق به بات‌ها تو پیام) */
-async function checkAntiSpam(widgetId, honeypotId){
+async function checkAntiSpam(widgetId, honeypotId, serverVerify=true){
   const honeypotEl = document.getElementById(honeypotId);
   if(honeypotEl && honeypotEl.value){ return {ok:false, reason:'honeypot'}; }
   await window.turnstileCheckPromise;
@@ -2483,11 +2483,13 @@ async function checkAntiSpam(widgetId, honeypotId){
     const tsInput = document.querySelector('#'+widgetId+' input[name="cf-turnstile-response"]');
     const tsToken = tsInput ? tsInput.value : '';
     if(!tsToken) return {ok:false, reason:'no_token'};
-    const tsOk = await verifyTurnstile(tsToken);
-    if(!tsOk) return {ok:false, reason:'invalid_token'};
-    return {ok:true, viaFallback:false};
+    if(serverVerify){
+      const tsOk = await verifyTurnstile(tsToken);
+      if(!tsOk) return {ok:false, reason:'invalid_token'};
+    }
+    return {ok:true, viaFallback:false, turnstileToken:tsToken};
   }
-  return {ok:true, viaFallback:true};
+  return {ok:true, viaFallback:true, turnstileToken:''};
 }
 function escapeHtml(str){
   if(str === null || str === undefined) return '';
@@ -3488,7 +3490,7 @@ function updatePackagingVisibility(){
   renderCheckoutTotals();
 }
 function computeCheckoutTotals(){
-  const productsTotal = cart.reduce((s,i)=>{ const p=findProduct(i.id); return s + (p?effectiveProductPrice(p)*i.qty:0); },0);
+  const productsTotal = cart.reduce((s,i)=>{ const p=findProduct(i.id); return s + (p?p.price*i.qty:0); },0);
   const pickup = isPickupShipping();
   if(pickup){
     return { productsTotal, packagingChoice:'pickup', packagingFee:0, grandTotal: productsTotal };
@@ -3632,7 +3634,9 @@ async function submitOrder(){
   if(honeypotEl && honeypotEl.value.trim()){
     console.warn('[anti-spam] order honeypot was filled; order blocked');
   }
-  const spamCheck = await checkAntiSpam('checkoutTurnstileWidget', 'ordHoneypot');
+  // Order creation is now verified server-side by the create-order Edge Function.
+  // Do not validate the Turnstile token here: Cloudflare tokens are single-use.
+  const spamCheck = await checkAntiSpam('checkoutTurnstileWidget', 'ordHoneypot', false);
   if(!spamCheck.ok){
     if(spamCheck.reason === 'no_token'){
       showToast('لطفا تیک تایید امنیتی رو کامل کنید');
@@ -3659,14 +3663,41 @@ async function submitOrder(){
   const idempotencyKey = (window.crypto && typeof window.crypto.randomUUID === 'function')
     ? window.crypto.randomUUID()
     : ('kg-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
-  const { data, error } = await sbClient.rpc('create_order_idempotent', {
-    p_name: name, p_phone: phone, p_address: address, p_shipping: shipping,
-    p_items: items, p_subtotal: subtotal, p_payment_method: paymentMethod, p_payment_ref: paymentRef,
-    p_province: province, p_city: city, p_postal_code: postalCode,
-    p_packaging_option: packagingOption, p_packaging_fee: packagingFee,
-    p_via_fallback: spamCheck.viaFallback,
-    p_idempotency_key: idempotencyKey
-  });
+  let data = null;
+  let error = null;
+  try{
+    const session = await getCurrentSession();
+    const headers = {
+      'Content-Type':'application/json',
+      'apikey':SUPABASE_ANON_KEY
+    };
+    if(session?.access_token) headers['Authorization'] = 'Bearer ' + session.access_token;
+    const res = await fetch('https://api.owli.ir/functions/v1/create-order', {
+      method:'POST',
+      headers,
+      body:JSON.stringify({
+        p_name:name, p_phone:phone, p_address:address, p_shipping:shipping,
+        p_items:items, p_subtotal:subtotal, p_payment_method:paymentMethod, p_payment_ref:paymentRef,
+        p_province:province, p_city:city, p_postal_code:postalCode,
+        p_packaging_option:packagingOption, p_packaging_fee:packagingFee,
+        p_via_fallback:spamCheck.viaFallback,
+        p_idempotency_key:idempotencyKey,
+        turnstile_token:spamCheck.turnstileToken || '',
+        honeypot:honeypotEl ? honeypotEl.value : ''
+      })
+    });
+    let body = null;
+    try{ body = await res.json(); }catch(_){ body = null; }
+    if(!res.ok || !body){
+      error = {message:String(body?.error || ('HTTP_'+res.status))};
+    }else if(body.error){
+      error = {message:String(body.error)};
+    }else{
+      data = body.data;
+    }
+  }catch(e){
+    error = {message:String(e?.message || 'NETWORK_ERROR')};
+  }
 
   btn.disabled = false;
   btn.textContent = 'ثبت نهایی سفارش';
@@ -3680,6 +3711,9 @@ async function submitOrder(){
       renderCart();
     } else if(errMsg.includes('INVALID_')){
       showToast('اطلاعات سفارش معتبر نیست؛ لطفاً فیلدهای فرم را دوباره بررسی کنید');
+    } else if(errMsg.includes('TURNSTILE_REQUIRED') || errMsg.includes('TURNSTILE_INVALID')){
+      showToast('تایید امنیتی ناموفق بود، دوباره امتحان کنید');
+      if(window.turnstile) turnstile.reset(document.getElementById('checkoutTurnstileWidget'));
     } else if(/permission denied|not authorized|NOT_AUTHORIZED/i.test(errMsg)){
       showToast('دسترسی ثبت سفارش از سمت سرور رد شد؛ لطفاً صفحه را تازه‌سازی و دوباره امتحان کنید');
     } else if(errMsg.includes('IDEMPOTENCY_KEY_REUSED')){
