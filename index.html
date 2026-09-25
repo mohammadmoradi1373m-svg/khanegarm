@@ -2295,6 +2295,9 @@ function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val))
 let cart = loadJSON('kg_cart', []);
 let accountCartLoaded = false;
 let cartSaveTimer = null;
+let accountFavoritesLoaded = false;
+let favoriteSaveTimer = null;
+let favoriteLoadToken = 0;
 let adminCustomerSegment = 'all';
 async function getCurrentSession(){ try{ const {data}=await sbClient.auth.getSession(); return data?.session||null; }catch(e){ return null; } }
 async function loadAccountCart(){
@@ -2955,16 +2958,97 @@ function openCart(){ document.getElementById('cartDrawer').classList.add('open')
 function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
 
 /* ============ RENDER: HOME ============ */
-function getFavorites(){
-  try{ const v=JSON.parse(localStorage.getItem('kg_favorites')||'[]'); return Array.isArray(v)?v:[]; }catch(e){ return []; }
+function normalizeFavoriteIds(value){
+  if(!Array.isArray(value)) return [];
+  const out=[]; const seen=new Set();
+  for(const id of value){
+    const key=String(id||'').trim();
+    if(!key || seen.has(key)) continue;
+    seen.add(key); out.push(key);
+  }
+  return out;
 }
-function saveFavorites(v){ try{ localStorage.setItem('kg_favorites', JSON.stringify(v)); }catch(e){} updateFavoriteCount(); }
-function isFavorite(id){ return getFavorites().includes(id); }
+function getFavorites(){
+  if(accountFavoritesLoaded) return normalizeFavoriteIds(window.__kgAccountFavorites||[]);
+  try{ return normalizeFavoriteIds(JSON.parse(localStorage.getItem('kg_favorites')||'[]')); }catch(e){ return []; }
+}
+async function saveAccountFavoritesNow(){
+  const session=await getCurrentSession();
+  if(!session || !accountFavoritesLoaded) return false;
+  const ids=normalizeFavoriteIds(window.__kgAccountFavorites||[]);
+  const {error}=await sbClient.from('customer_favorites').upsert({user_id:session.user.id,product_ids:ids,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+  if(error){ console.warn('[favorites] account save failed',error); return false; }
+  return true;
+}
+function scheduleFavoriteSave(){
+  clearTimeout(favoriteSaveTimer);
+  favoriteSaveTimer=setTimeout(async()=>{
+    favoriteSaveTimer=null;
+    const ok=await saveAccountFavoritesNow();
+    if(ok){ try{ localStorage.removeItem('kg_favorites'); }catch(e){} }
+    updateFavoriteCount();
+  },250);
+}
+function saveFavorites(v){
+  const ids=normalizeFavoriteIds(v);
+  if(accountFavoritesLoaded){
+    window.__kgAccountFavorites=ids;
+    scheduleFavoriteSave();
+  }else{
+    try{ localStorage.setItem('kg_favorites', JSON.stringify(ids)); }catch(e){}
+  }
+  updateFavoriteCount();
+}
+function isFavorite(id){ return getFavorites().includes(String(id)); }
 function toggleFavorite(id, ev){
   if(ev) ev.stopPropagation();
-  const fav=getFavorites(); const idx=fav.indexOf(id);
-  if(idx>=0) fav.splice(idx,1); else fav.push(id);
+  const key=String(id||'').trim(); if(!key) return;
+  const fav=getFavorites(); const idx=fav.indexOf(key);
+  if(idx>=0) fav.splice(idx,1); else fav.push(key);
   saveFavorites(fav); renderFavoriteButtons(); showToast(idx>=0?'از علاقه‌مندی‌ها حذف شد':'به علاقه‌مندی‌ها اضافه شد ❤️');
+}
+async function loadAccountFavorites(){
+  const token=++favoriteLoadToken;
+  const session=await getCurrentSession();
+  if(token!==favoriteLoadToken) return;
+  if(!session){
+    accountFavoritesLoaded=false;
+    window.__kgAccountFavorites=[];
+    renderFavoriteButtons();
+    return;
+  }
+  let guestFavorites=[];
+  try{ guestFavorites=normalizeFavoriteIds(JSON.parse(localStorage.getItem('kg_favorites')||'[]')); }catch(e){}
+  accountFavoritesLoaded=false;
+  window.__kgAccountFavorites=[];
+  renderFavoriteButtons();
+  try{
+    const {data,error}=await sbClient.from('customer_favorites').select('product_ids,updated_at').eq('user_id',session.user.id).maybeSingle();
+    if(error) throw error;
+    if(token!==favoriteLoadToken) return;
+    const serverFavorites=normalizeFavoriteIds(data?.product_ids);
+    window.__kgAccountFavorites=normalizeFavoriteIds([...serverFavorites,...guestFavorites]);
+    accountFavoritesLoaded=true;
+    renderFavoriteButtons();
+    const ok=await saveAccountFavoritesNow();
+    if(ok){ try{ localStorage.removeItem('kg_favorites'); }catch(e){} }
+    renderFavoriteButtons();
+  }catch(e){
+    if(token!==favoriteLoadToken) return;
+    console.warn('[favorites] account load failed',e);
+    accountFavoritesLoaded=true;
+    window.__kgAccountFavorites=[];
+    renderFavoriteButtons();
+  }
+}
+function clearActiveFavorites(){
+  favoriteLoadToken++;
+  clearTimeout(favoriteSaveTimer);
+  favoriteSaveTimer=null;
+  accountFavoritesLoaded=false;
+  window.__kgAccountFavorites=[];
+  try{ localStorage.removeItem('kg_favorites'); }catch(e){}
+  renderFavoriteButtons();
 }
 function updateFavoriteCount(){
   const el=document.getElementById('favCount'); if(!el) return; const n=getFavorites().length; el.textContent=toFa(n); el.style.display=n?'flex':'none';
@@ -4164,6 +4248,7 @@ async function accountLogout(){
   renderCart();
   renderAccountCart();
   try{ localStorage.removeItem('kg_cart'); sessionStorage.removeItem('kg_pending_guest_cart'); }catch(e){}
+  clearActiveFavorites();
   await sbClient.auth.signOut();
   accountAuthTab='login';
   showToast('از حساب خارج شدی');
@@ -4194,6 +4279,7 @@ sbClient.auth.onAuthStateChange((event,session)=>{
     try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
     accountCartLoaded=false;
     loadAccountCart().then(()=>renderAccountRoute()).catch(()=>{});
+    void loadAccountFavorites();
     showLoginWelcome(session);
   }
   if(event==='SIGNED_OUT'){
@@ -4202,6 +4288,7 @@ sbClient.auth.onAuthStateChange((event,session)=>{
     accountRecoveryFlow=false;
     try{ sessionStorage.removeItem('__owli_password_recovery'); sessionStorage.removeItem('kg_pending_guest_cart'); localStorage.removeItem('kg_cart'); }catch(e){}
     accountCartLoaded=false; cart=[]; renderCart(); renderAccountCart();
+    clearActiveFavorites();
   }
   if(event==='PASSWORD_RECOVERY'){
     accountRecoveryFlow=true;
@@ -5318,7 +5405,7 @@ function isValidPhone(phone){
 }
 
 /* ============ INIT ============ */
-loadProductsFromDB().then(async()=>{ renderMenuCategories(); const {data}=await sbClient.auth.getSession(); updateAccountHeader(data.session); if(data.session) await loadAccountCart(); else {accountCartLoaded=false; cart=loadJSON('kg_cart',[]); renderCart(); renderAccountCart();} });
+loadProductsFromDB().then(async()=>{ renderMenuCategories(); const {data}=await sbClient.auth.getSession(); updateAccountHeader(data.session); if(data.session){ await loadAccountCart(); void loadAccountFavorites(); } else { accountCartLoaded=false; accountFavoritesLoaded=false; cart=loadJSON('kg_cart',[]); renderCart(); renderAccountCart(); renderFavoriteButtons(); } });
 loadCategoriesFromDB();
 loadHeroSlides();
 populateProvinceSelect(document.getElementById('accountRegProvince'),''); populateProvinceSelect(document.getElementById('accountProfileProvince'),'');
