@@ -462,6 +462,17 @@
   .toast.toast-long{white-space:normal; text-align:center; line-height:1.7; border-radius:18px; width:max-content;}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto;}
   .toast-action{background:rgba(255,255,255,.18); border:none; color:#fff; padding:6px 12px; border-radius:100px; font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0;}
+  .welcome-banner{
+    position:fixed;top:88px;left:50%;transform:translate(-50%,-14px);
+    z-index:130;max-width:min(92vw,520px);padding:11px 20px;border-radius:999px;
+    background:linear-gradient(135deg,#E7B83F,#D6A43A);color:#123F36;
+    box-shadow:0 14px 34px rgba(17,63,54,.22);font:800 14px 'Vazirmatn',sans-serif;
+    text-align:center;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;
+  }
+  .welcome-banner.show{opacity:1;transform:translate(-50%,0);}
+  @media(max-width:520px){
+    .welcome-banner{top:82px;max-width:calc(100vw - 28px);width:max-content;padding:10px 17px;font-size:13px;}
+  }
 
   /* chat widget */
   .chat-fab{position:fixed; bottom:22px; left:22px; width:56px; height:56px; border-radius:50%; background:var(--rust); color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; box-shadow:0 12px 24px -8px rgba(193,68,46,.5); z-index:100; border:none;}
@@ -1379,6 +1390,7 @@ main.wrap:has(.page[data-route="/"]){padding-top:0!important;}
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="welcome-banner" id="welcomeBanner" role="status" aria-live="polite" aria-atomic="true" hidden></div>
 
 <main id="app" class="wrap">
 
@@ -2287,18 +2299,53 @@ let adminCustomerSegment = 'all';
 async function getCurrentSession(){ try{ const {data}=await sbClient.auth.getSession(); return data?.session||null; }catch(e){ return null; } }
 async function loadAccountCart(){
   const session=await getCurrentSession();
-  if(!session){ accountCartLoaded=false; cart=loadJSON('kg_cart',[]); renderCart(); renderAccountCart(); return; }
+  if(!session){
+    accountCartLoaded=false;
+    cart=loadJSON('kg_cart',[]);
+    renderCart(); renderAccountCart();
+    return;
+  }
+
+  // Keep the current local cart while the account cart is loading. This prevents a
+  // login-time race from replacing a just-added local item with an empty server cart.
+  const localAtStart=Array.isArray(cart)?cart.map(item=>({...item})):[];
   try{
     const {data,error}=await sbClient.from('customer_carts').select('items,updated_at').eq('user_id',session.user.id).maybeSingle();
     if(error) throw error;
-    cart=Array.isArray(data?.items)?data.items:[];
+
+    const serverItems=Array.isArray(data?.items)?data.items:[];
+    const currentCart=Array.isArray(cart)?cart:[];
+    const byKey=new Map();
+
+    // Merge by product/pack identity. max(qty) avoids duplicating a cart that is
+    // already represented both locally and on the account.
+    for(const item of serverItems){
+      if(!item || !item.id || !Number.isFinite(Number(item.qty)) || Number(item.qty)<=0) continue;
+      const key=(item.type||'product')+'::'+item.id;
+      byKey.set(key,{...item,qty:Number(item.qty)});
+    }
+    for(const source of [localAtStart,currentCart]){
+      for(const item of source){
+        if(!item || !item.id || !Number.isFinite(Number(item.qty)) || Number(item.qty)<=0) continue;
+        const key=(item.type||'product')+'::'+item.id;
+        const existing=byKey.get(key);
+        if(!existing) byKey.set(key,{...item,qty:Number(item.qty)});
+        else existing.qty=Math.max(Number(existing.qty)||0,Number(item.qty)||0);
+      }
+    }
+
+    cart=[...byKey.values()];
     accountCartLoaded=true;
     pruneCartOfMissingProducts();
     renderCart(); renderAccountCart();
+
+    // Persist the merged cart so the account becomes the source of truth after login.
+    scheduleAccountCartSave();
   }catch(e){
     console.warn('[cart] account cart load failed',e);
+    // Do not wipe the local cart on a transient API/proxy failure.
     accountCartLoaded=false;
-    cart=[];
+    cart=Array.isArray(cart)&&cart.length?cart:localAtStart;
     renderCart(); renderAccountCart();
   }
 }
@@ -3837,38 +3884,49 @@ function switchAccountAuthTab(tab){
 let accountRecoveryFlow=false;
 try{ accountRecoveryFlow=sessionStorage.getItem('__owli_password_recovery')==='1'; }catch(e){}
 async function prepareAuthCallback(){
-  // Supabase recovery callbacks can arrive as an implicit-flow hash or a PKCE code.
-  // Keep an explicit in-memory recovery flag so the code is not lost when the URL is cleaned.
+  // Recovery access is granted only after Supabase establishes a valid recovery session.
+  // Query markers alone (/account/recovery, ?recovery=1, __spa_path) are never enough.
   const hash=String(location.hash||'');
   let callbackSearch=location.search||'';
   const spaPathParam=new URLSearchParams(location.search||'').get('__spa_path');
+  let spaTargetPath='';
   if(spaPathParam){
+    try { spaTargetPath=new URL(decodeURIComponent(spaPathParam),location.origin).pathname || ''; } catch(e) {}
     try { callbackSearch=new URL(decodeURIComponent(spaPathParam),location.origin).search || callbackSearch; } catch(e) {}
   }
+
   const qs=new URLSearchParams(callbackSearch);
+  const hashQs=new URLSearchParams(hash.replace(/^#/,''));
   const code=qs.get('code');
   const type=qs.get('type');
-  const recoveryMarker=qs.get('recovery')==='1' || !!spaPathParam;
-  const errorCode=qs.get('error_code') || new URLSearchParams(hash.replace(/^#/,'')).get('error_code');
-  const errorDescription=qs.get('error_description') || new URLSearchParams(hash.replace(/^#/,'')).get('error_description');
-  if(/type=recovery/i.test(hash) || type==='recovery' || recoveryMarker || code){
-    accountRecoveryFlow=true;
-    try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
-  }
+  const hashType=hashQs.get('type');
+  const errorCode=qs.get('error_code') || hashQs.get('error_code');
+  const errorDescription=qs.get('error_description') || hashQs.get('error_description');
+
   if(errorCode || errorDescription){
     accountRecoveryFlow=false;
     try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
     return;
   }
+
+  // PKCE recovery links contain a one-time code. Exchange it first; only a successful
+  // exchange on the dedicated recovery redirect is allowed to mark the flow as valid.
   if(code){
+    const isRecoveryCallback=type==='recovery' || hashType==='recovery' || spaTargetPath==='/account/recovery' || String(location.pathname||'').replace(/\/$/,'')==='/account/recovery';
+    if(!isRecoveryCallback) return;
     try{
       const {error}=await sbClient.auth.exchangeCodeForSession(code);
       if(error){
         console.warn('[auth] recovery code exchange failed',error);
+        accountRecoveryFlow=false;
+        try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
         const msg=document.getElementById('accountRecoveryCompleteError');
         if(msg) accountMessage(msg,'لینک بازیابی معتبر نیست یا منقضی شده است. لطفاً یک لینک بازیابی جدید درخواست کن.');
         return;
       }
+      accountRecoveryFlow=true;
+      try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
+
       const next=new URL(location.href);
       next.searchParams.delete('__spa_path');
       next.searchParams.delete('code');
@@ -3880,25 +3938,34 @@ async function prepareAuthCallback(){
       history.replaceState({},'',next.pathname+(next.search?'?'+next.searchParams.toString():'')+(location.hash||''));
     }catch(e){
       console.warn('[auth] recovery callback failed',e);
+      accountRecoveryFlow=false;
+      try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
       const msg=document.getElementById('accountRecoveryCompleteError');
       if(msg) accountMessage(msg,'پردازش لینک بازیابی انجام نشد. لطفاً یک لینک بازیابی جدید درخواست کن.');
     }
+    return;
   }
+
+  // Implicit recovery links are authorized by Supabase's PASSWORD_RECOVERY event.
+  // Do not set accountRecoveryFlow here; the event listener below is the trust boundary.
+  if(hashType==='recovery' || type==='recovery') return;
 }
 async function renderAccountRoute(){
   const {data:{session}}=await sbClient.auth.getSession();
   const authBox=document.getElementById('accountAuthBox'), panel=document.getElementById('accountPanel'), recovery=document.getElementById('accountRecoveryComplete'), recoveryInvalid=document.getElementById('accountRecoveryInvalid');
   const parsedLocation=parseLocation();
   const currentPath=String(location.pathname||'').replace(/\/$/,'') || '/';
-  const locationRecovery=currentPath==='/account/recovery' || (parsedLocation.path==='/account' && parsedLocation.params.recovery==='1');
   const qs=new URLSearchParams(location.search||'');
   const recoveryError=parsedLocation.params.recoveryError==='1' || qs.get('error_code') || qs.get('error_description') || qs.get('error')==='access_denied' || /^\/error=/i.test(currentPath);
-  const recovering=locationRecovery || location.hash.includes('type=recovery') || qs.get('type')==='recovery' || qs.get('recovery')==='1' || !!qs.get('code') || !!qs.get('__spa_path');
+  const recovering=!!session && accountRecoveryFlow;
   // Recovery errors get a dedicated branded state instead of a blank/technical URL.
   if(recoveryError){
+    accountRecoveryFlow=false;
+    try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
     if(authBox) authBox.hidden=true; if(panel) panel.hidden=true; if(recovery) recovery.hidden=true; if(recoveryInvalid) recoveryInvalid.hidden=false; updateAccountHeader(session); return;
   }
-  // /account/recovery is a dedicated password-change route. Never fall back to login on this path.
+  // A recovery form is shown only when Supabase has established a valid recovery session
+  // and the in-memory/sessionStorage recovery marker was set by that flow.
   if(recovering){
     if(authBox) authBox.hidden=true;
     if(panel) panel.hidden=true;
@@ -3943,6 +4010,29 @@ async function accountRegister(){
   showToast('حساب شما با موفقیت ساخته شد 👌');
   await renderAccountRoute();
 }
+let welcomeTimer=null;
+function showWelcomeBanner(name){
+  const el=document.getElementById('welcomeBanner'); if(!el)return;
+  const cleanName=String(name||'').trim();
+  el.textContent=cleanName ? `${cleanName}، خوش آمدی 👋` : 'خوش آمدی 👋';
+  el.hidden=false;
+  requestAnimationFrame(()=>el.classList.add('show'));
+  clearTimeout(welcomeTimer);
+  welcomeTimer=setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>{ if(!el.classList.contains('show')) el.hidden=true; },260);
+  },3600);
+}
+async function showLoginWelcome(session){
+  let name=session?.user?.user_metadata?.name || '';
+  try{
+    if(session?.user?.id){
+      const {data}=await sbClient.from('customers').select('name').eq('user_id',session.user.id).maybeSingle();
+      if(data?.name) name=data.name;
+    }
+  }catch(e){}
+  showWelcomeBanner(name);
+}
 async function accountLogin(){
   const username=document.getElementById('accountLoginUsername').value.trim().toLowerCase(), password=document.getElementById('accountLoginPassword').value, err=document.getElementById('accountLoginError'); err.hidden=true;
   if(!validUsername(username)){accountMessage(err,'نام کاربری معتبر نیست.');return;}
@@ -3953,7 +4043,6 @@ async function accountLogin(){
   const {error}=await sbClient.auth.signInWithPassword({email:loginEmail,password});
   if(error){accountMessage(err,friendlyAuthError(error));return;}
   await syncMyCustomerProfile();
-  showToast('خوش آمدی 👋');
   await renderAccountRoute();
 }
 function getProductionAccountUrl(){
@@ -4058,15 +4147,25 @@ function friendlyAuthError(error){
 }
 sbClient.auth.onAuthStateChange((event,session)=>{
   updateAccountHeader(session);
-  if(event==='SIGNED_IN') { accountCartLoaded=false; loadAccountCart(); }
-  if(event==='SIGNED_OUT') { accountCartLoaded=false; cart=loadJSON('kg_cart',[]); renderCart(); renderAccountCart(); }
+  if(event==='SIGNED_IN'){
+    // A normal login is not a password-recovery session. If a stale marker exists,
+    // clear it before rendering the normal account page.
+    accountRecoveryFlow=false;
+    try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
+    accountCartLoaded=false;
+    loadAccountCart();
+    showLoginWelcome(session);
+  }
+  if(event==='SIGNED_OUT'){
+    accountRecoveryFlow=false;
+    try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
+    accountCartLoaded=false; cart=loadJSON('kg_cart',[]); renderCart(); renderAccountCart();
+  }
   if(event==='PASSWORD_RECOVERY'){
     accountRecoveryFlow=true;
     try{ sessionStorage.setItem('__owli_password_recovery','1'); }catch(e){}
     const box=document.getElementById('accountRecoveryComplete'); if(box) box.hidden=false;
     const authBox=document.getElementById('accountAuthBox'),panel=document.getElementById('accountPanel'); if(authBox)authBox.hidden=true;if(panel)panel.hidden=true;
-    // Re-render after the recovery session is established so a late auth event
-    // cannot leave the normal login form visible.
     if(/^\/account(?:\/recovery)?$/.test(location.pathname||'')) setTimeout(()=>render(),0);
   } else if(/^\/account(?:\/recovery)?$/.test(location.pathname||'') && event!=='INITIAL_SESSION') render();
 });
