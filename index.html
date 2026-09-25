@@ -2298,6 +2298,23 @@ let accountCartUserId = null;
 let cartLoadToken = 0;
 let cartSaveTimer = null;
 let adminCustomerSegment = 'all';
+
+// Cart/product helpers: keep catalog loading independent from stale cart items.
+// These helpers are intentionally defensive because loadProductsFromDB() calls
+// pruneCartOfMissingProducts() immediately after refreshing PRODUCTS.
+function findProduct(id){
+  const key=String(id ?? '');
+  return PRODUCTS.find(p=>String(p?.id ?? '')===key) || null;
+}
+function pruneCartOfMissingProducts(){
+  if(!Array.isArray(cart)){ cart=[]; return; }
+  cart=cart.filter(item=>{
+    if(!item || !item.id || !Number.isFinite(Number(item.qty)) || Number(item.qty)<=0) return false;
+    if(item.type==='pack') return !!findPack(item.id);
+    return !!findProduct(item.id);
+  });
+}
+
 async function getCurrentSession(){ try{ const {data}=await sbClient.auth.getSession(); return data?.session||null; }catch(e){ return null; } }
 async function loadAccountCart(){
   const token=++cartLoadToken;
