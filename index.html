@@ -2294,6 +2294,7 @@ function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val))
 
 let cart = loadJSON('kg_cart', []);
 let accountCartLoaded = false;
+let accountCartLoadPromise = null;
 let cartSaveTimer = null;
 let accountFavoritesLoaded = false;
 let favoriteSaveTimer = null;
@@ -2301,57 +2302,81 @@ let favoriteLoadToken = 0;
 let adminCustomerSegment = 'all';
 async function getCurrentSession(){ try{ const {data}=await sbClient.auth.getSession(); return data?.session||null; }catch(e){ return null; } }
 async function loadAccountCart(){
-  const session=await getCurrentSession();
-  if(!session){
-    accountCartLoaded=false;
-    cart=loadJSON('kg_cart',[]);
-    renderCart(); renderAccountCart();
-    return;
-  }
+  // Only one account-cart load may run at a time. Login, auth events and
+  // account-route rendering can all request the cart during the same tick.
+  if(accountCartLoadPromise) return accountCartLoadPromise;
 
-  // Keep the current local cart while the account cart is loading. This prevents a
-  // login-time race from replacing a just-added local item with an empty server cart.
-  const localAtStart=Array.isArray(cart)?cart.map(item=>({...item})):[];
-  try{
-    const {data,error}=await sbClient.from('customer_carts').select('items,updated_at').eq('user_id',session.user.id).maybeSingle();
-    if(error) throw error;
-
-    const serverItems=Array.isArray(data?.items)?data.items:[];
-    const currentCart=Array.isArray(cart)?cart:[];
-    const byKey=new Map();
-
-    // Merge by product/pack identity. max(qty) avoids duplicating a cart that is
-    // already represented both locally and on the account.
-    for(const item of serverItems){
-      if(!item || !item.id || !Number.isFinite(Number(item.qty)) || Number(item.qty)<=0) continue;
-      const key=(item.type||'product')+'::'+item.id;
-      byKey.set(key,{...item,qty:Number(item.qty)});
+  accountCartLoadPromise=(async()=>{
+    const session=await getCurrentSession();
+    if(!session){
+      accountCartLoaded=false;
+      cart=loadJSON('kg_cart',[]);
+      renderCart(); renderAccountCart();
+      return;
     }
-    for(const source of [localAtStart,currentCart]){
-      for(const item of source){
+
+    const sessionId=session.user.id;
+    // Make sure product metadata exists before pruning/rendering the account cart.
+    // Direct visits to /account can happen before the catalog has loaded.
+    try{ await ensureCatalogLoaded(); }catch(e){ console.warn('[cart] catalog load before account cart failed',e); }
+
+    // Keep the current local cart while the account cart is loading. This prevents a
+    // login-time race from replacing a just-added local item with an empty server cart.
+    const localAtStart=Array.isArray(cart)?cart.map(item=>({...item})):[];
+    try{
+      const {data,error}=await sbClient.from('customer_carts').select('items,updated_at').eq('user_id',sessionId).maybeSingle();
+      if(error) throw error;
+
+      // Ignore a response belonging to a session that has already signed out/switched.
+      const latestSession=await getCurrentSession();
+      if(!latestSession || latestSession.user.id!==sessionId) return;
+
+      const serverItems=Array.isArray(data?.items)?data.items:[];
+      const currentCart=Array.isArray(cart)?cart:[];
+      const byKey=new Map();
+
+      // Merge by product/pack identity. max(qty) avoids duplicating a cart that is
+      // already represented both locally and on the account.
+      for(const item of serverItems){
         if(!item || !item.id || !Number.isFinite(Number(item.qty)) || Number(item.qty)<=0) continue;
         const key=(item.type||'product')+'::'+item.id;
-        const existing=byKey.get(key);
-        if(!existing) byKey.set(key,{...item,qty:Number(item.qty)});
-        else existing.qty=Math.max(Number(existing.qty)||0,Number(item.qty)||0);
+        byKey.set(key,{...item,qty:Number(item.qty)});
       }
+      for(const source of [localAtStart,currentCart]){
+        for(const item of source){
+          if(!item || !item.id || !Number.isFinite(Number(item.qty)) || Number(item.qty)<=0) continue;
+          const key=(item.type||'product')+'::'+item.id;
+          const existing=byKey.get(key);
+          if(!existing) byKey.set(key,{...item,qty:Number(item.qty)});
+          else existing.qty=Math.max(Number(existing.qty)||0,Number(item.qty)||0);
+        }
+      }
+
+      cart=[...byKey.values()];
+      accountCartLoaded=true;
+      // Only prune after a successful catalog load; never turn a temporary catalog
+      // failure into an empty account cart.
+      if(!productsLoadError && Array.isArray(PRODUCTS) && PRODUCTS.length) pruneCartOfMissingProducts();
+      renderCart(); renderAccountCart();
+
+      // Persist the merged cart so the account becomes the source of truth after login.
+      scheduleAccountCartSave();
+    }catch(e){
+      console.warn('[cart] account cart load failed',e);
+      // Do not wipe the local cart on a transient API/proxy failure.
+      accountCartLoaded=false;
+      cart=Array.isArray(cart)&&cart.length?cart:localAtStart;
+      renderCart(); renderAccountCart();
     }
+  })();
 
-    cart=[...byKey.values()];
-    accountCartLoaded=true;
-    pruneCartOfMissingProducts();
-    renderCart(); renderAccountCart();
-
-    // Persist the merged cart so the account becomes the source of truth after login.
-    scheduleAccountCartSave();
-  }catch(e){
-    console.warn('[cart] account cart load failed',e);
-    // Do not wipe the local cart on a transient API/proxy failure.
-    accountCartLoaded=false;
-    cart=Array.isArray(cart)&&cart.length?cart:localAtStart;
-    renderCart(); renderAccountCart();
+  try{
+    return await accountCartLoadPromise;
+  }finally{
+    accountCartLoadPromise=null;
   }
 }
+
 function scheduleAccountCartSave(){
   clearTimeout(cartSaveTimer);
   cartSaveTimer=setTimeout(async()=>{
@@ -4252,6 +4277,7 @@ async function accountSaveProfile(){
 async function accountLogout(){
   clearTimeout(cartSaveTimer);
   cartSaveTimer=null;
+  accountCartLoadPromise=null;
   accountCartLoaded=false;
   cart=[];
   renderCart();
@@ -4294,6 +4320,7 @@ sbClient.auth.onAuthStateChange((event,session)=>{
   if(event==='SIGNED_OUT'){
     clearTimeout(cartSaveTimer);
     cartSaveTimer=null;
+    accountCartLoadPromise=null;
     accountRecoveryFlow=false;
     try{ sessionStorage.removeItem('__owli_password_recovery'); sessionStorage.removeItem('kg_pending_guest_cart'); localStorage.removeItem('kg_cart'); }catch(e){}
     accountCartLoaded=false; cart=[]; renderCart(); renderAccountCart();
