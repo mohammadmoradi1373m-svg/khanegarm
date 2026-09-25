@@ -2295,6 +2295,9 @@ function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val))
 let cart = loadJSON('kg_cart', []);
 let accountCartLoaded = false;
 let cartSaveTimer = null;
+let accountFavoritesLoaded = false;
+let favoriteSaveTimer = null;
+let favoriteLoadToken = 0;
 let adminCustomerSegment = 'all';
 async function getCurrentSession(){ try{ const {data}=await sbClient.auth.getSession(); return data?.session||null; }catch(e){ return null; } }
 async function loadAccountCart(){
@@ -2306,30 +2309,25 @@ async function loadAccountCart(){
     return;
   }
 
-  // While a user is authenticated, localStorage must never be the visible cart.
-  // Capture a possible guest cart only for one-time migration, then clear the
-  // active cart immediately so an old account cart cannot leak after logout.
-  let guestCart=[];
-  try{
-    const pending=JSON.parse(sessionStorage.getItem('kg_pending_guest_cart')||'null');
-    if(Array.isArray(pending)) guestCart=pending;
-  }catch(e){}
-  if(!guestCart.length) guestCart=Array.isArray(cart)?cart.map(item=>({...item})):[];
-  try{
-    if(guestCart.length) sessionStorage.setItem('kg_pending_guest_cart',JSON.stringify(guestCart));
-    localStorage.removeItem('kg_cart');
-  }catch(e){}
-  cart=[];
-  accountCartLoaded=false;
-  renderCart(); renderAccountCart();
-
+  // Keep the current local cart while the account cart is loading. This prevents a
+  // login-time race from replacing a just-added local item with an empty server cart.
+  const localAtStart=Array.isArray(cart)?cart.map(item=>({...item})):[];
   try{
     const {data,error}=await sbClient.from('customer_carts').select('items,updated_at').eq('user_id',session.user.id).maybeSingle();
     if(error) throw error;
 
     const serverItems=Array.isArray(data?.items)?data.items:[];
+    const currentCart=Array.isArray(cart)?cart:[];
     const byKey=new Map();
-    const addMerged=(source)=>{
+
+    // Merge by product/pack identity. max(qty) avoids duplicating a cart that is
+    // already represented both locally and on the account.
+    for(const item of serverItems){
+      if(!item || !item.id || !Number.isFinite(Number(item.qty)) || Number(item.qty)<=0) continue;
+      const key=(item.type||'product')+'::'+item.id;
+      byKey.set(key,{...item,qty:Number(item.qty)});
+    }
+    for(const source of [localAtStart,currentCart]){
       for(const item of source){
         if(!item || !item.id || !Number.isFinite(Number(item.qty)) || Number(item.qty)<=0) continue;
         const key=(item.type||'product')+'::'+item.id;
@@ -2337,40 +2335,30 @@ async function loadAccountCart(){
         if(!existing) byKey.set(key,{...item,qty:Number(item.qty)});
         else existing.qty=Math.max(Number(existing.qty)||0,Number(item.qty)||0);
       }
-    };
-    addMerged(serverItems);
-    addMerged(guestCart);
+    }
 
     cart=[...byKey.values()];
     accountCartLoaded=true;
     pruneCartOfMissingProducts();
     renderCart(); renderAccountCart();
 
-    // Persist the merged cart to the authenticated account. Only after a
-    // successful write do we consider the guest cart migration complete.
-    const saved=await saveAccountCartNow();
-    if(saved){
-      try{ sessionStorage.removeItem('kg_pending_guest_cart'); localStorage.removeItem('kg_cart'); }catch(e){}
-    }
+    // Persist the merged cart so the account becomes the source of truth after login.
+    scheduleAccountCartSave();
   }catch(e){
     console.warn('[cart] account cart load failed',e);
+    // Do not wipe the local cart on a transient API/proxy failure.
     accountCartLoaded=false;
-    cart=[];
+    cart=Array.isArray(cart)&&cart.length?cart:localAtStart;
     renderCart(); renderAccountCart();
   }
-}
-async function saveAccountCartNow(){
-  const session=await getCurrentSession();
-  if(!session || !accountCartLoaded) return false;
-  const {error}=await sbClient.from('customer_carts').upsert({user_id:session.user.id,items:cart,updated_at:new Date().toISOString()},{onConflict:'user_id'});
-  if(error){ console.warn('[cart] account cart save failed',error); return false; }
-  return true;
 }
 function scheduleAccountCartSave(){
   clearTimeout(cartSaveTimer);
   cartSaveTimer=setTimeout(async()=>{
-    const ok=await saveAccountCartNow();
-    if(ok){ try{ sessionStorage.removeItem('kg_pending_guest_cart'); localStorage.removeItem('kg_cart'); }catch(e){} }
+    const session=await getCurrentSession();
+    if(!session || !accountCartLoaded) return;
+    const {error}=await sbClient.from('customer_carts').upsert({user_id:session.user.id,items:cart,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+    if(error) console.warn('[cart] account cart save failed',error);
     renderAccountCart();
   },250);
 }
@@ -2381,7 +2369,7 @@ function persistCart(){
 }
 function renderAccountCart(){
   const box=document.getElementById('accountCartList'),totalEl=document.getElementById('accountCartTotal'); if(!box)return;
-  if(!accountCartLoaded){box.innerHTML='<div class="account-empty">سبد خرید حساب در حال بارگذاری است…</div>'; if(totalEl)totalEl.textContent='۰ تومان'; return;}
+  if(!accountCartLoaded){box.innerHTML='<div class="account-empty">سبد خرید این حساب بعد از ورود بارگذاری می‌شود.</div>'; if(totalEl)totalEl.textContent='۰ تومان'; return;}
   const valid=cart.filter(i=>i.type==='pack'?!!findPack(i.id):!!findProduct(i.id));
   if(!valid.length){box.innerHTML='<div class="account-empty">سبد خریدت خالیه. محصولات مورد علاقه‌ات رو اینجا نگه دار.</div>'; if(totalEl)totalEl.textContent='۰ تومان'; return;}
   let total=0;
@@ -2389,6 +2377,23 @@ function renderAccountCart(){
   if(totalEl)totalEl.textContent=formatToman(total);
 }
 
+const faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+function toFa(n){ return String(n).replace(/\d/g, d=>faDigits[d]); }
+function formatAdminDateTime(value){
+  const d = new Date(value);
+  if(Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('fa-IR') + '، ' + d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});
+}
+function tehranDateStr(d){
+  return (d || new Date()).toLocaleDateString('en-CA', {timeZone:'Asia/Tehran'});
+}
+function formatToman(n){ return toFa(n.toLocaleString('en-US')) + ' تومان'; }
+function findProduct(id){ return PRODUCTS.find(p=>p.id===id); }
+function pruneCartOfMissingProducts(){
+  const before = cart.length;
+  cart = cart.filter(item => item.type==='pack' ? !!findPack(item.id) : !!findProduct(item.id));
+  if(cart.length !== before){ if(accountCartLoaded) scheduleAccountCartSave(); else saveJSON('kg_cart', cart); }
+}
 function compressImage(file,maxDim,quality){
   maxDim=maxDim||2500; quality=quality||0.86;
   const TARGET_BYTES=4.7*1024*1024;
@@ -2953,77 +2958,88 @@ function openCart(){ document.getElementById('cartDrawer').classList.add('open')
 function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartOverlay').classList.remove('open'); }
 
 /* ============ RENDER: HOME ============ */
-let accountFavoritesLoaded = false;
-let favoriteSaveTimer = null;
-let favoriteLoadToken = 0;
+function normalizeFavoriteIds(value){
+  if(!Array.isArray(value)) return [];
+  const out=[]; const seen=new Set();
+  for(const id of value){
+    const key=String(id||'').trim();
+    if(!key || seen.has(key)) continue;
+    seen.add(key); out.push(key);
+  }
+  return out;
+}
 function getFavorites(){
-  if(accountFavoritesLoaded) return Array.isArray(window.__kgAccountFavorites)?window.__kgAccountFavorites:[];
-  try{ const v=JSON.parse(localStorage.getItem('kg_favorites')||'[]'); return Array.isArray(v)?v:[]; }catch(e){ return []; }
-}
-function normalizeFavoriteIds(v){
-  return [...new Set((Array.isArray(v)?v:[]).map(x=>String(x||'').trim()).filter(Boolean))];
-}
-function saveFavorites(v){
-  const next=normalizeFavoriteIds(v);
-  if(accountFavoritesLoaded){
-    window.__kgAccountFavorites=next;
-    scheduleFavoriteSave();
-  }else{
-    try{ localStorage.setItem('kg_favorites', JSON.stringify(next)); }catch(e){}
-  }
-  updateFavoriteCount();
-}
-async function loadAccountFavorites(){
-  const token=++favoriteLoadToken;
-  const session=await getCurrentSession();
-  if(token!==favoriteLoadToken) return false;
-  if(!session){
-    accountFavoritesLoaded=false;
-    window.__kgAccountFavorites=[];
-    renderFavoriteButtons();
-    return false;
-  }
-  let guestFavorites=[];
-  try{ const v=JSON.parse(localStorage.getItem('kg_favorites')||'[]'); if(Array.isArray(v)) guestFavorites=normalizeFavoriteIds(v); }catch(e){}
-  accountFavoritesLoaded=false;
-  window.__kgAccountFavorites=[];
-  try{ localStorage.removeItem('kg_favorites'); }catch(e){}
-  renderFavoriteButtons();
-  try{
-    const {data,error}=await sbClient.from('customer_favorites').select('product_ids,updated_at').eq('user_id',session.user.id).maybeSingle();
-    if(error) throw error;
-    if(token!==favoriteLoadToken) return false;
-    const serverFavorites=normalizeFavoriteIds(data?.product_ids);
-    const merged=normalizeFavoriteIds([...serverFavorites,...guestFavorites]);
-    window.__kgAccountFavorites=merged;
-    accountFavoritesLoaded=true;
-    renderFavoriteButtons();
-    const saved=await saveAccountFavoritesNow();
-    if(saved){ try{ localStorage.removeItem('kg_favorites'); }catch(e){} }
-    return true;
-  }catch(e){
-    console.warn('[favorites] account favorites load failed',e);
-    accountFavoritesLoaded=false;
-    window.__kgAccountFavorites=[];
-    // Never expose another account's favorites on a failed authenticated load.
-    renderFavoriteButtons();
-    return false;
-  }
+  if(accountFavoritesLoaded) return normalizeFavoriteIds(window.__kgAccountFavorites||[]);
+  try{ return normalizeFavoriteIds(JSON.parse(localStorage.getItem('kg_favorites')||'[]')); }catch(e){ return []; }
 }
 async function saveAccountFavoritesNow(){
   const session=await getCurrentSession();
   if(!session || !accountFavoritesLoaded) return false;
-  const ids=normalizeFavoriteIds(window.__kgAccountFavorites);
+  const ids=normalizeFavoriteIds(window.__kgAccountFavorites||[]);
   const {error}=await sbClient.from('customer_favorites').upsert({user_id:session.user.id,product_ids:ids,updated_at:new Date().toISOString()},{onConflict:'user_id'});
-  if(error){ console.warn('[favorites] account favorites save failed',error); return false; }
+  if(error){ console.warn('[favorites] account save failed',error); return false; }
   return true;
 }
 function scheduleFavoriteSave(){
   clearTimeout(favoriteSaveTimer);
   favoriteSaveTimer=setTimeout(async()=>{
+    favoriteSaveTimer=null;
     const ok=await saveAccountFavoritesNow();
     if(ok){ try{ localStorage.removeItem('kg_favorites'); }catch(e){} }
+    updateFavoriteCount();
   },250);
+}
+function saveFavorites(v){
+  const ids=normalizeFavoriteIds(v);
+  if(accountFavoritesLoaded){
+    window.__kgAccountFavorites=ids;
+    scheduleFavoriteSave();
+  }else{
+    try{ localStorage.setItem('kg_favorites', JSON.stringify(ids)); }catch(e){}
+  }
+  updateFavoriteCount();
+}
+function isFavorite(id){ return getFavorites().includes(String(id)); }
+function toggleFavorite(id, ev){
+  if(ev) ev.stopPropagation();
+  const key=String(id||'').trim(); if(!key) return;
+  const fav=getFavorites(); const idx=fav.indexOf(key);
+  if(idx>=0) fav.splice(idx,1); else fav.push(key);
+  saveFavorites(fav); renderFavoriteButtons(); showToast(idx>=0?'از علاقه‌مندی‌ها حذف شد':'به علاقه‌مندی‌ها اضافه شد ❤️');
+}
+async function loadAccountFavorites(){
+  const token=++favoriteLoadToken;
+  const session=await getCurrentSession();
+  if(token!==favoriteLoadToken) return;
+  if(!session){
+    accountFavoritesLoaded=false;
+    window.__kgAccountFavorites=[];
+    renderFavoriteButtons();
+    return;
+  }
+  let guestFavorites=[];
+  try{ guestFavorites=normalizeFavoriteIds(JSON.parse(localStorage.getItem('kg_favorites')||'[]')); }catch(e){}
+  accountFavoritesLoaded=false;
+  window.__kgAccountFavorites=[];
+  renderFavoriteButtons();
+  try{
+    const {data,error}=await sbClient.from('customer_favorites').select('product_ids,updated_at').eq('user_id',session.user.id).maybeSingle();
+    if(error) throw error;
+    if(token!==favoriteLoadToken) return;
+    const serverFavorites=normalizeFavoriteIds(data?.product_ids);
+    window.__kgAccountFavorites=normalizeFavoriteIds([...serverFavorites,...guestFavorites]);
+    accountFavoritesLoaded=true;
+    renderFavoriteButtons();
+    const ok=await saveAccountFavoritesNow();
+    if(ok){ try{ localStorage.removeItem('kg_favorites'); }catch(e){} }
+    renderFavoriteButtons();
+  }catch(e){
+    if(token!==favoriteLoadToken) return;
+    console.warn('[favorites] account load failed',e);
+    accountFavoritesLoaded=true;
+    window.__kgAccountFavorites=[];
+    renderFavoriteButtons();
+  }
 }
 function clearActiveFavorites(){
   favoriteLoadToken++;
@@ -3031,15 +3047,8 @@ function clearActiveFavorites(){
   favoriteSaveTimer=null;
   accountFavoritesLoaded=false;
   window.__kgAccountFavorites=[];
+  try{ localStorage.removeItem('kg_favorites'); }catch(e){}
   renderFavoriteButtons();
-}
-function isFavorite(id){ return getFavorites().includes(String(id)); }
-function toggleFavorite(id, ev){
-  if(ev) ev.stopPropagation();
-  const key=String(id);
-  const fav=getFavorites(); const idx=fav.indexOf(key);
-  if(idx>=0) fav.splice(idx,1); else fav.push(key);
-  saveFavorites(fav); renderFavoriteButtons(); showToast(idx>=0?'از علاقه‌مندی‌ها حذف شد':'به علاقه‌مندی‌ها اضافه شد ❤️');
 }
 function updateFavoriteCount(){
   const el=document.getElementById('favCount'); if(!el) return; const n=getFavorites().length; el.textContent=toFa(n); el.style.display=n?'flex':'none';
@@ -4127,11 +4136,12 @@ function showWelcomeBanner(name){
 }
 async function showLoginWelcome(session){
   const userId=String(session?.user?.id||'').trim();
-  if(!userId)return;
-  const key=`__owli_welcome_shown_${userId}`;
+  if(!userId) return;
+  const welcomeKey=`__owli_welcome_shown_${userId}`;
   try{
-    if(localStorage.getItem(key)==='1') return;
+    if(localStorage.getItem(welcomeKey)==='1') return;
   }catch(e){}
+
   let name=session?.user?.user_metadata?.name || '';
   try{
     if(userId){
@@ -4139,7 +4149,8 @@ async function showLoginWelcome(session){
       if(data?.name) name=data.name;
     }
   }catch(e){}
-  try{ localStorage.setItem(key,'1'); }catch(e){}
+
+  try{ localStorage.setItem(welcomeKey,'1'); }catch(e){}
   showWelcomeBanner(name);
 }
 async function accountLogin(){
@@ -4246,6 +4257,7 @@ async function accountLogout(){
   renderCart();
   renderAccountCart();
   try{ localStorage.removeItem('kg_cart'); sessionStorage.removeItem('kg_pending_guest_cart'); }catch(e){}
+  clearActiveFavorites();
   await sbClient.auth.signOut();
   accountAuthTab='login';
   showToast('از حساب خارج شدی');
@@ -4275,16 +4287,17 @@ sbClient.auth.onAuthStateChange((event,session)=>{
     accountRecoveryFlow=false;
     try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
     accountCartLoaded=false;
-    Promise.all([loadAccountCart(), loadAccountFavorites()]).then(()=>renderAccountRoute()).catch(()=>{});
+    loadAccountCart().then(()=>renderAccountRoute()).catch(()=>{});
+    void loadAccountFavorites();
     showLoginWelcome(session);
   }
   if(event==='SIGNED_OUT'){
     clearTimeout(cartSaveTimer);
     cartSaveTimer=null;
-    clearActiveFavorites();
     accountRecoveryFlow=false;
-    try{ sessionStorage.removeItem('__owli_password_recovery'); sessionStorage.removeItem('kg_pending_guest_cart'); localStorage.removeItem('kg_cart'); localStorage.removeItem('kg_favorites'); }catch(e){}
+    try{ sessionStorage.removeItem('__owli_password_recovery'); sessionStorage.removeItem('kg_pending_guest_cart'); localStorage.removeItem('kg_cart'); }catch(e){}
     accountCartLoaded=false; cart=[]; renderCart(); renderAccountCart();
+    clearActiveFavorites();
   }
   if(event==='PASSWORD_RECOVERY'){
     accountRecoveryFlow=true;
@@ -5401,7 +5414,7 @@ function isValidPhone(phone){
 }
 
 /* ============ INIT ============ */
-loadProductsFromDB().then(async()=>{ renderMenuCategories(); const {data}=await sbClient.auth.getSession(); updateAccountHeader(data.session); if(data.session){ await Promise.all([loadAccountCart(), loadAccountFavorites()]); } else {accountCartLoaded=false; accountFavoritesLoaded=false; cart=loadJSON('kg_cart',[]); window.__kgAccountFavorites=[]; renderCart(); renderAccountCart(); renderFavoriteButtons();} });
+loadProductsFromDB().then(async()=>{ renderMenuCategories(); const {data}=await sbClient.auth.getSession(); updateAccountHeader(data.session); if(data.session){ await loadAccountCart(); void loadAccountFavorites(); } else { accountCartLoaded=false; accountFavoritesLoaded=false; cart=loadJSON('kg_cart',[]); renderCart(); renderAccountCart(); renderFavoriteButtons(); } });
 loadCategoriesFromDB();
 loadHeroSlides();
 populateProvinceSelect(document.getElementById('accountRegProvince'),''); populateProvinceSelect(document.getElementById('accountProfileProvince'),'');
