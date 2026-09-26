@@ -1595,7 +1595,7 @@ main.wrap:has(.page[data-route="/"]){padding-top:0!important;}
       <button type="button" id="accountTabRecovery" onclick="switchAccountAuthTab('recovery')">بازیابی رمز</button>
     </div>
 
-    <form id="accountLoginForm" class="account-form" onsubmit="event.preventDefault(); accountLogin();">
+    <form id="accountLoginForm" class="account-form" novalidate onsubmit="event.preventDefault(); accountLogin();">
       <label>نام کاربری<input id="accountLoginUsername" type="text" autocomplete="username" maxlength="32" placeholder="مثلاً ali1373" required></label>
       <label>رمز عبور<input id="accountLoginPassword" type="password" autocomplete="current-password" minlength="8" placeholder="رمز عبور" required></label>
       <button class="btn-primary" type="submit">ورود به حساب</button>
@@ -1603,7 +1603,7 @@ main.wrap:has(.page[data-route="/"]){padding-top:0!important;}
       <button class="account-link" type="button" onclick="switchAccountAuthTab('recovery')">رمز عبور را فراموش کرده‌ام</button>
     </form>
 
-    <form id="accountRegisterForm" class="account-form" hidden onsubmit="event.preventDefault(); accountRegister();">
+    <form id="accountRegisterForm" class="account-form" hidden novalidate onsubmit="event.preventDefault(); accountRegister();">
       <div class="account-form-grid">
         <label>نام و نام خانوادگی<input id="accountRegName" type="text" autocomplete="name" maxlength="120" placeholder="مثلاً علی محمدی" required></label>
         <label>نام کاربری<input id="accountRegUsername" type="text" autocomplete="username" maxlength="32" placeholder="مثلاً ali1373" required></label>
@@ -1621,7 +1621,7 @@ main.wrap:has(.page[data-route="/"]){padding-top:0!important;}
       <p id="accountRegisterError" class="account-error" hidden></p>
     </form>
 
-    <form id="accountRecoveryForm" class="account-form" hidden onsubmit="event.preventDefault(); accountSendRecovery();">
+    <form id="accountRecoveryForm" class="account-form" hidden novalidate onsubmit="event.preventDefault(); accountSendRecovery();">
       <label>ایمیل بازیابی<input id="accountRecoveryEmail" type="email" autocomplete="email" maxlength="254" placeholder="ایمیلی که برای حساب ثبت کردی" required></label>
       <button class="btn-primary" type="submit">ارسال لینک بازیابی</button>
       <p id="accountRecoveryMsg" class="account-note" hidden></p>
@@ -1639,7 +1639,7 @@ main.wrap:has(.page[data-route="/"]){padding-top:0!important;}
         <div class="account-card-title"><h3>اطلاعات حساب</h3><span>نمایش خلاصه</span></div>
         <div id="accountProfileSummary" class="account-profile-summary"></div>
         <button id="accountProfileEditBtn" class="btn-ghost account-profile-edit" type="button" onclick="toggleAccountProfileEdit(true)">✏️ ویرایش اطلاعات حساب</button>
-        <form id="accountProfileForm" class="account-form" hidden onsubmit="event.preventDefault(); accountSaveProfile();">
+        <form id="accountProfileForm" class="account-form" hidden novalidate onsubmit="event.preventDefault(); accountSaveProfile();">
           <label>نام و نام خانوادگی<input id="accountProfileName" type="text" maxlength="120" required></label>
           <label>شماره موبایل<input id="accountProfilePhone" type="tel" readonly></label>
           <label>ایمیل بازیابی<input id="accountProfileEmail" type="email" maxlength="254" required></label>
@@ -4060,10 +4060,28 @@ async function renderAccountRoute(){
   updateAccountHeader(session);
 }
 function retryAccountRecovery(){ accountRecoveryFlow=false; try{sessionStorage.removeItem('__owli_password_recovery');}catch(e){} history.replaceState({},'', '/account'); switchAccountAuthTab('recovery'); render(); }
+function updateAccountPageHeader(session){
+  const eyebrow=document.querySelector('.account-page .section-head .eyebrow');
+  const title=document.getElementById('accountPageTitle');
+  const sub=document.getElementById('accountPageSubtitle');
+  if(!eyebrow||!title||!sub)return;
+  if(session){
+    eyebrow.textContent='حساب کاربری من';
+    title.textContent='خوش آمدی 👋';
+    sub.textContent='اطلاعات حساب، سفارش‌ها و وضعیت خریدت را از اینجا مدیریت کن.';
+  }else{
+    eyebrow.textContent='حساب کاربری خانه‌گرم';
+    if(accountAuthTab==='login'){
+      title.textContent='ورود به حساب';
+      sub.textContent='با نام کاربری و رمز عبور وارد حساب شخصی خودت شو.';
+    }
+  }
+}
 function updateAccountHeader(session){
   const btn=document.getElementById('accountHeaderBtn'); if(!btn)return;
   btn.classList.toggle('signed',!!session);
   btn.innerHTML=`<span class="account-icon">${session?'●':'♙'}</span><span class="account-label">${session?'حساب من':'ورود / حساب من'}</span>`;
+  updateAccountPageHeader(session);
 }
 function validUsername(v){ return /^[a-zA-Z0-9_]{3,32}$/.test(String(v||'').trim()); }
 async function accountRegister(){
