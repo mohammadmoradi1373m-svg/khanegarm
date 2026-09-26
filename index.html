@@ -4128,10 +4128,16 @@ async function accountLogin(){
   if(!validUsername(username)){accountMessage(err,'نام کاربری معتبر نیست.');return;}
   if(!password){accountMessage(err,'رمز عبور را وارد کن.');return;}
   const {data:loginEmail,error:resolveError}=await sbClient.rpc('resolve_username_login_email',{p_username:username});
-  if(resolveError){accountMessage(err,'ورود انجام نشد؛ لطفاً دوباره امتحان کن.');return;}
+  if(resolveError){accountMessage(err,'بررسی ورود انجام نشد؛ لطفاً دوباره امتحان کن.');return;}
+  if(loginEmail==='__OWLI_RATE_LIMITED__'){
+    accountMessage(err,'تعداد تلاش‌های ورود زیاد شده است. برای امنیت حساب، ورود موقتاً محدود شده؛ حدود ۱۵ دقیقه بعد دوباره امتحان کن.');
+    return;
+  }
   if(!loginEmail){accountMessage(err,'نام کاربری یا رمز عبور اشتباه است.');return;}
   const {error}=await sbClient.auth.signInWithPassword({email:loginEmail,password});
   if(error){accountMessage(err,friendlyAuthError(error));return;}
+  const {error:rateResetError}=await sbClient.rpc('reset_my_username_login_rate_limit');
+  if(rateResetError) console.warn('[auth] login rate-limit reset failed',rateResetError);
   await syncMyCustomerProfile();
   await renderAccountRoute();
 }
@@ -4229,6 +4235,7 @@ function friendlyProfileError(error){
 }
 function friendlyAuthError(error){
   const m=String(error?.message||'');
+  if(/rate.?limit|too many requests|too many attempts/i.test(m)) return 'تعداد تلاش‌های ورود زیاد شده است. برای امنیت حساب، ورود موقتاً محدود شده؛ حدود ۱۵ دقیقه بعد دوباره امتحان کن.';
   if(/invalid login credentials/i.test(m)) return 'نام کاربری یا رمز عبور اشتباه است.';
   if(/already registered|already been registered|user already exists/i.test(m)) return 'این ایمیل قبلاً برای یک حساب استفاده شده است. اگر حساب داری، وارد شو یا از بازیابی رمز عبور استفاده کن.';
   if(/password/i.test(m)&&/weak|short|characters/i.test(m)) return 'رمز عبور ضعیف است؛ حداقل ۸ کاراکتر انتخاب کن.';
