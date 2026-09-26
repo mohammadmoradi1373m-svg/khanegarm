@@ -4105,12 +4105,21 @@ function showWelcomeBanner(name){
   },3600);
 }
 async function showLoginWelcome(session){
+  const userId=session?.user?.id;
+  if(!userId) return;
+  // Welcome is a login-time event, not an app-refresh event. Keep the marker in
+  // sessionStorage so a page refresh during the same browser session does not
+  // show the banner again. It is cleared on SIGNED_OUT, so a real new login
+  // can show the welcome message again.
+  const marker='__owli_welcome_shown_'+userId;
+  try{
+    if(sessionStorage.getItem(marker)==='1') return;
+    sessionStorage.setItem(marker,'1');
+  }catch(e){}
   let name=session?.user?.user_metadata?.name || '';
   try{
-    if(session?.user?.id){
-      const {data}=await sbClient.from('customers').select('name').eq('user_id',session.user.id).maybeSingle();
-      if(data?.name) name=data.name;
-    }
+    const {data}=await sbClient.from('customers').select('name').eq('user_id',userId).maybeSingle();
+    if(data?.name) name=data.name;
   }catch(e){}
   showWelcomeBanner(name);
 }
@@ -4243,6 +4252,14 @@ sbClient.auth.onAuthStateChange((event,session)=>{
   }
   if(event==='SIGNED_OUT'){
     accountRecoveryFlow=false;
+    try{
+      const keys=[];
+      for(let i=0;i<sessionStorage.length;i++){
+        const k=sessionStorage.key(i);
+        if(k && k.startsWith('__owli_welcome_shown_')) keys.push(k);
+      }
+      keys.forEach(k=>sessionStorage.removeItem(k));
+    }catch(e){}
     try{ sessionStorage.removeItem('__owli_password_recovery'); }catch(e){}
     accountMode=false;
     accountCartLoaded=false;
