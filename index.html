@@ -2169,6 +2169,10 @@ const ADMIN_ERROR_MESSAGES = {
   PACK_PRODUCT_NOT_FOUND:'یکی از محصولات پک پیدا نشد',
   PACK_PRICE_TOO_HIGH:'قیمت ثابت پک از جمع قیمت محصولاتش بیشتره',
   AUTH_UPDATE_FAILED:'تغییر روی حساب مشتری انجام نشد (ایمیل تکراری یا نامعتبر؟)',
+  INVALID_STATUS_TRANSITION:'تغییر وضعیت به این مرحله مجاز نیست',
+  INVALID_STATUS:'وضعیت انتخاب‌شده نامعتبر است',
+  INVALID_ORDER_COUNT:'تعداد سفارش‌های انتخاب‌شده نامعتبر است',
+  ORDER_NOT_FOUND:'یکی از سفارش‌های انتخاب‌شده پیدا نشد',
   NO_SESSION:'نشست ورود پیدا نشد؛ دوباره وارد شو'
 };
 function describeAdminError(e){
@@ -4759,7 +4763,10 @@ async function applyBulkStatus(){
   if(selectedOrderIds.size === 0) return;
   const ids = Array.from(selectedOrderIds);
   const { data, error } = await sbClient.rpc('admin_bulk_set_order_status', { p_order_ids: ids, p_status: newStatus });
-  if(error){ showToast('خطا در به‌روزرسانی گروهی'); return; }
+  if(error){
+    showToast(describeAdminError(error));
+    return;
+  }
   showToast(`${toFa(Number(data)||0)} سفارش به‌روزرسانی شد ✅`);
   selectedOrderIds.clear();
   const selectAllBox = document.getElementById('selectAllOrders');
