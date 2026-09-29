@@ -38,7 +38,7 @@ as $$
 declare
   v_old_status integer;
 begin
-  if (select auth.jwt() ->> 'email') <> 'mohammadmoradi.1373m@gmail.com' then
+  if not private.is_admin() then
     raise exception 'NOT_AUTHORIZED';
   end if;
   if p_status not between 0 and 3 then
@@ -66,17 +66,41 @@ security definer
 set search_path = 'public', 'private', 'pg_temp'
 as $$
 declare
-  v_count integer;
-  v_invalid_count integer;
+  v_count integer := 0;
+  v_order record;
 begin
-  if (select auth.jwt() ->> 'email') <> 'mohammadmoradi.1373m@gmail.com' then raise exception 'NOT_AUTHORIZED'; end if;
-  if p_status not between 0 and 3 then raise exception 'INVALID_STATUS'; end if;
-  if p_order_ids is null or cardinality(p_order_ids) < 1 or cardinality(p_order_ids) > 100 then raise exception 'INVALID_ORDER_COUNT'; end if;
-  select count(*) into v_invalid_count from public.orders o where o.id = any(p_order_ids) and not private.is_valid_order_status_transition(o.status, p_status);
-  if v_invalid_count > 0 then raise exception 'INVALID_STATUS_TRANSITION'; end if;
-  update public.orders set status = p_status where id = any(p_order_ids);
-  get diagnostics v_count = row_count;
-  if v_count <> cardinality(p_order_ids) then raise exception 'ORDER_NOT_FOUND'; end if;
+  if not private.is_admin() then
+    raise exception 'NOT_AUTHORIZED';
+  end if;
+  if p_status not between 0 and 3 then
+    raise exception 'INVALID_STATUS';
+  end if;
+  if p_order_ids is null or cardinality(p_order_ids) < 1 or cardinality(p_order_ids) > 100 then
+    raise exception 'INVALID_ORDER_COUNT';
+  end if;
+
+  -- Lock every targeted order before validating its transition.
+  -- This prevents a concurrent status change from racing the validation.
+  for v_order in
+    select o.id, o.status
+    from public.orders o
+    where o.id = any(p_order_ids)
+    for update
+  loop
+    v_count := v_count + 1;
+    if not private.is_valid_order_status_transition(v_order.status, p_status) then
+      raise exception 'INVALID_STATUS_TRANSITION';
+    end if;
+  end loop;
+
+  if v_count <> cardinality(p_order_ids) then
+    raise exception 'ORDER_NOT_FOUND';
+  end if;
+
+  update public.orders
+  set status = p_status
+  where id = any(p_order_ids);
+
   return v_count;
 end;
 $$;
